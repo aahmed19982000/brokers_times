@@ -1,0 +1,272 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Brokers List / شركات الوساطة - Brokers Times{% endblock %}
+
+{% block nav_brokers %}active{% endblock %}
+{% block section_name %}Brokers / شركات الوساطة{% endblock %}
+
+{% block extra_head %}
+<style>
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 600px) {
+        .page-header-container {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+
+    .page-title-area h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.3rem;
+    }
+
+    .page-title-area p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .btn-action {
+        background: var(--accent);
+        color: white;
+        text-decoration: none;
+        padding: 0.7rem 1.4rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-action:hover {
+        background: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-action svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.5;
+    }
+
+    .table-container {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        overflow: hidden;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .data-table th, .data-table td {
+        padding: 1.2rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .data-table th {
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .data-table td {
+        color: var(--text-color);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .data-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+        background: rgba(255, 255, 255, 0.01);
+    }
+
+    .broker-name-cell {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .broker-main-name {
+        font-weight: 600;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .broker-sub-slug {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-family: monospace;
+    }
+
+    .badge-pill {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.3rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .badge-primary {
+        background: rgba(79, 70, 229, 0.15);
+        color: #a5b4fc;
+        border: 1px solid rgba(79, 70, 229, 0.3);
+    }
+
+    .badge-success {
+        background: rgba(16, 185, 129, 0.15);
+        color: #a7f3d0;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-edit-inline {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: color 0.2s ease;
+    }
+
+    .btn-edit-inline:hover {
+        color: #818cf8;
+        text-decoration: underline;
+    }
+
+    .no-data-state {
+        padding: 3.5rem;
+        text-align: center;
+        color: var(--text-muted);
+    }
+
+    .no-data-state svg {
+        width: 48px;
+        height: 48px;
+        stroke: var(--text-muted);
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-title-area">
+        <h1>Brokers Directory / قائمة شركات الوساطة</h1>
+        <p>View, search, and manage broker profiles, regulatory status, and specifications.</p>
+    </div>
+    {% if user.is_staff or user.is_superuser %}
+    <a href="{% url 'dashboard_brokers_add' %}" class="btn-action">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Add Broker / إضافة وسيط</span>
+    </a>
+    {% endif %}
+</div>
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Broker Info / اسم الوسيط</th>
+                    <th>Regulators / الهيئات الرقابية</th>
+                    <th>Min Deposit / الحد الأدنى للإيداع</th>
+                    <th>Headquarters / المقر الرئيسي</th>
+                    <th>Islamic Account / حساب إسلامي</th>
+                    <th>Actions / إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for broker in brokers %}
+                <tr>
+                    <td>
+                        <div class="broker-name-cell">
+                            <span class="broker-main-name">{{ broker.name }}</span>
+                            <span class="broker-sub-slug">/{{ broker.slug }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% for regulator in broker.regulators.all %}
+                            <span class="badge-pill badge-primary">{{ regulator.name }}</span>
+                        {% empty %}
+                            <span class="badge-pill badge-secondary">Unregulated</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <span style="font-weight: 600; color: white;">${{ broker.min_deposit|floatformat:2 }}</span>
+                    </td>
+                    <td>
+                        {% if broker.headquarters %}
+                            <span class="badge-pill badge-success">{{ broker.headquarters.name }}</span>
+                        {% else %}
+                            <span class="badge-pill badge-secondary">Unknown</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if broker.islamic_account %}
+                            <span class="badge-pill badge-success">{{ broker.islamic_account.name }}</span>
+                        {% else %}
+                            <span class="badge-pill badge-secondary">No / غير متوفر</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'dashboard_brokers_edit' broker.id %}" class="btn-edit-inline">Edit / تعديل</a>
+                        {% else %}
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">View Only</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">
+                        <div class="no-data-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                            <h3>No Brokers Found</h3>
+                            <p>Try seeding the database or creating a new broker in the Admin panel.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

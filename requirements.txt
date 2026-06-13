@@ -1,0 +1,8 @@
+django
+djangorestframework
+pillow
+psycopg2
+python-decouple
+django-rosetta
+django-modeltranslation
+django-ckeditor

@@ -1,0 +1,1181 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}{% if is_edit %}Edit Comparison List / تعديل قائمة المقارنة{% else %}New Comparison List / قائمة مقارنة جديدة{% endif %} - Brokers Times{% endblock %}
+
+{% block nav_best_brokers %}active{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Clean layout reset for Full Focus Editor Mode */
+    .sidebar {
+        display: none !important;
+    }
+    .main-panel {
+        margin-left: 0 !important;
+    }
+    .topbar {
+        display: none !important;
+    }
+    .footer {
+        display: none !important;
+    }
+    .content-body {
+        padding: 0 !important;
+        background-color: #090d16;
+    }
+
+    /* Custom Editor Styles */
+    .editor-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #090d16;
+        color: #f3f4f6;
+        font-family: 'Outfit', 'Cairo', sans-serif;
+    }
+
+    /* Custom Header Bar */
+    .editor-header {
+        height: 70px;
+        background: #111726;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .editor-logo-area {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .editor-logo {
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #fff;
+        text-transform: uppercase;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+        padding-right: 1.5rem;
+    }
+
+    .editor-subtitle {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #9ca3af;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-editor-secondary {
+        background: transparent;
+        color: #f3f4f6;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 0.55rem 1.4rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-editor-secondary:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-editor-primary {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.6rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-editor-primary:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Split Main Workspace */
+    .editor-container {
+        display: flex;
+        flex: 1;
+        position: relative;
+    }
+
+    /* Form Section Spy Sidebar */
+    .editor-sidebar {
+        width: 280px;
+        background: #0d1322;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 2rem 1.5rem;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+
+    .editor-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .editor-menu-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: #9ca3af;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .editor-menu-item:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .editor-menu-item.active {
+        color: #fff;
+        background: rgba(59, 130, 246, 0.1);
+        border-left: 3px solid #3b82f6;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    /* Core Form Scroll Area */
+    .editor-content-area {
+        flex: 1;
+        padding: 3rem 4rem;
+        overflow-y: auto;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .editor-card {
+        background: rgba(22, 30, 49, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        backdrop-filter: blur(8px);
+    }
+
+    .editor-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 0.8rem;
+    }
+
+    /* Forms Elements styling */
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+    }
+
+    .form-group-editor {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group-editor.no-margin {
+        margin-bottom: 0 !important;
+    }
+
+    .form-group-editor.no-flex {
+        flex: none;
+    }
+
+    .form-group-editor label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #d1d5db;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .label-lang-indicator {
+        font-size: 0.7rem;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+        color: #9ca3af;
+        font-weight: 700;
+    }
+
+    .form-input-editor {
+        background: #0d1322;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: white;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .form-input-editor:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .form-input-editor::placeholder {
+        color: #4b5563;
+    }
+
+    select.form-input-editor {
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg fill='none' stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
+    }
+
+    textarea.form-input-editor {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    /* WYSIWYG Editor styling */
+    .wysiwyg-container {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        background: #0d1322;
+        overflow: hidden;
+    }
+
+    .editor-toolbar {
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+
+    .toolbar-group {
+        display: flex;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding-right: 0.5rem;
+        margin-right: 0.2rem;
+    }
+
+    .toolbar-group:last-child {
+        border-right: none;
+        padding-right: 0;
+        margin-right: 0;
+    }
+
+    .toolbar-btn {
+        background: transparent;
+        border: none;
+        color: #d1d5db;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .toolbar-btn:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: white;
+    }
+
+    .toolbar-btn svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .wysiwyg-editor {
+        min-height: 350px;
+        max-height: 600px;
+        overflow-y: auto;
+        padding: 1.5rem;
+        outline: none;
+        color: white;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .wysiwyg-editor.rtl {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .wysiwyg-editor:empty:before {
+        content: attr(placeholder);
+        color: #4b5563;
+        font-style: italic;
+    }
+
+    /* Translation switcher tabs */
+    .tab-headers {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tab-btn {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: #9ca3af;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+    }
+
+    .tab-btn.active {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .editor-status-bar {
+        background: #111726;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.5rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: #9ca3af;
+    }
+
+    /* Dynamic Repeater row styling */
+    .faq-repeater-row, .ranking-repeater-row {
+        background: rgba(13, 19, 34, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .delete-faq-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 5;
+    }
+
+    .delete-faq-btn:hover {
+        background: #ef4444;
+        color: white;
+    }
+
+    .delete-faq-btn svg {
+        width: 14px;
+        height: 14px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+    }
+
+    .add-faq-btn, .add-ranking-btn {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .add-faq-btn:hover, .add-ranking-btn:hover {
+        background: #10b981;
+        color: white;
+    }
+
+    .add-faq-btn svg, .add-ranking-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+    }
+
+    /* Featured Image preview */
+    .image-preview-container {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: #0d1322;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 0.5rem;
+    }
+
+    .image-preview-thumb {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .image-preview-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .clear-image-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: #ef4444;
+        cursor: pointer;
+        font-weight: 600;
+        margin-top: 0.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<form method="POST" id="best-brokers-form" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="editor-wrapper">
+        <!-- Header Actions -->
+        <header class="editor-header">
+            <div class="editor-logo-area">
+                <span class="editor-logo">Brokers Times</span>
+                <span class="editor-subtitle">
+                    {% if is_edit %}Edit Comparison List / تعديل المقارنة{% else %}New Comparison List / قائمة جديدة{% endif %}
+                </span>
+            </div>
+            
+            <div class="header-actions">
+                <a href="{% url 'dashboard_best_brokers' %}" class="btn-editor-secondary">
+                    Cancel / إلغاء
+                </a>
+                <button type="submit" class="btn-editor-primary">
+                    {% if is_edit %}Save Changes / حفظ التعديلات{% else %}Create List / حفظ القائمة{% endif %}
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="editor-container">
+            <!-- Left Navigation Scrollspy -->
+            <aside class="editor-sidebar">
+                <ul class="editor-menu">
+                    <li><a href="#section-metadata" class="editor-menu-item active" id="li-metadata">Bilingual Metadata / البيانات الأساسية</a></li>
+                    <li><a href="#section-content" class="editor-menu-item" id="li-content">Comparison Content / تفاصيل القائمة</a></li>
+                    <li><a href="#section-specs" class="editor-menu-item" id="li-specs">Publishing & Image / النشر والصورة</a></li>
+                    <li><a href="#section-ranking" class="editor-menu-item" id="li-ranking">Ranked Brokers / ترتيب الشركات</a></li>
+                    <li><a href="#section-faqs" class="editor-menu-item" id="li-faqs">FAQ Manager / الأسئلة الشائعة</a></li>
+                </ul>
+            </aside>
+
+            <!-- Scrollable Content -->
+            <div class="editor-content-area">
+                <!-- 1. Bilingual Metadata Card -->
+                <div class="editor-card" id="section-metadata">
+                    <div class="editor-card-title">Bilingual List Titles & SEO / العنوان وبيانات محركات البحث</div>
+                    
+                    <!-- Titles -->
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label>
+                                <span>Comparison Title (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <input type="text" name="title_en" value="{{ best_list.title_en|default:'' }}" required class="form-input-editor" placeholder="e.g. Best Forex Brokers for 2026...">
+                        </div>
+                        <div class="form-group-editor">
+                            <label>
+                                <span>عنوان قائمة المقارنة (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <input type="text" name="title_ar" value="{{ best_list.title_ar|default:'' }}" required class="form-input-editor" style="direction: rtl;" placeholder="مثال: أفضل شركات الفوركس لعام 2026...">
+                        </div>
+                    </div>
+
+                    <!-- Slug -->
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label>URL Slug / الرابط المعرف</label>
+                            <input type="text" name="slug" value="{{ best_list.slug|default:'' }}" required class="form-input-editor" placeholder="e.g. best-forex-brokers-2026 (without spaces)">
+                        </div>
+                    </div>
+
+                    <!-- SEO Titles -->
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label>
+                                <span>SEO Title (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <input type="text" name="seo_title_en" value="{{ best_list.seo_title_en|default:'' }}" class="form-input-editor" placeholder="Google search title in English...">
+                        </div>
+                        <div class="form-group-editor">
+                            <label>
+                                <span>عنوان SEO (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <input type="text" name="seo_title_ar" value="{{ best_list.seo_title_ar|default:'' }}" class="form-input-editor" style="direction: rtl;" placeholder="عنوان البحث في جوجل بالعربية...">
+                        </div>
+                    </div>
+
+                    <!-- SEO Descriptions -->
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label>
+                                <span>SEO Meta Description (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <textarea name="seo_description_en" class="form-input-editor" placeholder="Google search snippet description in English...">{{ best_list.seo_description_en|default:'' }}</textarea>
+                        </div>
+                        <div class="form-group-editor">
+                            <label>
+                                <span>وصف SEO (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <textarea name="seo_description_ar" class="form-input-editor" style="direction: rtl;" placeholder="مقتطف البحث الوصفي لجوجل بالعربية...">{{ best_list.seo_description_ar|default:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. WYSIWYG Content Editor Card -->
+                <div class="editor-card" id="section-content">
+                    <div class="editor-card-title">Editorial Description / الوصف التمهيدي المكتوب لقائمة المقارنة</div>
+                    
+                    <div class="form-group-editor">
+                        <!-- Switcher Tabs -->
+                        <div class="tab-headers">
+                            <button type="button" class="tab-btn active" id="tab-btn-en" onclick="switchLangTab('en')">English Editor (EN)</button>
+                            <button type="button" class="tab-btn" id="tab-btn-ar" onclick="switchLangTab('ar')">المحرر العربي (AR)</button>
+                        </div>
+
+                        <div class="wysiwyg-container">
+                            <!-- Editing Toolbar -->
+                            <div class="editor-toolbar">
+                                <div class="toolbar-group">
+                                    <button type="button" class="toolbar-btn" title="Bold" onmousedown="event.preventDefault(); formatDoc('bold')">
+                                        <svg viewBox="0 0 24 24"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Italic" onmousedown="event.preventDefault(); formatDoc('italic')">
+                                        <svg viewBox="0 0 24 24"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Underline" onmousedown="event.preventDefault(); formatDoc('underline')">
+                                        <svg viewBox="0 0 24 24"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+                                    </button>
+                                </div>
+                                
+                                <div class="toolbar-group">
+                                    <button type="button" class="toolbar-btn" title="Heading 1" onmousedown="event.preventDefault(); formatDoc('formatBlock', '<h1>')">
+                                        <span style="font-weight: 700; font-size: 0.95rem;">H1</span>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Heading 2" onmousedown="event.preventDefault(); formatDoc('formatBlock', '<h2>')">
+                                        <span style="font-weight: 700; font-size: 0.95rem;">H2</span>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Paragraph" onmousedown="event.preventDefault(); formatDoc('formatBlock', '<p>')">
+                                        <span style="font-weight: 500; font-size: 0.8rem;">P</span>
+                                    </button>
+                                </div>
+
+                                <div class="toolbar-group">
+                                    <button type="button" class="toolbar-btn" title="Bullet List" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')">
+                                        <svg viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><line x1="5" y1="6" x2="5.01" y2="6"/><line x1="5" y1="12" x2="5.01" y2="12"/><line x1="5" y1="18" x2="5.01" y2="18"/></svg>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Numbered List" onmousedown="event.preventDefault(); formatDoc('insertOrderedList')">
+                                        <svg viewBox="0 0 24 24"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><circle cx="5" cy="14" r="1"/></svg>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Blockquote" onmousedown="event.preventDefault(); formatDoc('formatBlock', '<blockquote>')">
+                                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                    </button>
+                                </div>
+
+                                <div class="toolbar-group">
+                                    <button type="button" class="toolbar-btn" title="Insert Link" onmousedown="event.preventDefault(); insertLinkPrompt()">
+                                        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Insert Image" onmousedown="event.preventDefault(); insertImagePrompt()">
+                                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                    </button>
+                                </div>
+                                
+                                <div class="toolbar-group">
+                                    <button type="button" class="toolbar-btn" title="Clear Formatting" onmousedown="event.preventDefault(); formatDoc('removeFormat')">
+                                        <span style="font-size: 0.75rem; font-weight: 700;">Clear</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- English Editable WYSIWYG -->
+                            <div class="tab-content active" id="tab-content-en">
+                                <div contenteditable="true" class="wysiwyg-editor" id="editor-en" placeholder="Start writing the introduction content in English here..." oninput="syncEditor('en')">
+                                    {{ best_list.content_en|safe }}
+                                </div>
+                            </div>
+
+                            <!-- Arabic Editable WYSIWYG -->
+                            <div class="tab-content" id="tab-content-ar">
+                                <div contenteditable="true" class="wysiwyg-editor rtl" id="editor-ar" placeholder="ابدأ بكتابة النص التمهيدي للقائمة باللغة العربية هنا..." oninput="syncEditor('ar')">
+                                    {{ best_list.content_ar|safe }}
+                                </div>
+                            </div>
+
+                            <!-- Status Bar -->
+                            <div class="editor-status-bar">
+                                <span id="word-count-display">Words (EN): 0</span>
+                                <span>HTML Live Synchronization / مزامنة مباشرة</span>
+                            </div>
+                        </div>
+
+                        <!-- Hidden Textareas to hold values for standard submission -->
+                        <textarea name="content_en" id="id_review_content_en" style="display:none;">{{ best_list.content_en|default:'' }}</textarea>
+                        <textarea name="content_ar" id="id_review_content_ar" style="display:none;">{{ best_list.content_ar|default:'' }}</textarea>
+                        
+                        <!-- Hidden file input for WYSIWYG editor image upload -->
+                        <input type="file" id="wysiwyg-image-upload-input" style="display:none;" accept="image/*" onchange="uploadWysiwygImage(this)">
+                    </div>
+                </div>
+
+                <!-- 3. Publishing & Image Card -->
+                <div class="editor-card" id="section-specs">
+                    <div class="editor-card-title">Publishing & Image / حالة النشر والصورة البارزة</div>
+                    
+                    <div class="form-row">
+                        <!-- Status Selection -->
+                        <div class="form-group-editor">
+                            <label>Publish Status / حالة النشر</label>
+                            <select name="status" class="form-input-editor">
+                                <option value="draft" {% if best_list.status == 'draft' %}selected{% endif %}>Draft / مسودة</option>
+                                <option value="published" {% if best_list.status == 'published' %}selected{% endif %}>Published / منشور للعامة</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Visibility Selection -->
+                        <div class="form-group-editor">
+                            <label>Visibility / مستوى الظهور</label>
+                            <select name="visibility" class="form-input-editor">
+                                <option value="private" {% if best_list.visibility == 'private' %}selected{% endif %}>Private / خاص للناشرين فقط</option>
+                                <option value="public" {% if best_list.visibility == 'public' %}selected{% endif %}>Public / عام للزوار</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Featured Image Field -->
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label>Featured Image / الصورة الرئيسية للقائمة</label>
+                            <input type="file" name="featured_image" accept="image/*" class="form-input-editor">
+                            {% if best_list.featured_image %}
+                                <div class="image-preview-container">
+                                    <img src="{{ best_list.featured_image.url }}" alt="Featured Image" class="image-preview-thumb">
+                                    <div class="image-preview-info">
+                                        <span style="font-size: 0.85rem; font-weight: 600;">Currently Uploaded Image</span>
+                                        <label class="clear-image-checkbox">
+                                            <input type="checkbox" name="featured_image-clear" id="featured_image-clear_id">
+                                            Clear / إزالة الصورة
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Ranked Brokers Manager Card -->
+                <div class="editor-card" id="section-ranking">
+                    <div class="editor-card-title">Ranked Brokers List / ترتيب شركات وساطة التداول في القائمة</div>
+                    
+                    <div id="ranking-list-container">
+                        {% for item in items %}
+                            <div class="ranking-repeater-row" data-index="{{ forloop.index0 }}">
+                                <button type="button" class="delete-faq-btn" onclick="deleteRankedItem(this)">
+                                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </button>
+                                
+                                <div class="form-row">
+                                    <!-- Broker select -->
+                                    <div class="form-group-editor">
+                                        <label>Broker / شركة الوساطة</label>
+                                        <select name="item_broker" class="form-input-editor" required>
+                                            <option value="">--- Select Broker / اختر الشركة ---</option>
+                                            {% for b in brokers %}
+                                                <option value="{{ b.id }}" {% if item.broker.id == b.id %}selected{% endif %}>
+                                                    {{ b.name_en }} / {{ b.name_ar }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Rank Number -->
+                                    <div class="form-group-editor" style="max-width: 120px;">
+                                        <label>Rank / الترتيب</label>
+                                        <input type="number" name="item_rank" class="form-input-editor" min="1" required value="{{ item.rank }}">
+                                    </div>
+                                </div>
+
+                                <!-- Descriptions -->
+                                <div class="form-row" style="margin-bottom: 0;">
+                                    <div class="form-group-editor">
+                                        <label>
+                                            <span>Description (English)</span>
+                                            <span class="label-lang-indicator">EN</span>
+                                        </label>
+                                        <textarea name="item_description_en" class="form-input-editor" placeholder="Explain why this broker got this rank in English...">{{ item.description_en }}</textarea>
+                                    </div>
+                                    <div class="form-group-editor">
+                                        <label>
+                                            <span>الوصف القصير (العربية)</span>
+                                            <span class="label-lang-indicator">AR</span>
+                                        </label>
+                                        <textarea name="item_description_ar" class="form-input-editor" style="direction: rtl;" placeholder="اشرح أسباب الترتيب في هذه القائمة بالعربية...">{{ item.description_ar }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="add-ranking-btn" onclick="addNewRankedItem()">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add Ranked Broker / إضافة شركة جديدة للترتيب
+                    </button>
+                </div>
+
+                <!-- 5. FAQ Manager Card -->
+                <div class="editor-card" id="section-faqs">
+                    <div class="editor-card-title">Comparison List FAQ Manager / الأسئلة الشائعة للقائمة</div>
+                    
+                    <div id="faqs-list-container">
+                        {% for faq in faqs %}
+                            <div class="faq-repeater-row" data-index="{{ forloop.index0 }}">
+                                <button type="button" class="delete-faq-btn" onclick="deleteFAQ(this)">
+                                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </button>
+                                
+                                <!-- Question Row -->
+                                <div class="form-row">
+                                    <div class="form-group-editor">
+                                        <label>
+                                            <span>Question (English)</span>
+                                            <span class="label-lang-indicator">EN</span>
+                                        </label>
+                                        <input type="text" name="faq_question_en" value="{{ faq.question_en }}" class="form-input-editor" placeholder="Enter question in English...">
+                                    </div>
+                                    <div class="form-group-editor">
+                                        <label>
+                                            <span>السؤال (العربية)</span>
+                                            <span class="label-lang-indicator">AR</span>
+                                        </label>
+                                        <input type="text" name="faq_question_ar" value="{{ faq.question_ar }}" class="form-input-editor" style="direction: rtl;" placeholder="أدخل السؤال بالعربية...">
+                                    </div>
+                                </div>
+
+                                <!-- Answer Row -->
+                                <div class="form-row" style="margin-bottom: 0;">
+                                    <div class="form-group-editor no-margin">
+                                        <label>
+                                            <span>Answer (English)</span>
+                                            <span class="label-lang-indicator">EN</span>
+                                        </label>
+                                        <textarea name="faq_answer_en" class="form-input-editor" placeholder="Enter detailed answer in English...">{{ faq.answer_en }}</textarea>
+                                    </div>
+                                    <div class="form-group-editor no-margin">
+                                        <label>
+                                            <span>الإجابة (العربية)</span>
+                                            <span class="label-lang-indicator">AR</span>
+                                        </label>
+                                        <textarea name="faq_answer_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل الإجابة التفصيلية بالعربية...">{{ faq.answer_ar }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="add-faq-btn" onclick="addNewFAQ()">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add FAQ Item / إضافة سؤال وجواب جديد
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    // HTML string of broker selection options for dynamic ranked rows
+    const brokerOptionsHTML = `
+        <option value="">--- Select Broker / اختر الشركة ---</option>
+        {% for b in brokers %}
+            <option value="{{ b.id }}">{{ b.name_en }} / {{ b.name_ar }}</option>
+        {% endfor %}
+    `;
+
+    // Scroll Spy & Menu Selection Highlights
+    window.addEventListener('DOMContentLoaded', () => {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                const id = entry.target.getAttribute('id');
+                if (entry.intersectionRatio > 0.3) {
+                    document.querySelectorAll('.editor-menu-item').forEach(item => item.classList.remove('active'));
+                    
+                    if (id === 'section-metadata') document.getElementById('li-metadata').classList.add('active');
+                    if (id === 'section-content') document.getElementById('li-content').classList.add('active');
+                    if (id === 'section-specs') document.getElementById('li-specs').classList.add('active');
+                    if (id === 'section-ranking') document.getElementById('li-ranking').classList.add('active');
+                    if (id === 'section-faqs') document.getElementById('li-faqs').classList.add('active');
+                }
+            });
+        }, { threshold: [0.1, 0.3, 0.5] });
+
+        document.querySelectorAll('.editor-card').forEach(section => {
+            observer.observe(section);
+        });
+        
+        countWords();
+    });
+
+    // Synchronize HTML from contenteditable DIVs to standard form hidden textareas
+    function syncEditor(lang) {
+        const editor = document.getElementById(`editor-${lang}`);
+        const textarea = document.getElementById(`id_review_content_${lang}`);
+        textarea.value = editor.innerHTML;
+        countWords();
+    }
+
+    // Force sync immediately on submit
+    document.getElementById('best-brokers-form').addEventListener('submit', () => {
+        document.getElementById('id_review_content_en').value = document.getElementById('editor-en').innerHTML;
+        document.getElementById('id_review_content_ar').value = document.getElementById('editor-ar').innerHTML;
+    });
+
+    // Translation tab switcher
+    let currentLangTab = 'en';
+    function switchLangTab(lang) {
+        currentLangTab = lang;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-btn-${lang}`).classList.add('active');
+        
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(`tab-content-${lang}`).classList.add('active');
+        
+        countWords();
+    }
+
+    // Live Word Counter
+    function countWords() {
+        const editorId = currentLangTab === 'en' ? 'editor-en' : 'editor-ar';
+        const text = document.getElementById(editorId).innerText;
+        const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+        document.getElementById('word-count-display').innerText = `Words (${currentLangTab.toUpperCase()}): ${words}`;
+    }
+
+    // WYSIWYG Document Action Command
+    function formatDoc(cmd, value = null) {
+        document.execCommand(cmd, false, value);
+        syncEditor(currentLangTab);
+    }
+
+    // Insert Link Prompt
+    function insertLinkPrompt() {
+        const url = prompt("Enter link URL (e.g. https://google.com):");
+        if (url) {
+            formatDoc('createLink', url);
+        }
+    }
+
+    // Trigger Hidden Image Input Dialog
+    function insertImagePrompt() {
+        document.getElementById('wysiwyg-image-upload-input').click();
+    }
+
+    // AJAX Image Upload & Compressor to WebP
+    function uploadWysiwygImage(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        input.value = '';
+        
+        // Create placeholder element using standard DOM API
+        const placeholder = document.createElement('span');
+        placeholder.style.color = '#3b82f6';
+        placeholder.style.fontStyle = 'italic';
+        placeholder.style.fontWeight = '600';
+        placeholder.style.display = 'block';
+        placeholder.style.margin = '10px 0';
+        placeholder.innerText = '[Uploading Image...]';
+        
+        const editorId = currentLangTab === 'en' ? 'editor-en' : 'editor-ar';
+        const editor = document.getElementById(editorId);
+        editor.focus();
+        
+        // Insert placeholder at cursor position using Selection API
+        const selection = window.getSelection();
+        let rangeInserted = false;
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            if (editor.contains(range.commonAncestorContainer)) {
+                range.deleteContents();
+                range.insertNode(placeholder);
+                rangeInserted = true;
+                
+                // Move selection immediately after placeholder to allow continuing typing
+                const newRange = document.createRange();
+                newRange.setStartAfter(placeholder);
+                newRange.setEndAfter(placeholder);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+            }
+        }
+        
+        // Fallback: append to editor if selection was not inside it
+        if (!rangeInserted) {
+            editor.appendChild(placeholder);
+        }
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        fetch("{% url 'dashboard_upload_image' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Upload failed");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (placeholder && placeholder.parentNode) {
+                const imgNode = document.createElement('img');
+                imgNode.src = data.url;
+                imgNode.alt = "Uploaded Image";
+                imgNode.style.maxWidth = "100%";
+                imgNode.style.borderRadius = "8px";
+                imgNode.style.margin = "12px 0";
+                imgNode.style.display = "block";
+                
+                placeholder.parentNode.replaceChild(imgNode, placeholder);
+                syncEditor(currentLangTab);
+            }
+        })
+        .catch(error => {
+            console.error("Image upload error:", error);
+            if (placeholder) {
+                placeholder.style.color = '#ef4444';
+                placeholder.innerText = '[Upload Failed]';
+            }
+        });
+    }
+
+    // Dynamic Ranked Brokers Repeater
+    function addNewRankedItem() {
+        const list = document.getElementById('ranking-list-container');
+        const row = document.createElement('div');
+        row.className = 'ranking-repeater-row';
+        
+        row.innerHTML = `
+            <button type="button" class="delete-faq-btn" onclick="deleteRankedItem(this)">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+            
+            <div class="form-row">
+                <!-- Broker Select -->
+                <div class="form-group-editor">
+                    <label>Broker / شركة الوساطة</label>
+                    <select name="item_broker" class="form-input-editor" required>
+                        ${brokerOptionsHTML}
+                    </select>
+                </div>
+                
+                <!-- Rank Number -->
+                <div class="form-group-editor" style="max-width: 120px;">
+                    <label>Rank / الترتيب</label>
+                    <input type="number" name="item_rank" class="form-input-editor" min="1" required value="${list.children.length + 1}">
+                </div>
+            </div>
+
+            <!-- Short Descriptions -->
+            <div class="form-row" style="margin-bottom: 0;">
+                <div class="form-group-editor">
+                    <label>
+                        <span>Short Description (English)</span>
+                        <span class="label-lang-indicator">EN</span>
+                    </label>
+                    <textarea name="item_description_en" class="form-input-editor" placeholder="Explain why this broker got this rank in English..."></textarea>
+                </div>
+                <div class="form-group-editor">
+                    <label>
+                        <span>الوصف المختصر (العربية)</span>
+                        <span class="label-lang-indicator">AR</span>
+                    </label>
+                    <textarea name="item_description_ar" class="form-input-editor" style="direction: rtl;" placeholder="اشرح أسباب حصول الشركة على هذا الترتيب بالعربية..."></textarea>
+                </div>
+            </div>
+        `;
+        
+        list.appendChild(row);
+    }
+
+    // Delete Ranked Item
+    function deleteRankedItem(btn) {
+        const row = btn.closest('.ranking-repeater-row');
+        if (row) row.remove();
+        recalculateRanks();
+    }
+
+    // Proactively recalculate ranks to match elements count
+    function recalculateRanks() {
+        const rows = document.querySelectorAll('.ranking-repeater-row');
+        rows.forEach((row, i) => {
+            const rankInput = row.querySelector('input[name="item_rank"]');
+            if (rankInput) {
+                rankInput.value = i + 1;
+            }
+        });
+    }
+
+    // FAQ dynamic list repeater
+    let faqIndexCount = document.querySelectorAll('.faq-repeater-row').length;
+
+    function addNewFAQ() {
+        const list = document.getElementById('faqs-list-container');
+        const row = document.createElement('div');
+        row.className = 'faq-repeater-row';
+        row.setAttribute('data-index', faqIndexCount);
+        
+        row.innerHTML = `
+            <button type="button" class="delete-faq-btn" onclick="deleteFAQ(this)">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+            
+            <!-- Question Row -->
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label>
+                        <span>Question (English)</span>
+                        <span class="label-lang-indicator">EN</span>
+                    </label>
+                    <input type="text" name="faq_question_en" class="form-input-editor" placeholder="Enter question in English...">
+                </div>
+                <div class="form-group-editor">
+                    <label>
+                        <span>السؤال (العربية)</span>
+                        <span class="label-lang-indicator">AR</span>
+                    </label>
+                    <input type="text" name="faq_question_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل السؤال بالعربية...">
+                </div>
+            </div>
+
+            <!-- Answer Row -->
+            <div class="form-row" style="margin-bottom: 0;">
+                <div class="form-group-editor no-margin">
+                    <label>
+                        <span>Answer (English)</span>
+                        <span class="label-lang-indicator">EN</span>
+                    </label>
+                    <textarea name="faq_answer_en" class="form-input-editor" placeholder="Enter detailed answer in English..."></textarea>
+                </div>
+                <div class="form-group-editor no-margin">
+                    <label>
+                        <span>الإجابة (العربية)</span>
+                        <span class="label-lang-indicator">AR</span>
+                    </label>
+                    <textarea name="faq_answer_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل الإجابة التفصيلية بالعربية..."></textarea>
+                </div>
+            </div>
+        `;
+        
+        list.appendChild(row);
+        faqIndexCount++;
+    }
+
+    // Delete FAQ row
+    function deleteFAQ(btn) {
+        const row = btn.closest('.faq-repeater-row');
+        if (row) row.remove();
+    }
+</script>
+{% endblock %}

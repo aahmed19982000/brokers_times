@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Now / تسجيل جديد - Brokers Times</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --text-color: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%);
+            color: var(--text-color);
+            font-family: 'Outfit', 'Cairo', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            backdrop-filter: blur(12px);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        @media (max-width: 500px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 500px) {
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+        }
+
+        .error-list {
+            list-style: none;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            color: #fca5a5;
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Brokers Times</div>
+            <h1 class="title">Join Now / تسجيل جديد</h1>
+            <p class="subtitle">Create an account to join our team<br>أنشئ حساباً للانضمام إلى فريقنا</p>
+        </div>
+
+        {% if form.errors %}
+        <ul class="error-list">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="id_first_name">
+                        <span>First Name</span>
+                        <span>الاسم الأول</span>
+                    </label>
+                    <input type="text" name="first_name" id="id_first_name" class="form-control" placeholder="First Name" required value="{{ form.first_name.value|default_if_none:'' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="id_last_name">
+                        <span>Last Name</span>
+                        <span>اسم العائلة</span>
+                    </label>
+                    <input type="text" name="last_name" id="id_last_name" class="form-control" placeholder="Last Name" required value="{{ form.last_name.value|default_if_none:'' }}">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="id_username">
+                        <span>Username</span>
+                        <span>اسم المستخدم</span>
+                    </label>
+                    <input type="text" name="username" id="id_username" class="form-control" placeholder="Username" required value="{{ form.username.value|default_if_none:'' }}">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="id_email">
+                        <span>Email</span>
+                        <span>البريد الإلكتروني</span>
+                    </label>
+                    <input type="email" name="email" id="id_email" class="form-control" placeholder="Email" required value="{{ form.email.value|default_if_none:'' }}">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="id_preferred_language">
+                        <span>Preferred Language</span>
+                        <span>اللغة المفضلة</span>
+                    </label>
+                    <select name="preferred_language" id="id_preferred_language" class="form-control">
+                        <option value="ar" {% if form.preferred_language.value == 'ar' %}selected{% endif %}>العربية</option>
+                        <option value="en" {% if form.preferred_language.value == 'en' %}selected{% endif %}>English</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password1">
+                        <span>Password</span>
+                        <span>كلمة المرور</span>
+                    </label>
+                    <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password2">
+                        <span>Confirm Password</span>
+                        <span>تأكيد كلمة المرور</span>
+                    </label>
+                    <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm Password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">
+                <span>Register / تسجيل الحساب</span>
+            </button>
+        </form>
+
+        <div class="footer-links">
+            <span>Already have an account? / لديك حساب بالفعل؟</span>
+            <a href="{% url 'login' %}">Login / تسجيل الدخول</a>
+        </div>
+    </div>
+</body>
+</html>

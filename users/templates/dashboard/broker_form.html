@@ -1,0 +1,1370 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}{% if is_edit %}Edit Broker / تعديل وسيط{% else %}Add New Broker / إضافة وسيط جديد{% endif %}{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Hide default portal layout components for focused editor mode */
+    .sidebar {
+        display: none !important;
+    }
+    .main-panel {
+        margin-left: 0 !important;
+    }
+    .topbar {
+        display: none !important;
+    }
+    .footer {
+        display: none !important;
+    }
+    .content-body {
+        padding: 0 !important;
+        background-color: #090d16;
+    }
+
+    /* Custom Custom Editor Styles */
+    .editor-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #090d16;
+        color: #f3f4f6;
+        font-family: 'Outfit', 'Cairo', sans-serif;
+    }
+
+    /* Custom Header Bar */
+    .editor-header {
+        height: 70px;
+        background: #111726;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .editor-logo-area {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .editor-logo {
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #fff;
+        text-transform: uppercase;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+        padding-right: 1.5rem;
+    }
+
+    .editor-subtitle {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #9ca3af;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-editor-secondary {
+        background: transparent;
+        color: #f3f4f6;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 0.55rem 1.4rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-editor-secondary:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-editor-primary {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.6rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-editor-primary:hover {
+        background: #2563eb;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Core Editor Body Grid */
+    .editor-main {
+        display: flex;
+        flex: 1;
+        margin-bottom: 70px; /* Space for footer */
+    }
+
+    /* Form Section Navigation Sidebar */
+    .editor-sidebar {
+        width: 250px;
+        background: #111726;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: fixed;
+        height: calc(100vh - 140px);
+        top: 70px;
+        left: 0;
+    }
+
+    .editor-sidebar-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .editor-menu-item a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.8rem 1rem;
+        color: #9ca3af;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .editor-menu-item a svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+    }
+
+    .editor-menu-item a:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .editor-menu-item.active a {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+        border-left: 3px solid #3b82f6;
+        border-radius: 0 10px 10px 0;
+        padding-left: 13px;
+    }
+
+    .sidebar-status-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        padding: 0.8rem;
+        font-size: 0.75rem;
+        color: #9ca3af;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    /* Main Form Area */
+    .editor-content-container {
+        margin-left: 250px;
+        flex: 1;
+        padding: 3rem 5%;
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        max-width: 1000px;
+    }
+
+    .editor-card {
+        background: rgba(22, 30, 49, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 2.2rem;
+        backdrop-filter: blur(12px);
+    }
+
+    .editor-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 1.8rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-group-editor {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group-editor.no-margin {
+        margin-bottom: 0;
+    }
+
+    .form-group-editor label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #9ca3af;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .label-lang-indicator {
+        font-size: 0.75rem;
+        color: #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+
+    .form-input-editor {
+        background: #0e1320;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .form-input-editor:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    textarea.form-input-editor {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* Bilingual Tab System for Review Editor */
+    .tab-headers {
+        display: flex;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        padding: 0.5rem 1.2rem;
+        border-radius: 8px 8px 0 0;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .tab-btn:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tab-btn.active {
+        color: #fff;
+        background: rgba(59, 130, 246, 0.12);
+        border-color: rgba(255, 255, 255, 0.08) rgba(255, 255, 255, 0.08) transparent;
+        border-bottom: 2px solid #3b82f6;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Professional Rich Text WYSIWYG Editor styling */
+    .wysiwyg-container {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        background: #0e1320;
+        transition: all 0.3s ease;
+    }
+
+    .wysiwyg-container:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .editor-toolbar {
+        background: #161e2f;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.6rem 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        align-items: center;
+    }
+
+    .toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding-right: 0.6rem;
+        margin-right: 0.2rem;
+    }
+
+    .toolbar-group:last-child {
+        border-right: none;
+        padding-right: 0;
+        margin-right: 0;
+    }
+
+    .toolbar-btn {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .toolbar-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+    }
+
+    .toolbar-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* WYSIWYG Editable Area */
+    .wysiwyg-editor {
+        padding: 1.5rem;
+        min-height: 320px;
+        max-height: 600px;
+        overflow-y: auto;
+        color: #e2e8f0;
+        font-family: 'Outfit', 'Cairo', sans-serif;
+        font-size: 0.98rem;
+        line-height: 1.6;
+        background: #0e1320;
+    }
+
+    .wysiwyg-editor:focus {
+        outline: none;
+    }
+
+    .wysiwyg-editor h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+        margin-top: 1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .wysiwyg-editor h2 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #fff;
+        margin-top: 0.8rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .wysiwyg-editor p {
+        margin-bottom: 0.8rem;
+    }
+
+    .wysiwyg-editor ul, .wysiwyg-editor ol {
+        padding-left: 1.8rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .wysiwyg-editor blockquote {
+        border-left: 4px solid #3b82f6;
+        padding-left: 1rem;
+        color: #9ca3af;
+        font-style: italic;
+        margin-bottom: 0.8rem;
+    }
+
+    .wysiwyg-editor.rtl {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .wysiwyg-editor.rtl blockquote {
+        border-left: none;
+        border-right: 4px solid #3b82f6;
+        padding-left: 0;
+        padding-right: 1rem;
+    }
+
+    /* Contenteditable placeholder */
+    .wysiwyg-editor:empty::before {
+        content: attr(placeholder);
+        color: #4b5563;
+        font-style: italic;
+        cursor: text;
+    }
+
+    /* Regulators Badges UI */
+    .regulator-badges-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .regulator-badges-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .regulator-badge-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(59, 130, 246, 0.15);
+        color: #93c5fd;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .regulator-badge-close {
+        cursor: pointer;
+        color: #93c5fd;
+        font-weight: 700;
+        transition: color 0.2s ease;
+    }
+
+    .regulator-badge-close:hover {
+        color: #ef4444;
+    }
+
+    .select-add-regulator-btn {
+        max-width: 180px;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #9ca3af;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .select-add-regulator-btn:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Available Trading Assets Custom Checkboxes */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .checkbox-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .asset-checkbox-card {
+        background: #0e1320;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .asset-checkbox-card:hover {
+        border-color: rgba(59, 130, 246, 0.3);
+        background: rgba(59, 130, 246, 0.02);
+    }
+
+    .asset-checkbox-card input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #3b82f6;
+        cursor: pointer;
+    }
+
+    .asset-checkbox-card span {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #d1d5db;
+    }
+
+    /* FAQ Manager Repeater Cards */
+    .faqs-list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .faq-repeater-row {
+        background: rgba(14, 19, 32, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 1.8rem;
+        position: relative;
+    }
+
+    .delete-faq-btn {
+        position: absolute;
+        top: 1.2rem;
+        right: 1.2rem;
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .delete-faq-btn:hover {
+        color: #ef4444;
+    }
+
+    .delete-faq-btn svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+    }
+
+    .btn-add-faq-text {
+        color: #3b82f6;
+        background: transparent;
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s ease;
+    }
+
+    .btn-add-faq-text:hover {
+        color: #60a5fa;
+    }
+
+    .btn-add-faq-text svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.5;
+    }
+
+    /* Footer Bar */
+    .editor-footer {
+        height: 70px;
+        background: #111726;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+    }
+
+    .footer-status-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        font-size: 0.8rem;
+        color: #9ca3af;
+    }
+
+    .status-badge-saved {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #10b981;
+        font-weight: 600;
+    }
+
+    .status-badge-saved svg {
+        width: 14px;
+        height: 14px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 3;
+    }
+
+    .footer-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<form method="post" id="broker-form">
+    {% csrf_token %}
+    
+    <!-- Hidden textareas that sync with contenteditable DIVs on submit -->
+    <textarea name="review_content_en" id="id_review_content_en" style="display:none;">{{ broker.review_content_en|default_if_none:'' }}</textarea>
+    <textarea name="review_content_ar" id="id_review_content_ar" style="display:none;">{{ broker.review_content_ar|default_if_none:'' }}</textarea>
+
+    <!-- Hidden file input for WYSIWYG editor image upload -->
+    <input type="file" id="wysiwyg-image-upload-input" style="display:none;" accept="image/*" onchange="uploadWysiwygImage(this)">
+
+    <div class="editor-wrapper">
+        <!-- Editor Header -->
+        <div class="editor-header">
+            <div class="editor-logo-area">
+                <span class="editor-logo">Brokers Times</span>
+                <span class="editor-subtitle">{% if is_edit %}Edit Broker / تعديل وسيط{% else %}Add New Broker / إضافة وسيط جديد{% endif %}</span>
+            </div>
+            <div class="header-actions">
+                <button type="submit" class="btn-editor-secondary">Save Draft / حفظ مسودة</button>
+                <button type="submit" class="btn-editor-primary">Publish / نشر</button>
+            </div>
+        </div>
+
+        <div class="editor-main">
+            <!-- Left Navigation Sidebar -->
+            <div class="editor-sidebar">
+                <ul class="editor-sidebar-menu">
+                    <li class="editor-menu-item active" id="li-metadata">
+                        <a href="#section-metadata">
+                            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            <span>Metadata</span>
+                        </a>
+                    </li>
+                    <li class="editor-menu-item" id="li-review">
+                        <a href="#section-review">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            <span>Review Content</span>
+                        </a>
+                    </li>
+                    <li class="editor-menu-item" id="li-specs">
+                        <a href="#section-specs">
+                            <svg viewBox="0 0 24 24"><path d="M20 7h-9L9 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+                            <span>Specifications</span>
+                        </a>
+                    </li>
+                    <li class="editor-menu-item" id="li-faqs">
+                        <a href="#section-faqs">
+                            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>FAQ Manager</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="sidebar-status-box">
+                    <span>Last auto-saved</span>
+                    <span style="font-weight: 700; color: #fff;">Just now</span>
+                </div>
+            </div>
+
+            <!-- Form Content container -->
+            <div class="editor-content-container">
+                
+                <!-- 1. Metadata Section -->
+                <div class="editor-card" id="section-metadata">
+                    <div class="editor-card-title">Metadata / البيانات الوصفية</div>
+                    
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label for="id_name_en">
+                                <span>Broker Name (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <input type="text" name="name_en" id="id_name_en" class="form-input-editor" placeholder="e.g. Admiral Markets" value="{{ broker.name_en|default_if_none:'' }}" required>
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_name_ar">
+                                <span>اسم شركة الوساطة (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <input type="text" name="name_ar" id="id_name_ar" class="form-input-editor" style="direction: rtl;" placeholder="مثال: أدميرال ماركتس" value="{{ broker.name_ar|default_if_none:'' }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group-editor" style="grid-column: span 2;">
+                            <label for="id_slug">URL Slug / رابط الصفحة الفريد (اسم فريد باللاتينية فقط)</label>
+                            <input type="text" name="slug" id="id_slug" class="form-input-editor" placeholder="admiral-markets-review" value="{{ broker.slug|default_if_none:'' }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label for="id_seo_title_en">
+                                <span>SEO Title Tag (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <input type="text" name="seo_title_en" id="id_seo_title_en" class="form-input-editor" placeholder="Best for Forex: Admiral Markets Review 2024" value="{{ broker.seo_title_en|default_if_none:'' }}">
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_seo_title_ar">
+                                <span>عنوان SEO للـ Google (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <input type="text" name="seo_title_ar" id="id_seo_title_ar" class="form-input-editor" style="direction: rtl;" placeholder="مراجعة شركة أدميرال ماركتس 2024 - الرسوم والأمان" value="{{ broker.seo_title_ar|default_if_none:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="margin-bottom: 0;">
+                        <div class="form-group-editor no-margin">
+                            <label for="id_seo_description_en">
+                                <span>SEO Meta Description (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <textarea name="seo_description_en" id="id_seo_description_en" class="form-input-editor" placeholder="Comprehensive expert review of Admiral Markets trading platform, fees, and security...">{{ broker.seo_description_en|default_if_none:'' }}</textarea>
+                        </div>
+                        <div class="form-group-editor no-margin">
+                            <label for="id_seo_description_ar">
+                                <span>وصف الصفحة القصير للـ Google (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <textarea name="seo_description_ar" id="id_seo_description_ar" class="form-input-editor" style="direction: rtl;" placeholder="مراجعة الخبراء لشركة أدميرال ماركتس من حيث الرسوم والتراخيص والمنصات...">{{ broker.seo_description_ar|default_if_none:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Review Content Section -->
+                <div class="editor-card" id="section-review">
+                    <div class="editor-card-title">Review Content / مراجعة محتوى الشركة التفصيلي</div>
+                    
+                    <!-- Translation Tabs -->
+                    <div class="tab-headers">
+                        <button type="button" class="tab-btn active" id="tab-btn-en" onclick="switchLangTab('en')">English Editor (EN)</button>
+                        <button type="button" class="tab-btn" id="tab-btn-ar" onclick="switchLangTab('ar')">المحرر العربي (AR)</button>
+                    </div>
+
+                    <div class="wysiwyg-container">
+                        <!-- Professional WYSIWYG Toolbar with SVGs -->
+                        <div class="editor-toolbar">
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" title="Bold" onmousedown="event.preventDefault(); formatDoc('bold')">
+                                    <svg viewBox="0 0 24 24"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
+                                </button>
+                                <button type="button" class="toolbar-btn" title="Italic" onmousedown="event.preventDefault(); formatDoc('italic')">
+                                    <svg viewBox="0 0 24 24"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+                                </button>
+                                <button type="button" class="toolbar-btn" title="Underline" onmousedown="event.preventDefault(); formatDoc('underline')">
+                                    <svg viewBox="0 0 24 24"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+                                </button>
+                            </div>
+                            
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" title="Heading 1" onmousedown="event.preventDefault(); formatDoc('formatBlock', '<h1>')">
+                                    <span style="font-weight: 700; font-size: 0.95rem;">H1</span>
+                                </button>
+                                <button type="button" class="toolbar-btn" title="Heading 2" onmousedown="event.preventDefault(); formatDoc('formatBlock', '<h2>')">
+                                    <span style="font-weight: 700; font-size: 0.85rem;">H2</span>
+                                </button>
+                                <button type="button" class="toolbar-btn" title="Paragraph" onmousedown="event.preventDefault(); formatDoc('formatBlock', '<p>')">
+                                    <span style="font-weight: 500; font-size: 0.8rem;">P</span>
+                                </button>
+                            </div>
+
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" title="Bullet List" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')">
+                                    <svg viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><line x1="5" y1="6" x2="5.01" y2="6"/><line x1="5" y1="12" x2="5.01" y2="12"/><line x1="5" y1="18" x2="5.01" y2="18"/></svg>
+                                </button>
+                                <button type="button" class="toolbar-btn" title="Numbered List" onmousedown="event.preventDefault(); formatDoc('insertOrderedList')">
+                                    <svg viewBox="0 0 24 24"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><circle cx="5" cy="14" r="1"/></svg>
+                                </button>
+                                <button type="button" class="toolbar-btn" title="Blockquote" onmousedown="event.preventDefault(); formatDoc('formatBlock', '<blockquote>')">
+                                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                </button>
+                            </div>
+
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" title="Insert Link" onmousedown="event.preventDefault(); insertLinkPrompt()">
+                                    <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                </button>
+                                <button type="button" class="toolbar-btn" title="Insert Image" onmousedown="event.preventDefault(); insertImagePrompt()">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                </button>
+                            </div>
+                            
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" title="Clear Formatting" onmousedown="event.preventDefault(); formatDoc('removeFormat')">
+                                    <span style="font-size: 0.75rem; font-weight: 700;">Clear</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- English Editable WYSIWYG -->
+                        <div class="tab-content active" id="tab-content-en">
+                            <div contenteditable="true" class="wysiwyg-editor" id="editor-en" placeholder="Start writing the comprehensive broker review in English here..." oninput="syncEditor('en')">
+                                {{ broker.review_content_en|safe }}
+                            </div>
+                        </div>
+
+                        <!-- Arabic Editable WYSIWYG -->
+                        <div class="tab-content" id="tab-content-ar">
+                            <div contenteditable="true" class="wysiwyg-editor rtl" id="editor-ar" placeholder="ابدأ بكتابة المراجعة التفصيلية لشركة الوساطة هنا باللغة العربية..." oninput="syncEditor('ar')">
+                                {{ broker.review_content_ar|safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Broker Specifications Section -->
+                <div class="editor-card" id="section-specs">
+                    <div class="editor-card-title">Broker Specifications / مواصفات وسيط التداول</div>
+                    
+                    <!-- Licenses and Regulators -->
+                    <div class="form-group-editor">
+                        <label>Licenses & Regulation / التراخيص والهيئات الرقابية</label>
+                        <div class="regulator-badges-wrapper">
+                            <div class="regulator-badges-list" id="regulator-badges-list">
+                                {% for regulator in regulators %}
+                                    {% if regulator.id in selected_regulators %}
+                                        <span class="regulator-badge-custom" data-id="{{ regulator.id }}">
+                                            {{ regulator.name }}
+                                            <span class="regulator-badge-close" onclick="removeRegulator({{ regulator.id }})">&times;</span>
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            
+                            <select class="select-add-regulator-btn" id="regulator-dropdown" onchange="addRegulatorFromDropdown()">
+                                <option value="">+ Add Regulator</option>
+                                {% for regulator in regulators %}
+                                    <option value="{{ regulator.id }}" id="opt-reg-{{ regulator.id }}" {% if regulator.id in selected_regulators %}style="display:none;"{% endif %}>
+                                        {{ regulator.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            
+                            <!-- Hidden multiple select to submit data -->
+                            <select name="regulators" id="hidden-regulators-select" multiple style="display:none;">
+                                {% for regulator in regulators %}
+                                    <option value="{{ regulator.id }}" {% if regulator.id in selected_regulators %}selected{% endif %}></option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Min Deposit, Withdrawal Time, Base Currencies -->
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label for="id_min_deposit">Min. Deposit ($) / الحد الأدنى للإيداع بالدولار</label>
+                            <input type="number" name="min_deposit" id="id_min_deposit" step="0.01" class="form-input-editor" placeholder="100" value="{{ broker.min_deposit|default:'100' }}">
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_base_currencies">Base Currencies / العملات الأساسية للحساب</label>
+                            <input type="text" name="base_currencies" id="id_base_currencies" class="form-input-editor" placeholder="USD, EUR, GBP" value="{{ broker.base_currencies|default:'USD, EUR, GBP' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label for="id_withdrawal_time_en">
+                                <span>Withdrawal Time (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <input type="text" name="withdrawal_time_en" id="id_withdrawal_time_en" class="form-input-editor" placeholder="e.g. Instant / 1-2 Days" value="{{ broker.withdrawal_time_en|default:'Instant' }}">
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_withdrawal_time_ar">
+                                <span>مدة السحب (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <input type="text" name="withdrawal_time_ar" id="id_withdrawal_time_ar" class="form-input-editor" style="direction: rtl;" placeholder="مثال: فوري / 1-2 أيام عمل" value="{{ broker.withdrawal_time_ar|default:'فوري' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label for="id_headquarters">Headquarters / المقر الرئيسي للشركة</label>
+                            <select name="headquarters" id="id_headquarters" class="form-input-editor">
+                                <option value="">--------</option>
+                                {% for hq in headquarters %}
+                                    <option value="{{ hq.id }}" {% if broker.headquarters.id == hq.id %}selected{% endif %}>{{ hq.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_islamic_account">Islamic Account / حساب إسلامي خالي من فوائد التبييت</label>
+                            <select name="islamic_account" id="id_islamic_account" class="form-input-editor">
+                                <option value="">--------</option>
+                                {% for account in islamic_accounts %}
+                                    <option value="{{ account.id }}" {% if broker.islamic_account.id == account.id %}selected{% endif %}>{{ account.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Available Trading Assets -->
+                    <div class="form-group-editor no-margin">
+                        <label>Available Trading Assets / الأصول المالية المتاحة للتداول</label>
+                        <div class="checkbox-grid">
+                            {% for asset in financial_assets %}
+                                <label class="asset-checkbox-card">
+                                    <input type="checkbox" name="financial_assets" value="{{ asset.id }}" {% if asset.id in selected_assets %}checked{% endif %}>
+                                    <span>{{ asset.name }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. FAQ Manager Section -->
+                <div class="editor-card" id="section-faqs">
+                    <div class="editor-card-title">
+                        <span>FAQ Manager / إدارة الأسئلة الشائعة للشركة</span>
+                        <button type="button" class="btn-add-faq-text" onclick="addNewFAQ()">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>Add New FAQ</span>
+                        </button>
+                    </div>
+
+                    <div class="faqs-list-container" id="faqs-list-container">
+                        {% for faq in faqs %}
+                            <div class="faq-repeater-row" data-index="{{ forloop.counter0 }}">
+                                <button type="button" class="delete-faq-btn" onclick="deleteFAQ(this)">
+                                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </button>
+                                
+                                <!-- Question Row -->
+                                <div class="form-row">
+                                    <div class="form-group-editor">
+                                        <label>
+                                            <span>Question (English)</span>
+                                            <span class="label-lang-indicator">EN</span>
+                                        </label>
+                                        <input type="text" name="faq_question_en" class="form-input-editor" placeholder="Is Admiral Markets a regulated broker?" value="{{ faq.question_en }}">
+                                    </div>
+                                    <div class="form-group-editor">
+                                        <label>
+                                            <span>السؤال (العربية)</span>
+                                            <span class="label-lang-indicator">AR</span>
+                                        </label>
+                                        <input type="text" name="faq_question_ar" class="form-input-editor" style="direction: rtl;" placeholder="هل شركة أدميرال ماركتس مرخصة؟" value="{{ faq.question_ar }}">
+                                    </div>
+                                </div>
+
+                                <!-- Answer Row -->
+                                <div class="form-row" style="margin-bottom: 0;">
+                                    <div class="form-group-editor no-margin">
+                                        <label>
+                                            <span>Answer (English)</span>
+                                            <span class="label-lang-indicator">EN</span>
+                                        </label>
+                                        <textarea name="faq_answer_en" class="form-input-editor" placeholder="Yes, Admiral Markets is regulated by multiple high-tier financial authorities...">{{ faq.answer_en }}</textarea>
+                                    </div>
+                                    <div class="form-group-editor no-margin">
+                                        <label>
+                                            <span>الإجابة (العربية)</span>
+                                            <span class="label-lang-indicator">AR</span>
+                                        </label>
+                                        <textarea name="faq_answer_ar" class="form-input-editor" style="direction: rtl;" placeholder="نعم، شركة أدميرال ماركتس مرخصة من جهات رقابية قوية...">{{ faq.answer_ar }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="faq-repeater-row" data-index="0">
+                                <button type="button" class="delete-faq-btn" onclick="deleteFAQ(this)">
+                                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </button>
+                                
+                                <!-- Question Row -->
+                                <div class="form-row">
+                                    <div class="form-group-editor">
+                                        <label>
+                                            <span>Question (English)</span>
+                                            <span class="label-lang-indicator">EN</span>
+                                        </label>
+                                        <input type="text" name="faq_question_en" class="form-input-editor" placeholder="Enter question in English...">
+                                    </div>
+                                    <div class="form-group-editor">
+                                        <label>
+                                            <span>السؤال (العربية)</span>
+                                            <span class="label-lang-indicator">AR</span>
+                                        </label>
+                                        <input type="text" name="faq_question_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل السؤال بالعربية...">
+                                    </div>
+                                </div>
+
+                                <!-- Answer Row -->
+                                <div class="form-row" style="margin-bottom: 0;">
+                                    <div class="form-group-editor no-margin">
+                                        <label>
+                                            <span>Answer (English)</span>
+                                            <span class="label-lang-indicator">EN</span>
+                                        </label>
+                                        <textarea name="faq_answer_en" class="form-input-editor" placeholder="Enter detailed answer in English..."></textarea>
+                                    </div>
+                                    <div class="form-group-editor no-margin">
+                                        <label>
+                                            <span>الإجابة (العربية)</span>
+                                            <span class="label-lang-indicator">AR</span>
+                                        </label>
+                                        <textarea name="faq_answer_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل الإجابة التفصيلية بالعربية..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Editor Footer -->
+        <div class="editor-footer">
+            <div class="footer-status-info">
+                <span class="status-badge-saved">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>All changes saved</span>
+                </span>
+                <span>|</span>
+                <span id="word-count-display">Words (EN): 0</span>
+            </div>
+            <div class="footer-actions">
+                <button type="button" class="btn-editor-secondary" onclick="alert('Preview loaded')">Preview Article</button>
+                <button type="submit" class="btn-editor-primary">Publish Live</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- JS Scripting for editor interactions -->
+<script>
+    // Scroll and Active Link Spy
+    window.addEventListener('DOMContentLoaded', () => {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                const id = entry.target.getAttribute('id');
+                if (entry.intersectionRatio > 0.3) {
+                    document.querySelectorAll('.editor-menu-item').forEach(item => item.classList.remove('active'));
+                    
+                    if (id === 'section-metadata') document.getElementById('li-metadata').classList.add('active');
+                    if (id === 'section-review') document.getElementById('li-review').classList.add('active');
+                    if (id === 'section-specs') document.getElementById('li-specs').classList.add('active');
+                    if (id === 'section-faqs') document.getElementById('li-faqs').classList.add('active');
+                }
+            });
+        }, { threshold: [0.1, 0.3, 0.5] });
+
+        // Track sections
+        document.querySelectorAll('.editor-card').forEach(section => {
+            observer.observe(section);
+        });
+        
+        countWords();
+    });
+
+    // Sync content from contenteditable DIVs to hidden textareas on input
+    function syncEditor(lang) {
+        const editor = document.getElementById(`editor-${lang}`);
+        const textarea = document.getElementById(`id_review_content_${lang}`);
+        textarea.value = editor.innerHTML;
+        countWords();
+    }
+
+    // Force synchronization right before form submission
+    document.getElementById('broker-form').addEventListener('submit', () => {
+        document.getElementById('id_review_content_en').value = document.getElementById('editor-en').innerHTML;
+        document.getElementById('id_review_content_ar').value = document.getElementById('editor-ar').innerHTML;
+    });
+
+    // Language tab switching
+    let currentLangTab = 'en';
+    function switchLangTab(lang) {
+        currentLangTab = lang;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-btn-${lang}`).classList.add('active');
+        
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(`tab-content-${lang}`).classList.add('active');
+        
+        countWords();
+    }
+
+    // Dynamic word counting
+    function countWords() {
+        const editorId = currentLangTab === 'en' ? 'editor-en' : 'editor-ar';
+        const text = document.getElementById(editorId).innerText;
+        const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+        document.getElementById('word-count-display').innerText = `Words (${currentLangTab.toUpperCase()}): ${words}`;
+    }
+
+    // Rich editor format execution
+    function formatDoc(cmd, value = null) {
+        document.execCommand(cmd, false, value);
+        syncEditor(currentLangTab);
+    }
+
+    function insertLinkPrompt() {
+        const url = prompt("Enter link URL (e.g. https://google.com):");
+        if (url) {
+            formatDoc('createLink', url);
+        }
+    }
+
+    function insertImagePrompt() {
+        document.getElementById('wysiwyg-image-upload-input').click();
+    }
+
+    function uploadWysiwygImage(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        input.value = '';
+        
+        // Create placeholder element using standard DOM API
+        const placeholder = document.createElement('span');
+        placeholder.style.color = '#3b82f6';
+        placeholder.style.fontStyle = 'italic';
+        placeholder.style.fontWeight = '600';
+        placeholder.style.display = 'block';
+        placeholder.style.margin = '10px 0';
+        placeholder.innerText = '[Uploading Image...]';
+        
+        const editorId = currentLangTab === 'en' ? 'editor-en' : 'editor-ar';
+        const editor = document.getElementById(editorId);
+        editor.focus();
+        
+        // Insert placeholder at cursor position using Selection API
+        const selection = window.getSelection();
+        let rangeInserted = false;
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            if (editor.contains(range.commonAncestorContainer)) {
+                range.deleteContents();
+                range.insertNode(placeholder);
+                rangeInserted = true;
+                
+                // Move selection immediately after placeholder to allow continuing typing
+                const newRange = document.createRange();
+                newRange.setStartAfter(placeholder);
+                newRange.setEndAfter(placeholder);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+            }
+        }
+        
+        // Fallback: append to editor if selection was not inside it
+        if (!rangeInserted) {
+            editor.appendChild(placeholder);
+        }
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        fetch("{% url 'dashboard_upload_image' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Upload failed");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (placeholder && placeholder.parentNode) {
+                const imgNode = document.createElement('img');
+                imgNode.src = data.url;
+                imgNode.alt = "Uploaded Image";
+                imgNode.style.maxWidth = "100%";
+                imgNode.style.borderRadius = "8px";
+                imgNode.style.margin = "12px 0";
+                imgNode.style.display = "block";
+                
+                placeholder.parentNode.replaceChild(imgNode, placeholder);
+                syncEditor(currentLangTab);
+            }
+        })
+        .catch(error => {
+            console.error("Image upload error:", error);
+            if (placeholder) {
+                placeholder.style.color = '#ef4444';
+                placeholder.innerText = '[Upload Failed]';
+            }
+        });
+    }
+
+    // Regulators selection script
+    function addRegulatorFromDropdown() {
+        const dropdown = document.getElementById('regulator-dropdown');
+        const selectedId = dropdown.value;
+        if (!selectedId) return;
+        
+        const selectedOption = dropdown.options[dropdown.selectedIndex];
+        const name = selectedOption.text;
+        
+        // Add badge to UI list
+        const list = document.getElementById('regulator-badges-list');
+        const badge = document.createElement('span');
+        badge.className = 'regulator-badge-custom';
+        badge.setAttribute('data-id', selectedId);
+        badge.innerHTML = `${name} <span class="regulator-badge-close" onclick="removeRegulator(${selectedId})">&times;</span>`;
+        list.appendChild(badge);
+        
+        // Hide from selector option list
+        selectedOption.style.display = 'none';
+        dropdown.value = '';
+        
+        // Mark selected in hidden select options
+        const hiddenSelect = document.getElementById('hidden-regulators-select');
+        for (let i = 0; i < hiddenSelect.options.length; i++) {
+            if (hiddenSelect.options[i].value == selectedId) {
+                hiddenSelect.options[i].selected = true;
+                break;
+            }
+        }
+    }
+
+    function removeRegulator(id) {
+        // Remove badge UI element
+        const badge = document.querySelector(`.regulator-badge-custom[data-id="${id}"]`);
+        if (badge) badge.remove();
+        
+        // Redisplay option in selector
+        const option = document.getElementById(`opt-reg-${id}`);
+        if (option) option.style.display = '';
+        
+        // Mark unselected in hidden select options
+        const hiddenSelect = document.getElementById('hidden-regulators-select');
+        for (let i = 0; i < hiddenSelect.options.length; i++) {
+            if (hiddenSelect.options[i].value == id) {
+                hiddenSelect.options[i].selected = false;
+                break;
+            }
+        }
+    }
+
+    // FAQ dynamic list repeater
+    let faqIndexCount = document.querySelectorAll('.faq-repeater-row').length;
+
+    function addNewFAQ() {
+        const list = document.getElementById('faqs-list-container');
+        const row = document.createElement('div');
+        row.className = 'faq-repeater-row';
+        row.setAttribute('data-index', faqIndexCount);
+        
+        row.innerHTML = `
+            <button type="button" class="delete-faq-btn" onclick="deleteFAQ(this)">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+            
+            <!-- Question Row -->
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label>
+                        <span>Question (English)</span>
+                        <span class="label-lang-indicator">EN</span>
+                    </label>
+                    <input type="text" name="faq_question_en" class="form-input-editor" placeholder="Enter question in English...">
+                </div>
+                <div class="form-group-editor">
+                    <label>
+                        <span>السؤال (العربية)</span>
+                        <span class="label-lang-indicator">AR</span>
+                    </label>
+                    <input type="text" name="faq_question_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل السؤال بالعربية...">
+                </div>
+            </div>
+
+            <!-- Answer Row -->
+            <div class="form-row" style="margin-bottom: 0;">
+                <div class="form-group-editor no-margin">
+                    <label>
+                        <span>Answer (English)</span>
+                        <span class="label-lang-indicator">EN</span>
+                    </label>
+                    <textarea name="faq_answer_en" class="form-input-editor" placeholder="Enter detailed answer in English..."></textarea>
+                </div>
+                <div class="form-group-editor no-margin">
+                    <label>
+                        <span>الإجابة (العربية)</span>
+                        <span class="label-lang-indicator">AR</span>
+                    </label>
+                    <textarea name="faq_answer_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل الإجابة التفصيلية بالعربية..."></textarea>
+                </div>
+            </div>
+        `;
+        
+        list.appendChild(row);
+        faqIndexCount++;
+    }
+
+    // Delete FAQ row
+    function deleteFAQ(btn) {
+        const row = btn.closest('.faq-repeater-row');
+        if (row) row.remove();
+    }
+</script>
+{% endblock %}

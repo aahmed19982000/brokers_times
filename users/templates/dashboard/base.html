@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard - Brokers Times{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #090d16;
+            --sidebar-bg: #111726;
+            --card-bg: rgba(22, 30, 49, 0.7);
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #10b981;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.08) 0px, transparent 50%);
+            color: var(--text-color);
+            font-family: 'Outfit', 'Cairo', sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .sidebar-brand {
+            padding: 2.2rem 1.8rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #818cf8, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+            font-weight: 500;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex: 1;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            gap: 12px;
+        }
+
+        .menu-item a svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.3s ease;
+        }
+
+        .menu-item a:hover {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .menu-item.active a {
+            color: white;
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .menu-item.active a svg {
+            stroke: white;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-small {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--primary);
+        }
+
+        .user-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-avatar-placeholder {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Main Panel Styling */
+        .main-panel {
+            margin-left: 260px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Top Header Styling */
+        .topbar {
+            height: 70px;
+            background: rgba(9, 13, 22, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 9;
+        }
+
+        .breadcrumbs {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breadcrumbs a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            color: var(--text-color);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .action-icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .action-icon-btn:hover {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .action-icon-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .btn-top {
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-top-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-top-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-top-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-top-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Content Area */
+        .content-body {
+            padding: 2.5rem;
+            flex: 1;
+        }
+
+        .footer {
+            padding: 1.5rem 2.5rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Utilities */
+        .rtl-layout {
+            direction: rtl;
+        }
+
+        .ltr-layout {
+            direction: ltr;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-name">Brokers Times</span>
+            <span class="brand-sub">Editor-in-Chief Panel</span>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item {% block nav_dashboard %}{% endblock %}">
+                <a href="{% url 'dashboard' %}">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                    <span>Dashboard / الإحصائيات</span>
+                </a>
+            </li>
+            <li class="menu-item {% block nav_brokers %}{% endblock %}">
+                <a href="{% url 'dashboard_brokers' %}">
+                    <svg viewBox="0 0 24 24"><path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M4 10h16L12 3z"></path></svg>
+                    <span>Brokers / شركات الوساطة</span>
+                </a>
+            </li>
+            <li class="menu-item {% block nav_articles %}{% endblock %}">
+                <a href="{% url 'dashboard_articles' %}">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Articles / المقالات</span>
+                </a>
+            </li>
+            <li class="menu-item {% block nav_best_brokers %}{% endblock %}">
+                <a href="{% url 'dashboard_best_brokers' %}">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                    <span>Best Brokers / قوائم المقارنة</span>
+                </a>
+            </li>
+            <li class="menu-item {% block nav_settings %}{% endblock %}">
+                <a href="{% url 'profile' %}">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Settings / الملف الشخصي</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="user-avatar-small">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="Avatar">
+                {% else %}
+                    <span class="user-avatar-placeholder">{{ user.username|slice:":2" }}</span>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <span class="user-name">{{ user.first_name }} {{ user.last_name }}</span>
+                <span class="user-role">{{ user.get_role_display }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="breadcrumbs">
+                <span>Editor Dashboard</span>
+                <span>/</span>
+                <span>{% block section_name %}Home{% endblock %}</span>
+            </div>
+
+            <div class="topbar-actions">
+                <button class="action-icon-btn" title="View Portal">
+                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                <button class="action-icon-btn" title="Recent History">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </button>
+                <a href="{% url 'logout' %}" class="btn-top btn-top-secondary">Logout / تسجيل الخروج</a>
+                {% if user.is_staff or user.is_superuser %}
+                    <a href="/admin/" class="btn-top btn-top-primary" target="_blank">Django Admin</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body">
+            {% block content %}{% endblock %}
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>&copy; 2026 Brokers Times Institutional. All Rights Reserved.</span>
+            <span>بوابة المحررين والناشرين لشبكة Brokers Times</span>
+        </div>
+    </div>
+</body>
+</html>
