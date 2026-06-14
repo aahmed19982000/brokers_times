@@ -56,6 +56,15 @@ class DashboardBrokersView(LoginRequiredMixin, ListView):
     model = Broker
     template_name = 'dashboard/brokers.html'
     context_object_name = 'brokers'
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        from django.db.models import Q
+        queryset = super().get_queryset()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(Q(name__icontains=q) | Q(slug__icontains=q))
+        return queryset
 class DashboardArticlesView(LoginRequiredMixin, ListView):
     model = Article
     template_name = 'dashboard/articles.html'
@@ -105,6 +114,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
         custom_terminal_description = request.POST.get('custom_terminal_description', '')
         verdict_quote = request.POST.get('verdict_quote', '')
         verdict_text = request.POST.get('verdict_text', '')
+        local_offices = request.POST.get('local_offices', '')
         try:
             rating_val = float(rating)
         except (ValueError, TypeError):
@@ -156,6 +166,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
                 verdict_quote = verdict_quote,
                 verdict_text = verdict_text,
                 verdict_sentiment = verdict_sentiment,
+                local_offices = local_offices,
             )
             regulator_ids = request.POST.getlist('regulators')
             if regulator_ids:
@@ -245,6 +256,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
         custom_terminal_description = request.POST.get('custom_terminal_description', '')
         verdict_quote = request.POST.get('verdict_quote', '')
         verdict_text = request.POST.get('verdict_text', '')
+        local_offices = request.POST.get('local_offices', '')
         try:
             rating_val = float(rating)
         except (ValueError, TypeError):
@@ -293,6 +305,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
             broker.verdict_quote = verdict_quote
             broker.verdict_text = verdict_text
             broker.verdict_sentiment = verdict_sentiment
+            broker.local_offices = local_offices
             if request.FILES.get('logo'):
                 broker.logo = request.FILES.get('logo')
             elif request.POST.get('logo-clear') == 'on':

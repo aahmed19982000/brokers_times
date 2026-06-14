@@ -71,11 +71,14 @@ class BrokerReviewDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         broker = self.get_object()
         
-        # Parse pros and cons from translated fields (uses the active language automatically)
+        # Parse pros, cons, and local offices
         pros_text = broker.pros or ''
         cons_text = broker.cons or ''
+        local_offices_text = broker.local_offices or ''
+        
         pros_list = [line.strip() for line in pros_text.split('\n') if line.strip()]
         cons_list = [line.strip() for line in cons_text.split('\n') if line.strip()]
+        local_offices_list = [line.strip() for line in local_offices_text.split('\n') if line.strip()]
         
         # Fetch other brokers for comparison (excluding current)
         compare_brokers = Broker.objects.exclude(id=broker.id)[:3]
@@ -83,6 +86,7 @@ class BrokerReviewDetailView(DetailView):
         context.update({
             'pros_list': pros_list,
             'cons_list': cons_list,
+            'local_offices_list': local_offices_list,
             'compare_brokers': compare_brokers,
             'account_types': broker.account_types.all(),
             'broker_regulators': broker.broker_regulators.all(),

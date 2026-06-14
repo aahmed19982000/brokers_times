@@ -43,6 +43,7 @@ class Broker(models.Model):
     verdict_quote = models.TextField(blank=True)
     verdict_text = models.TextField(blank=True)
     verdict_sentiment = models.CharField(max_length=20, choices=[('positive', 'Positive'), ('negative', 'Negative'), ('neutral', 'Neutral')], default='neutral')
+    local_offices = models.TextField(blank=True, help_text="One office per line / مكتب واحد في كل سطر")
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

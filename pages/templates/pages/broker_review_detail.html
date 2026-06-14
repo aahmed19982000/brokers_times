@@ -925,6 +925,24 @@
                             </div>
                         {% endfor %}
                     </div>
+                    
+                    {% if local_offices_list %}
+                    <!-- Local Offices Sub-section -->
+                    <div class="local-offices-container" style="margin-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 1.5rem;">
+                        <h3 class="section-headline" style="font-size: 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            {% if request.LANGUAGE_CODE == 'ar' %}المكاتب المحلية للشركة{% else %}Local Offices{% endif %}
+                        </h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
+                            {% for office in local_offices_list %}
+                                <div class="office-badge" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 0.6rem 1.2rem; display: flex; align-items: center; gap: 8px; color: white; font-weight: 500; font-size: 0.95rem;">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--accent)" stroke-width="2.5" style="flex-shrink: 0;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                                    <span>{{ office }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- Detailed Review Text block -->

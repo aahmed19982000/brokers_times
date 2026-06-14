@@ -1067,6 +1067,12 @@
                             <textarea name="verdict_text" id="id_verdict_text" class="form-input-editor" rows="3" placeholder="This broker stands out for its tight spreads and excellent educational resources...">{{ broker.verdict_text|default_if_none:'' }}</textarea>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group-editor" style="grid-column: span 2;">
+                            <label for="id_local_offices">Local Offices / المكاتب المحلية (مكتب واحد في كل سطر / One office per line)</label>
+                            <textarea name="local_offices" id="id_local_offices" class="form-input-editor" rows="3" placeholder="دبي، الإمارات العربية المتحدة&#10;الرياض، المملكة العربية السعودية">{{ broker.local_offices|default_if_none:'' }}</textarea>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 2. Review Content Section -->

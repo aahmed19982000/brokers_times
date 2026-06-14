@@ -183,6 +183,12 @@
         margin-bottom: 1rem;
         opacity: 0.5;
     }
+
+    .search-input-wrapper input:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        background: rgba(255, 255, 255, 0.08) !important;
+    }
 </style>
 {% endblock %}
 
@@ -198,6 +204,23 @@
         <span>Add Broker / إضافة وسيط</span>
     </a>
     {% endif %}
+</div>
+
+<div class="search-filter-row" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center;">
+    <form method="get" action="" style="display: flex; flex: 1; gap: 0.8rem; max-width: 500px;">
+        <div class="search-input-wrapper" style="position: relative; flex: 1; display: flex; align-items: center;">
+            <svg class="search-icon" viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: none; stroke: var(--text-muted); stroke-width: 2.5; position: absolute; {% if request.LANGUAGE_CODE == 'ar' %}right: 14px;{% else %}left: 14px;{% endif %} pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="{% if request.LANGUAGE_CODE == 'ar' %}ابحث عن اسم وسيط...{% else %}Search broker name...{% endif %}" style="width: 100%; {% if request.LANGUAGE_CODE == 'ar' %}padding: 0.7rem 2.6rem 0.7rem 1rem;{% else %}padding: 0.7rem 1rem 0.7rem 2.6rem;{% endif %} border-radius: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: white; font-size: 0.9rem; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;">
+        </div>
+        <button type="submit" class="btn-action" style="padding: 0 1.2rem; background: var(--primary); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);">
+            {% if request.LANGUAGE_CODE == 'ar' %}بحث{% else %}Search{% endif %}
+        </button>
+        {% if request.GET.q %}
+            <a href="?" class="btn-action" style="padding: 0.7rem 1.2rem; background: rgba(255, 255, 255, 0.05); color: var(--text-muted); box-shadow: none; border: 1px solid var(--border-color); text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                {% if request.LANGUAGE_CODE == 'ar' %}إلغاء{% else %}Clear{% endif %}
+            </a>
+        {% endif %}
+    </form>
 </div>
 
 <div class="table-container">
