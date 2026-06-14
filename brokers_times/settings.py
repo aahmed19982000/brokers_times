@@ -32,7 +32,6 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=lamb
 # Application definition
 
 INSTALLED_APPS = [
-    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,7 +41,6 @@ INSTALLED_APPS = [
 
     # Third party apps
     'rest_framework',
-    'rosetta',
     'ckeditor',
 
     # Local apps
@@ -53,6 +51,7 @@ INSTALLED_APPS = [
     'pages',
     'dashboard',
     'categories',
+    'news',
 ]
 
 MIDDLEWARE = [
@@ -129,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = config('LANGUAGE_CODE', default='ar')
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='en')
 
 TIME_ZONE = 'UTC'
 
@@ -138,7 +137,6 @@ USE_I18N = True
 USE_TZ = True
 
 LANGUAGES = [
-    ('ar', 'العربية'),
     ('en', 'English'),
 ]
 

@@ -1,0 +1,187 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}{% if item %}Edit{% else %}Add{% endif %} Item / التصنيفات{% endblock %}
+
+{% block nav_categories %}active{% endblock %}
+{% block section_name %}Categories / التصنيفات{% endblock %}
+
+{% block extra_head %}
+<style>
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title-area h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.3rem;
+    }
+
+    .page-title-area p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .btn-secondary-top {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 1rem;
+    }
+
+    .btn-secondary-top:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .form-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 2.5rem;
+        backdrop-filter: blur(12px);
+        max-width: 700px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group {
+        margin-bottom: 1.8rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.6rem;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        color: white;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .form-input[type="file"] {
+        padding: 0.6rem 1rem;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .form-text {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .current-icon-preview {
+        display: inline-block;
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .current-icon-preview img {
+        max-width: 64px;
+        max-height: 64px;
+        object-fit: contain;
+        display: block;
+    }
+
+    .btn-submit {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'dashboard_categories' %}?type={{ current_type }}" class="btn-secondary-top">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Back to List / العودة للقائمة
+</a>
+
+<div class="page-header-container" style="margin-bottom: 2rem;">
+    <div class="page-title-area">
+        <h1>{% if item %}Edit{% else %}Add New{% endif %} Item / {% if item %}تعديل{% else %}إضافة{% endif %} عنصر</h1>
+        <p>You are managing a category element.</p>
+    </div>
+</div>
+
+<div class="form-card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="{{ current_type }}">
+        
+        <div class="form-group">
+            <label class="form-label">Name / الاسم</label>
+            <input type="text" name="name" value="{{ item.name|default:'' }}" required class="form-input" placeholder="e.g. FCA, MetaTrader 5, Forex...">
+            <span class="form-text">The display name of the item.</span>
+        </div>
+
+        {% if has_icon %}
+        <div class="form-group">
+            <label class="form-label">Icon / Image (Optional)</label>
+            {% if item.icon %}
+                <div class="current-icon-preview">
+                    <img src="{{ item.icon.url }}" alt="Current icon">
+                </div>
+            {% endif %}
+            <input type="file" name="icon" accept="image/*,.svg" class="form-input">
+            <span class="form-text">Upload a PNG or SVG icon (Recommended size: 24x24 px). This will be displayed next to the name on the visitor's page.</span>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 2.5rem;">
+            <button type="submit" class="btn-submit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Save Changes / حفظ التغييرات
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

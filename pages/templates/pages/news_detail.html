@@ -1,0 +1,177 @@
+{% extends 'pages/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ news_article.seo_title|default:news_article.title }} | Brokers Times{% endblock %}
+
+{% block content %}
+<style>
+    .news-detail-header {
+        background: var(--bg-white);
+        border-bottom: 1px solid var(--border-color);
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+    }
+
+    .news-detail-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .news-detail-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .news-detail-badge {
+        background: var(--accent);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .news-detail-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+    }
+
+    .news-detail-image-wrapper {
+        margin-bottom: 3rem;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .news-detail-image {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .news-detail-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #334155;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .news-detail-content h2, 
+    .news-detail-content h3 {
+        color: var(--text-dark);
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .news-detail-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .news-detail-content img {
+        max-width: 100%;
+        border-radius: 12px;
+        margin: 2rem 0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .news-detail-content a {
+        color: var(--primary);
+        text-decoration: underline;
+    }
+
+    .related-broker-card {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-top: 4rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .related-broker-logo {
+        width: 120px;
+        height: 120px;
+        object-fit: contain;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 10px;
+    }
+
+    .related-broker-info h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+    }
+
+    .related-broker-info p {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .btn-view-broker {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+
+    .btn-view-broker:hover {
+        background: var(--primary-hover);
+    }
+
+</style>
+
+<div class="news-detail-header">
+    <div class="container" style="max-width: 900px;">
+        <div class="news-detail-meta">
+            
+            <span class="news-detail-meta-item">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                {{ news_article.created_at|date:"F d, Y" }}
+            </span>
+        </div>
+
+        <h1 class="news-detail-title">{{ news_article.title }}</h1>
+    </div>
+</div>
+
+<div class="container" style="max-width: 900px; padding-bottom: 5rem;">
+    {% if news_article.featured_image %}
+        <div class="news-detail-image-wrapper">
+            <img src="{{ news_article.featured_image.url }}" alt="{{ news_article.featured_image_alt|default:news_article.title }}" class="news-detail-image">
+        </div>
+    {% endif %}
+
+    <div class="news-detail-content">
+        {{ news_article.content|safe }}
+    </div>
+
+    
+            <div class="related-broker-info">
+                <h3>About {{ news_article.broker.name }}</h3>
+                <p>Read our comprehensive review and analysis of {{ news_article.broker.name }}, including features, pros, cons, and user ratings.</p>
+                <a href="{% url 'broker_review_detail' news_article.broker.slug %}" class="btn-view-broker">Read Full Broker Review</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

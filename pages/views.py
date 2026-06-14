@@ -32,6 +32,9 @@ class HomeView(TemplateView):
         all_articles = Article.objects.filter(status='published').order_by('-created_at')
         featured_article = all_articles.first() if all_articles.exists() else None
         sidebar_articles = all_articles[1:4] if all_articles.count() > 1 else []
+        
+        from news.models import NewsArticle
+        latest_news = NewsArticle.objects.filter(status='published').order_by('-created_at')[:4]
 
         context.update({
             'homepage_settings': settings_obj,
@@ -39,12 +42,29 @@ class HomeView(TemplateView):
             'featured_lists': featured_lists,
             'featured_article': featured_article,
             'sidebar_articles': sidebar_articles,
+            'latest_news': latest_news,
         })
         return context
 
 class BrokerReviewDetailView(DetailView):
     model = Broker
     template_name = 'pages/broker_review_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        broker = self.object
+        
+        # Split pros and cons by newline
+        context['pros_list'] = [p.strip() for p in broker.pros.split('\n') if p.strip()] if broker.pros else []
+        context['cons_list'] = [c.strip() for c in broker.cons.split('\n') if c.strip()] if broker.cons else []
+        
+        # Get related objects
+        context['broker_regulators'] = broker.broker_regulators.all()
+        context['account_types'] = broker.account_types.all()
+        context['platform_tabs'] = broker.platform_tabs.all()
+        context['faqs'] = broker.faqs.all()
+        
+        return context
     context_object_name = 'broker'
 
     def get_context_data(self, **kwargs):

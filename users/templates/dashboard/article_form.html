@@ -6,23 +6,7 @@
 
 {% block extra_head %}
 <style>
-    /* Clean layout reset for Full Focus Editor Mode */
-    .sidebar {
-        display: none !important;
-    }
-    .main-panel {
-        margin-left: 0 !important;
-    }
-    .topbar {
-        display: none !important;
-    }
-    .footer {
-        display: none !important;
-    }
-    .content-body {
-        padding: 0 !important;
-        background-color: #090d16;
-    }
+    /* Adjusted Editor Styles to fit within Dashboard */
 
     /* Custom Editor Styles */
     .editor-wrapper {
@@ -34,18 +18,15 @@
         font-family: 'Outfit', 'Cairo', sans-serif;
     }
 
-    /* Custom Header Bar */
+    /* Custom Header Bar inside content */
     .editor-header {
-        height: 70px;
-        background: #111726;
+        background: transparent;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 2rem;
-        position: sticky;
-        top: 0;
-        z-index: 100;
+        padding: 1rem 0 2rem 0;
+        margin: 0 5%;
     }
 
     .editor-logo-area {
@@ -124,14 +105,13 @@
 
     /* Form Section Spy Sidebar */
     .editor-sidebar {
-        width: 280px;
-        background: #0d1322;
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-        padding: 2rem 1.5rem;
+        width: 250px;
+        background: transparent;
+        border-right: none;
+        padding: 0 1rem;
         position: sticky;
-        top: 70px;
-        height: calc(100vh - 70px);
-        overflow-y: auto;
+        top: 90px;
+        height: calc(100vh - 120px);
     }
 
     .editor-menu {
@@ -170,10 +150,9 @@
     /* Core Form Scroll Area */
     .editor-content-area {
         flex: 1;
-        padding: 3rem 4rem;
-        overflow-y: auto;
-        max-width: 1200px;
-        margin: 0 auto;
+        padding: 0 5% 3rem 2rem;
+        max-width: 1000px;
+        margin: 0;
     }
 
     .editor-card {
@@ -680,18 +659,12 @@
                     <div class="form-row">
                         <div class="form-group-editor">
                             <label>
-                                <span>Article Title (English)</span>
-                                <span class="label-lang-indicator">EN</span>
+                                <span>Article Title </span>
+                                
                             </label>
-                            <input type="text" name="title_en" value="{{ article.title_en|default:'' }}" required class="form-input-editor" placeholder="Enter article title in English...">
+                            <input type="text" name="title" value="{{ article.title|default:'' }}" required class="form-input-editor" placeholder="Enter article title in English...">
                         </div>
-                        <div class="form-group-editor">
-                            <label>
-                                <span>عنوان المقال (العربية)</span>
-                                <span class="label-lang-indicator">AR</span>
-                            </label>
-                            <input type="text" name="title_ar" value="{{ article.title_ar|default:'' }}" required class="form-input-editor" style="direction: rtl;" placeholder="أدخل عنوان المقال بالعربية...">
-                        </div>
+                        
                     </div>
 
                     <!-- Slug -->
@@ -706,36 +679,24 @@
                     <div class="form-row">
                         <div class="form-group-editor">
                             <label>
-                                <span>SEO Title (English)</span>
-                                <span class="label-lang-indicator">EN</span>
+                                <span>SEO Title </span>
+                                
                             </label>
-                            <input type="text" name="seo_title_en" value="{{ article.seo_title_en|default:'' }}" class="form-input-editor" placeholder="Google search title in English...">
+                            <input type="text" name="seo_title" value="{{ article.seo_title|default:'' }}" class="form-input-editor" placeholder="Google search title in English...">
                         </div>
-                        <div class="form-group-editor">
-                            <label>
-                                <span>عنوان SEO (العربية)</span>
-                                <span class="label-lang-indicator">AR</span>
-                            </label>
-                            <input type="text" name="seo_title_ar" value="{{ article.seo_title_ar|default:'' }}" class="form-input-editor" style="direction: rtl;" placeholder="عنوان البحث في جوجل بالعربية...">
-                        </div>
+                        
                     </div>
 
                     <!-- SEO Descriptions -->
                     <div class="form-row">
                         <div class="form-group-editor">
                             <label>
-                                <span>SEO Meta Description (English)</span>
-                                <span class="label-lang-indicator">EN</span>
+                                <span>SEO Meta Description </span>
+                                
                             </label>
-                            <textarea name="seo_description_en" class="form-input-editor" placeholder="Google search description snippet in English...">{{ article.seo_description_en|default:'' }}</textarea>
+                            <textarea name="seo_description" class="form-input-editor" placeholder="Google search description snippet in English...">{{ article.seo_description|default:'' }}</textarea>
                         </div>
-                        <div class="form-group-editor">
-                            <label>
-                                <span>وصف SEO (العربية)</span>
-                                <span class="label-lang-indicator">AR</span>
-                            </label>
-                            <textarea name="seo_description_ar" class="form-input-editor" style="direction: rtl;" placeholder="مقتطف البحث الوصفي لجوجل بالعربية...">{{ article.seo_description_ar|default:'' }}</textarea>
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -745,10 +706,7 @@
                     
                     <div class="form-group-editor">
                         <!-- Switcher Tabs -->
-                        <div class="tab-headers">
-                            <button type="button" class="tab-btn active" id="tab-btn-en" onclick="switchLangTab('en')">English Editor (EN)</button>
-                            <button type="button" class="tab-btn" id="tab-btn-ar" onclick="switchLangTab('ar')">المحرر العربي (AR)</button>
-                        </div>
+                        
 
                         <div class="wysiwyg-container">
                             <!-- Editing Toolbar -->
@@ -806,18 +764,13 @@
                             </div>
 
                             <!-- English Editable WYSIWYG -->
-                            <div class="tab-content active" id="tab-content-en">
-                                <div contenteditable="true" class="wysiwyg-editor" id="editor-en" placeholder="Start writing the article content in English here..." oninput="syncEditor('en')">
-                                    {{ article.content_en|safe }}
+                            <div>
+                                <div contenteditable="true" class="wysiwyg-editor" id="editor" placeholder="Start writing the article content in English here..." oninput="syncEditor()">
+                                    {{ article.content|safe }}
                                 </div>
                             </div>
 
-                            <!-- Arabic Editable WYSIWYG -->
-                            <div class="tab-content" id="tab-content-ar">
-                                <div contenteditable="true" class="wysiwyg-editor rtl" id="editor-ar" placeholder="ابدأ بكتابة محتوى المقال باللغة العربية هنا..." oninput="syncEditor('ar')">
-                                    {{ article.content_ar|safe }}
-                                </div>
-                            </div>
+                            
 
                             <!-- Status Bar -->
                             <div class="editor-status-bar">
@@ -827,8 +780,8 @@
                         </div>
 
                         <!-- Hidden Textareas to hold values for standard submission -->
-                        <textarea name="content_en" id="id_review_content_en" style="display:none;">{{ article.content_en|default:'' }}</textarea>
-                        <textarea name="content_ar" id="id_review_content_ar" style="display:none;">{{ article.content_ar|default:'' }}</textarea>
+                        <textarea name="content" id="id_review_content" style="display:none;">{{ article.content|default:'' }}</textarea>
+                        
                         
                         <!-- Hidden file input for WYSIWYG editor image upload -->
                         <input type="file" id="wysiwyg-image-upload-input" style="display:none;" accept="image/*" onchange="uploadWysiwygImage(this)">
@@ -874,17 +827,14 @@
                     <div class="form-row" style="margin-top: 1rem;">
                         <div class="form-group-editor">
                             <label for="id_featured_image_alt_en">
-                                <span>Featured Image Alt Text (English)</span>
-                                <span class="label-lang-indicator">EN</span>
+                                <span>Featured Image Alt Text </span>
+                                
                             </label>
-                            <input type="text" name="featured_image_alt_en" id="id_featured_image_alt_en" class="form-input-editor" placeholder="e.g. Overview of trading workspace" value="{{ article.featured_image_alt_en|default_if_none:'' }}">
+                            <input type="text" name="featured_image_alt" id="id_featured_image_alt" class="form-input-editor" placeholder="e.g. Overview of trading workspace" value="{{ article.featured_image_alt|default_if_none:'' }}">
                         </div>
                         <div class="form-group-editor">
-                            <label for="id_featured_image_alt_ar">
-                                <span>النص البديل للصورة البارزة (العربية)</span>
-                                <span class="label-lang-indicator">AR</span>
-                            </label>
-                            <input type="text" name="featured_image_alt_ar" id="id_featured_image_alt_ar" class="form-input-editor" style="direction: rtl;" placeholder="مثال: نظرة عامة على مساحة عمل التداول" value="{{ article.featured_image_alt_ar|default_if_none:'' }}">
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -904,35 +854,29 @@
                                 <div class="form-row">
                                     <div class="form-group-editor">
                                         <label>
-                                            <span>Question (English)</span>
-                                            <span class="label-lang-indicator">EN</span>
+                                            <span>Question </span>
+                                            
                                         </label>
-                                        <input type="text" name="faq_question_en" value="{{ faq.question_en }}" class="form-input-editor" placeholder="Enter question in English...">
+                                        <input type="text" name="faq_question" value="{{ faq.question }}" class="form-input-editor" placeholder="Enter question in English...">
                                     </div>
-                                    <div class="form-group-editor">
-                                        <label>
-                                            <span>السؤال (العربية)</span>
-                                            <span class="label-lang-indicator">AR</span>
-                                        </label>
-                                        <input type="text" name="faq_question_ar" value="{{ faq.question_ar }}" class="form-input-editor" style="direction: rtl;" placeholder="أدخل السؤال بالعربية...">
-                                    </div>
+                                    
                                 </div>
 
                                 <!-- Answer Row -->
                                 <div class="form-row" style="margin-bottom: 0;">
                                     <div class="form-group-editor no-margin">
                                         <label>
-                                            <span>Answer (English)</span>
-                                            <span class="label-lang-indicator">EN</span>
+                                            <span>Answer </span>
+                                            
                                         </label>
-                                        <textarea name="faq_answer_en" class="form-input-editor" placeholder="Enter detailed answer in English...">{{ faq.answer_en }}</textarea>
+                                        <textarea name="faq_answer" class="form-input-editor" placeholder="Enter detailed answer in English...">{{ faq.answer }}</textarea>
                                     </div>
                                     <div class="form-group-editor no-margin">
                                         <label>
                                             <span>الإجابة (العربية)</span>
                                             <span class="label-lang-indicator">AR</span>
                                         </label>
-                                        <textarea name="faq_answer_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل الإجابة التفصيلية بالعربية...">{{ faq.answer_ar }}</textarea>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -974,44 +918,45 @@
     });
 
     // Synchronize HTML from contenteditable DIVs to standard form hidden textareas
-    function syncEditor(lang) {
-        const editor = document.getElementById(`editor-${lang}`);
-        const textarea = document.getElementById(`id_review_content_${lang}`);
-        textarea.value = editor.innerHTML;
+    function syncEditor() {
+        const editor = document.getElementById('editor');
+        const textarea = document.getElementById('id_review_content');
+        if (editor && textarea) textarea.value = editor.innerHTML;
         countWords();
     }
 
     // Force sync immediately on submit
     document.getElementById('article-form').addEventListener('submit', () => {
-        document.getElementById('id_review_content_en').value = document.getElementById('editor-en').innerHTML;
-        document.getElementById('id_review_content_ar').value = document.getElementById('editor-ar').innerHTML;
+        const editor = document.getElementById('editor');
+        const textarea = document.getElementById('id_review_content');
+        if (editor && textarea) textarea.value = editor.innerHTML;
     });
 
     // Translation tab switcher
-    let currentLangTab = 'en';
-    function switchLangTab(lang) {
-        currentLangTab = lang;
+    function switchTab(lang) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(`tab-btn-${lang}`).classList.add('active');
+        document.getElementById('tab-btn-' + lang).classList.add('active');
         
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        document.getElementById(`tab-content-${lang}`).classList.add('active');
+        document.getElementById('tab-content-' + lang).classList.add('active');
         
         countWords();
     }
 
     // Live Word Counter
     function countWords() {
-        const editorId = currentLangTab === 'en' ? 'editor-en' : 'editor-ar';
-        const text = document.getElementById(editorId).innerText;
+        const editor = document.getElementById('editor');
+        if (!editor) return;
+        const text = editor.innerText;
         const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-        document.getElementById('word-count-display').innerText = `Words (${currentLangTab.toUpperCase()}): ${words}`;
+        const display = document.getElementById('word-count-display');
+        if (display) display.innerText = `Words: ${words}`;
     }
 
     // WYSIWYG Document Action Command
     function formatDoc(cmd, value = null) {
         document.execCommand(cmd, false, value);
-        syncEditor(currentLangTab);
+        syncEditor();
     }
 
     // Insert Link Prompt
@@ -1043,7 +988,7 @@
         placeholder.style.margin = '10px 0';
         placeholder.innerText = '[Uploading Image...]';
         
-        const editorId = currentLangTab === 'en' ? 'editor-en' : 'editor-ar';
+        const editorId = 'editor';
         const editor = document.getElementById(editorId);
         editor.focus();
         
@@ -1100,7 +1045,7 @@
                     imgNode.style.display = "block";
                     
                     placeholder.parentNode.replaceChild(imgNode, placeholder);
-                    syncEditor(currentLangTab);
+                    syncEditor();
                 });
             }
         })
@@ -1131,35 +1076,29 @@
             <div class="form-row">
                 <div class="form-group-editor">
                     <label>
-                        <span>Question (English)</span>
-                        <span class="label-lang-indicator">EN</span>
+                        <span>Question </span>
+                        
                     </label>
-                    <input type="text" name="faq_question_en" class="form-input-editor" placeholder="Enter question in English...">
+                    <input type="text" name="faq_question" class="form-input-editor" placeholder="Enter question in English...">
                 </div>
-                <div class="form-group-editor">
-                    <label>
-                        <span>السؤال (العربية)</span>
-                        <span class="label-lang-indicator">AR</span>
-                    </label>
-                    <input type="text" name="faq_question_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل السؤال بالعربية...">
-                </div>
+                
             </div>
 
             <!-- Answer Row -->
             <div class="form-row" style="margin-bottom: 0;">
                 <div class="form-group-editor no-margin">
                     <label>
-                        <span>Answer (English)</span>
-                        <span class="label-lang-indicator">EN</span>
+                        <span>Answer </span>
+                        
                     </label>
-                    <textarea name="faq_answer_en" class="form-input-editor" placeholder="Enter detailed answer in English..."></textarea>
+                    <textarea name="faq_answer" class="form-input-editor" placeholder="Enter detailed answer in English..."></textarea>
                 </div>
                 <div class="form-group-editor no-margin">
                     <label>
                         <span>الإجابة (العربية)</span>
                         <span class="label-lang-indicator">AR</span>
                     </label>
-                    <textarea name="faq_answer_ar" class="form-input-editor" style="direction: rtl;" placeholder="أدخل الإجابة التفصيلية بالعربية..."></textarea>
+                    
                 </div>
             </div>
         `;
@@ -1183,7 +1122,7 @@
                     e.target.setAttribute('alt', newAlt);
                     const editor = e.target.closest('.wysiwyg-editor');
                     const lang = editor.id === 'editor-en' ? 'en' : 'ar';
-                    syncEditor(lang);
+                    syncEditor();
                 }
             });
         }

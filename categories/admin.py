@@ -1,38 +1,37 @@
 from django.contrib import admin
-from modeltranslation.admin import TranslationAdmin
 from .models import Category, Regulator, FinancialAsset, DepositLimit, IslamicAccount, Headquarters, TradingPlatform
 
 @admin.register(Category)
-class CategoryAdmin(TranslationAdmin):
+class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name_en',)}
+    prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(Regulator)
-class RegulatorAdmin(TranslationAdmin):
+class RegulatorAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name_en',)}
+    prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(FinancialAsset)
-class FinancialAssetAdmin(TranslationAdmin):
+class FinancialAssetAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name_en',)}
+    prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(DepositLimit)
-class DepositLimitAdmin(TranslationAdmin):
+class DepositLimitAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name_en',)}
+    prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(IslamicAccount)
-class IslamicAccountAdmin(TranslationAdmin):
+class IslamicAccountAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name_en',)}
+    prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(Headquarters)
-class HeadquartersAdmin(TranslationAdmin):
+class HeadquartersAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name_en',)}
+    prepopulated_fields = {'slug': ('name',)}
 
 @admin.register(TradingPlatform)
-class TradingPlatformAdmin(TranslationAdmin):
+class TradingPlatformAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name_en',)}
+    prepopulated_fields = {'slug': ('name',)}

@@ -13,6 +13,7 @@ class Category(models.Model):
 class Regulator(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
+    icon = models.FileField(upload_to='category_icons/', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -20,6 +21,7 @@ class Regulator(models.Model):
 class FinancialAsset(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
+    icon = models.FileField(upload_to='category_icons/', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -51,6 +53,7 @@ class Headquarters(models.Model):
 class TradingPlatform(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
+    icon = models.FileField(upload_to='category_icons/', blank=True, null=True)
 
     def __str__(self):
         return self.name

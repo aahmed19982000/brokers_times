@@ -122,7 +122,7 @@ class DashboardTaxonomyCreateAjaxViewTest(TestCase):
     def test_ajax_create_taxonomy_duplicate(self):
         self.client.login(username="writer_user", password="writerpassword")
         # Create first regulator
-        reg = Regulator.objects.create(name_en="ASIC", slug="asic")
+        reg = Regulator.objects.create(name="ASIC", slug="asic")
         
         response = self.client.post(reverse('dashboard_taxonomy_create_ajax'), {
             'type': 'regulator',

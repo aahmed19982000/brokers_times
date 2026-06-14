@@ -610,6 +610,95 @@
 
 {% block content %}
 
+<!-- Latest News Section (Added by Request) -->
+<section class="section-container" style="background-color: var(--bg-white); border-bottom: 1px solid var(--border-color); position: relative; overflow: hidden;">
+    <div class="container">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+            <div class="section-title">
+                <h2>{% if request.LANGUAGE_CODE == 'ar' %}أحدث أخبار التداول{% else %}Latest Trading News{% endif %}</h2>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);">{% if request.LANGUAGE_CODE == 'ar' %}تغطية لأهم التطورات والأخبار العاجلة في سوق الفوركس وشركات التداول.{% else %}Coverage of the most important developments and breaking news in the forex market and brokers.{% endif %}</p>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="slider-controls" style="display: flex; gap: 0.5rem;">
+                    <button class="slider-btn" id="news-slide-left" style="background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="transform: {% if request.LANGUAGE_CODE == 'ar' %}rotate(180deg){% else %}none{% endif %};"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button class="slider-btn" id="news-slide-right" style="background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="transform: {% if request.LANGUAGE_CODE == 'ar' %}rotate(180deg){% else %}none{% endif %};"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+                <a href="{% url 'news_list' %}" class="section-link" style="margin-left: 1rem; font-weight: 600;">
+                    {% if request.LANGUAGE_CODE == 'ar' %}تصفح كل الأخبار{% else %}View All News{% endif %} &rarr;
+                </a>
+            </div>
+        </div>
+
+        <div id="news-slider-container" style="display: flex; gap: 1.5rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 1rem; scroll-behavior: smooth;">
+            {% for news in latest_news %}
+            <a href="{% url 'news_detail' news.slug %}" style="scroll-snap-align: start; flex: 0 0 calc(33.333% - 1rem); min-width: 280px; text-decoration: none; color: inherit; display: block; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; background: #fff; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                <div style="height: 180px; background-color: var(--bg-light); position: relative; overflow: hidden;">
+                    {% if news.featured_image %}
+                        <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); background: #f1f5f9;">
+                            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        </div>
+                    {% endif %}
+                </div>
+                <div style="padding: 1.5rem;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 6px;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        {{ news.created_at|date:"M d, Y" }}
+                    </div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.8rem; line-height: 1.4;">{{ news.title|truncatechars:60 }}</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0; line-height: 1.5;">{{ news.content|striptags|truncatewords:15|safe }}</p>
+                </div>
+            </a>
+            {% empty %}
+            <div style="flex: 1 1 100%; text-align: center; padding: 3rem; color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: 12px; background-color: var(--bg-light);">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem;"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">{% if request.LANGUAGE_CODE == 'ar' %}لا توجد أخبار حالياً{% else %}No News Available{% endif %}</h3>
+                <p style="font-size: 0.95rem; margin: 0;">{% if request.LANGUAGE_CODE == 'ar' %}سنقوم بنشر أحدث الأخبار والتطورات قريباً.{% else %}We will publish the latest news and developments soon.{% endif %}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    #news-slider-container::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .slider-btn:hover {
+        background-color: var(--primary) !important;
+        color: white !important;
+        border-color: var(--primary) !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slider = document.getElementById('news-slider-container');
+        const btnLeft = document.getElementById('news-slide-left');
+        const btnRight = document.getElementById('news-slide-right');
+        
+        if(slider && btnLeft && btnRight) {
+            const isRTL = document.documentElement.dir === 'rtl' || document.body.classList.contains('rtl-layout');
+            const scrollAmount = 350; // Scroll distance
+            
+            btnLeft.addEventListener('click', () => {
+                slider.scrollBy({ left: isRTL ? scrollAmount : -scrollAmount, behavior: 'smooth' });
+            });
+            
+            btnRight.addEventListener('click', () => {
+                slider.scrollBy({ left: isRTL ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+            });
+        }
+    });
+</script>
+
 <!-- 1. Hero Section -->
 <section class="hero-section">
     <div class="container hero-grid">

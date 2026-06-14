@@ -10,6 +10,7 @@ class Broker(models.Model):
     seo_description = models.TextField(blank=True)
     logo = models.ImageField(upload_to='brokers/logos/', blank=True, null=True)
     logo_alt = models.CharField(max_length=255, blank=True)
+    account_opening_link = models.URLField(max_length=500, blank=True)
 
     # Review Content
     review_content = RichTextField(blank=True)
@@ -41,6 +42,7 @@ class Broker(models.Model):
     
     verdict_quote = models.TextField(blank=True)
     verdict_text = models.TextField(blank=True)
+    verdict_sentiment = models.CharField(max_length=20, choices=[('positive', 'Positive'), ('negative', 'Negative'), ('neutral', 'Neutral')], default='neutral')
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
