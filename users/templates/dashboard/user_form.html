@@ -1,0 +1,285 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}{% if is_edit %}Edit User / تعديل عضو{% else %}Add User / إضافة عضو{% endif %} - Brokers Times{% endblock %}
+
+{% block nav_users %}active{% endblock %}
+{% block section_name %}Users & Permissions / الأعضاء والصلاحيات{% endblock %}
+
+{% block extra_head %}
+<style>
+    .editor-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .editor-card {
+        background: #111726;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .editor-card-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+    
+    .form-group-editor {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .form-group-editor label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .form-group-editor label span:last-child {
+        font-size: 0.75rem;
+        color: var(--primary);
+    }
+
+    .form-input-editor {
+        background: #0d1322 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
+    }
+    
+    .form-input-editor:focus {
+        outline: none !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+    }
+
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        background: #0d1322;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1.2rem;
+        border-radius: 10px;
+        margin-top: 0.5rem;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+        cursor: pointer;
+    }
+
+    .checkbox-desc {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-left: 28px;
+        display: block;
+        margin-top: -6px;
+    }
+
+    .error-list {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        color: #fca5a5;
+        font-size: 0.9rem;
+        list-style: none;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="editor-wrapper">
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="editor-card">
+            <div class="editor-card-title">
+                <span>{% if is_edit %}Edit User Details / تعديل بيانات العضو{% else %}Create New User / إضافة عضو جديد{% endif %}</span>
+                <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">
+                    <a href="{% url 'dashboard_users' %}" style="color: var(--text-muted); text-decoration: none;">&larr; Back to List</a>
+                </span>
+            </div>
+
+            {% if form.errors %}
+            <ul class="error-list">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <!-- Row 1: Username & Password -->
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label for="id_username">
+                        <span>Username</span>
+                        <span>اسم المستخدم (فريد)</span>
+                    </label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group-editor">
+                    <label for="id_password">
+                        <span>Password</span>
+                        <span>كلمة المرور</span>
+                    </label>
+                    {{ form.password }}
+                    {% if is_edit %}
+                    <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.2rem;">Leave blank to keep current password.</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Row 2: First Name & Last Name -->
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label for="id_first_name">
+                        <span>First Name</span>
+                        <span>الاسم الأول</span>
+                    </label>
+                    {{ form.first_name }}
+                </div>
+                <div class="form-group-editor">
+                    <label for="id_last_name">
+                        <span>Last Name</span>
+                        <span>اسم العائلة</span>
+                    </label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+
+            <!-- Row 3: Email & Role -->
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label for="id_email">
+                        <span>Email Address</span>
+                        <span>البريد الإلكتروني</span>
+                    </label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group-editor">
+                    <label for="id_role">
+                        <span>System Role</span>
+                        <span>الرتبة في النظام</span>
+                    </label>
+                    {{ form.role }}
+                </div>
+            </div>
+
+            <!-- Row 4: Active Status -->
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label>
+                        <span>Account Status / حالة الحساب</span>
+                    </label>
+                    <div class="checkbox-group" style="padding: 0.8rem 1.2rem;">
+                        <label class="checkbox-label">
+                            {{ form.is_active }}
+                            <span>Active account / الحساب نشط ويمكنه تسجيل الدخول</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 5: Permissions Checkboxes -->
+            <div class="form-row" style="margin-bottom: 0;">
+                <div class="form-group-editor">
+                    <label>
+                        <span>Permissions / الصلاحيات الإضافية</span>
+                    </label>
+                    <div class="checkbox-group">
+                        <div>
+                            <label class="checkbox-label">
+                                {{ form.can_publish }}
+                                <span>Can Publish / صلاحية النشر</span>
+                            </label>
+                            <span class="checkbox-desc">Allows user to publish and sync content live on the portal.</span>
+                        </div>
+                        
+                        <div>
+                            <label class="checkbox-label">
+                                {{ form.can_edit }}
+                                <span>Can Edit / صلاحية التعديل</span>
+                            </label>
+                            <span class="checkbox-desc">Allows user to modify existing articles, brokers, and comparison lists.</span>
+                        </div>
+
+                        <div>
+                            <label class="checkbox-label">
+                                {{ form.can_manage_brokers }}
+                                <span>Manage Brokers / إدارة شركات الوساطة</span>
+                            </label>
+                            <span class="checkbox-desc">Allows user to add/edit/delete brokers, regulatory entries, and base specs.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'dashboard_users' %}" class="btn-editor-secondary" style="padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 8px; font-weight: 600; text-align: center; border: 1px solid rgba(255,255,255,0.08); display: inline-flex; align-items: center; justify-content: center;">
+                    Cancel / إلغاء
+                </a>
+                <button type="submit" class="btn-editor-primary" style="padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: none;">
+                    Save User / حفظ البيانات
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -221,6 +221,22 @@
                 <input type="text" name="last_name" id="id_last_name" class="form-control" placeholder="Last Name" value="{{ form.last_name.value|default_if_none:'' }}">
             </div>
 
+            <div class="form-group">
+                <label for="id_facebook_url">
+                    <span>Facebook Link</span>
+                    <span>رابط فيسبوك</span>
+                </label>
+                <input type="url" name="facebook_url" id="id_facebook_url" class="form-control" placeholder="https://facebook.com/username" value="{{ form.facebook_url.value|default_if_none:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="id_linkedin_url">
+                    <span>LinkedIn Link</span>
+                    <span>رابط لينكد إن</span>
+                </label>
+                <input type="url" name="linkedin_url" id="id_linkedin_url" class="form-control" placeholder="https://linkedin.com/in/username" value="{{ form.linkedin_url.value|default_if_none:'' }}">
+            </div>
+
             <div class="form-group full-width">
                 <label for="id_bio">
                     <span>Biography</span>

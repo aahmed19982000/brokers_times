@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from categories.models import Category, Regulator, FinancialAsset, DepositLimit, IslamicAccount, Headquarters, TradingPlatform
-from brokers.models import Broker, BrokerFAQ
-from articles.models import Tag, Article, ArticleFAQ
+from brokers.models import Broker, BrokerFAQ, BrokerRegulator, BrokerAccountType, BrokerPlatformTab
+from articles.models import Article, ArticleFAQ
 
 class Command(BaseCommand):
     help = 'Seeds the database with bilingual taxonomy items, 5 brokers, and 3 articles.'
@@ -12,7 +12,6 @@ class Command(BaseCommand):
         # 1. Clear existing data
         ArticleFAQ.objects.all().delete()
         Article.objects.all().delete()
-        Tag.objects.all().delete()
         BrokerFAQ.objects.all().delete()
         Broker.objects.all().delete()
         
@@ -62,37 +61,126 @@ class Command(BaseCommand):
         plat_mt5 = TradingPlatform.objects.create(name_en="MetaTrader 5", name_ar="ميتاتريدر 5", slug="mt5")
         plat_ctrader = TradingPlatform.objects.create(name_en="cTrader", name_ar="سي تريدر", slug="ctrader")
 
-        # 9. Create Tags
-        tag_trading = Tag.objects.create(name_en="Trading", name_ar="التداول", slug="trading")
-        tag_forex = Tag.objects.create(name_en="Forex", name_ar="فوركس", slug="forex-tag")
-        tag_investment = Tag.objects.create(name_en="Investment", name_ar="الاستثمار", slug="investment")
-
-        # 10. Create 5 Brokers
-        # Broker 1: Admiral Markets
+        # Broker 1: Exness
         b1 = Broker.objects.create(
-            name_en="Admiral Markets", name_ar="أدميرال ماركتس",
-            slug="admiral-markets-review",
-            seo_title_en="Admiral Markets Review 2024 - Fees & Safety", seo_title_ar="مراجعة شركة أدميرال ماركتس 2024 - الرسوم والأمان",
-            seo_description_en="Expert review of Admiral Markets trading fees, regulation, and platforms.", seo_description_ar="مراجعة الخبراء لشركة أدميرال ماركتس من حيث الرسوم والتراخيص والمنصات.",
-            review_content_en="<p>Admiral Markets is a leading global broker regulated by FCA and ASIC. It offers MetaTrader 4 and 5 with low spreads.</p>",
-            review_content_ar="<p>تعتبر شركة أدميرال ماركتس وسيطاً عالمياً رائداً مرخصاً من FCA و ASIC. وتوفر منصات ميتاتريدر 4 و 5 بفروق أسعار منخفضة.</p>",
-            min_deposit=100.00,
+            name_en="Exness", name_ar="إكسنس",
+            slug="exness-review",
+            seo_title_en="Exness Review 2026 - Instant Withdrawals & Low Spreads",
+            seo_title_ar="مراجعة شركة إكسنس 2026 - سحب فوري وسبريد منخفض",
+            seo_description_en="Expert review of Exness trading fees, raw spreads, instant withdrawals, and custom web terminal.",
+            seo_description_ar="مراجعة الخبراء لرسوم التداول في إكسنس، الفروق السعرية الصفرية، السحب الفوري، ومنصة الويب الخاصة بها.",
+            review_content_en="""
+            <p><strong>A deep dive into the operational excellence of Exness.</strong></p>
+            <p>Exness has consistently demonstrated a commitment to technological innovation since its inception in 2008. By focusing on the core needs of high-frequency traders—namely speed, liquidity, and transparency—the broker has carved out a significant niche in the global retail market. Our analysis reveals that their proprietary infrastructure is designed to handle extreme volatility without the slippage common in lesser platforms.</p>
+            <p><strong>Market Execution &amp; Liquidity</strong></p>
+            <p>The broker's execution model is primarily based on automated market-making, which allows for the instant withdrawal feature that has become their hallmark. This liquidity depth is particularly evident during major news events where spreads remain remarkably stable compared to industry averages.</p>
+            <ul>
+                <li>Proprietary data centers in major financial hubs.</li>
+                <li>Direct fiber-optic connections to Tier-1 liquidity providers.</li>
+                <li>Advanced risk management algorithms protecting client equity.</li>
+            </ul>
+            <p>Furthermore, the integration of TradingView charts into their web terminal provides a seamless transition for technical analysts who require sophisticated drawing tools and indicators without leaving the trading environment.</p>
+            """,
+            review_content_ar="""
+            <p><strong>غوص عميق في التميز التشغيلي لشركة إكسنس.</strong></p>
+            <p>أظهرت إكسنس باستمرار التزاماً بالابتكار التكنولوجي منذ تأسيسها في عام 2008. ومن خلال التركيز على الاحتياجات الأساسية لمتداولي التردد العالي - أي السرعة والسيولة والشفافية - نجح الوسيط في اقتطاع مكانة كبيرة في سوق التجزئة العالمي. ويكشف تحليلنا أن بنيتهم التحتية الخاصة مصممة للتعامل مع التقلبات الشديدة دون حدوث الانزلاق السعري الشائع في المنصات الأقل شأناً.</p>
+            <p><strong>تنفيذ السوق والسيولة</strong></p>
+            <p>يعتمد نموذج تنفيذ الوسيط بشكل أساسي على صناعة السوق المؤتمتة، مما يسمح بميزة السحب الفوري التي أصبحت السمة المميزة لهم. ويكون عمق السيولة هذا واضحاً بشكل خاص خلال الأحداث الإخبارية الكبرى حيث تظل الفروق السعرية مستقرة بشكل ملحوظ مقارنة بالمتوسطات في الصناعة.</p>
+            <ul>
+                <li>مراكز بيانات خاصة في المراكز المالية الرئيسية.</li>
+                <li>اتصالات مباشرة بالألياف الضوئية لمزودي السيولة من الفئة الأولى.</li>
+                <li>خوارزميات متقدمة لإدارة المخاطر تحمي أموال العملاء.</li>
+            </ul>
+            <p>علاوة على ذلك، يوفر دمج رسوم TradingView البيانية في منصة الويب الخاصة بهم انتقالاً سلساً للمحللين الفنيين الذين يحتاجون إلى أدوات رسم ومؤشرات متطورة دون مغادرة بيئة التداول.</p>
+            """,
+            min_deposit=1.00,
             withdrawal_time_en="Instant", withdrawal_time_ar="فوري",
             base_currencies="USD, EUR, GBP",
-            deposit_limit=dep_100_500,
+            rating=9.2,
+            execution_speed=96,
+            customer_support=88,
+            asset_variety=82,
+            pros_en="Instant withdrawals 24/7 with zero commission.\nIndustry-leading low spreads on major pairs.\nUnlimited leverage available for experienced traders.\nProp proprietary terminal with advanced charting.",
+            pros_ar="عمليات سحب فورية على مدار الساعة طوال أيام الأسبوع بدون عمولة.\nسبريد منخفض رائد في الصناعة على الأزواج الرئيسية.\nرافعة مالية غير محدودة متاحة للمتداولين ذوي الخبرة.\nمنصة تداول خاصة متطورة مع رسوم بيانية متقدمة.",
+            cons_en="FCA regulation limited to B2B clients.\nNo U.S. residents accepted.\nLimited educational webinars compared to peers.\nHigher spreads on exotic currency pairs.",
+            cons_ar="ترخيص FCA يقتصر على عملاء B2B فقط.\nغير متاحة للمقيمين في الولايات المتحدة.\nندوات تعليمية محدودة عبر الإنترنت مقارنة بالمنافسين.\nفروق أسعار أعلى على أزواج العملات النادرة.",
+            custom_terminal_title_en="Exness Terminal",
+            custom_terminal_title_ar="منصة إكسنس",
+            custom_terminal_description_en="Custom-built web platform featuring TradingView integration, advanced order types, and one-click trading in a highly intuitive interface.",
+            custom_terminal_description_ar="منصة ويب مخصصة تتميز بدمج TradingView، وأنواع أوامر متقدمة، والتداول بنقرة واحدة في واجهة سهلة الاستخدام للغاية.",
+            verdict_quote_en="Exness sets the benchmark for technological efficiency in the retail brokerage space. Their instant withdrawal system and zero-spread accounts make them an elite choice for high-frequency scalpers and professional traders alike.",
+            verdict_quote_ar="تضع إكسنس المعيار للكفاءة التكنولوجية في مجال الوساطة للأفراد. إن نظام السحب الفوري وحسابات السبريد الصفري يجعل منها خياراً ممتازاً للمضاربين السريعين والمتداولين المحترفين على حد سواء.",
+            verdict_text_en="Our experts recommend Exness for traders who prioritize execution speed and capital mobility. While educational resources could be broader, the core trading engine is arguably one of the best in the world today.",
+            verdict_text_ar="يوصي خبراؤنا بشركة إكسنس للمتداولين الذين يعطون الأولوية لسرعة التنفيذ وحركة رأس المال. في حين أن الموارد التعليمية يمكن أن تكون أوسع، فإن محرك التداول الأساسي هو بلا شك أحد الأفضل في العالم اليوم.",
+            deposit_limit=dep_under_100,
             islamic_account=isl_yes,
-            headquarters=hq_uk
+            headquarters=hq_cyp
         )
-        b1.regulators.add(reg_fca, reg_asic)
-        b1.financial_assets.add(asset_forex, asset_stocks, asset_crypto, asset_indices)
+        b1.regulators.add(reg_fca, reg_cysec)
+        b1.financial_assets.add(asset_forex, asset_stocks, asset_crypto, asset_indices, asset_commodities)
         b1.trading_platforms.add(plat_mt4, plat_mt5)
+
+        # Seed Sub-models for Exness (BrokerRegulator, BrokerAccountType, BrokerPlatformTab)
+        BrokerRegulator.objects.create(
+            broker=b1, regulator=reg_fca, license_number="730729", status_en="AUTHORIZED", status_ar="مرخص"
+        )
+        BrokerRegulator.objects.create(
+            broker=b1, regulator=reg_cysec, license_number="178/12", status_en="AUTHORIZED", status_ar="مرخص"
+        )
+
+        BrokerAccountType.objects.create(
+            broker=b1, order=1,
+            name_en="Standard", name_ar="ستاندارد",
+            min_deposit_en="$1", min_deposit_ar="1 دولار",
+            spread_from_en="0.3 pips", spread_from_ar="0.3 نقطة",
+            commission_en="None", commission_ar="بدون عمولة",
+            leverage_en="Unlimited", leverage_ar="غير محدود"
+        )
+        BrokerAccountType.objects.create(
+            broker=b1, order=2,
+            name_en="Pro", name_ar="برو",
+            min_deposit_en="$500", min_deposit_ar="500 دولار",
+            spread_from_en="0.1 pips", spread_from_ar="0.1 نقطة",
+            commission_en="None", commission_ar="بدون عمولة",
+            leverage_en="Unlimited", leverage_ar="غير محدود"
+        )
+        BrokerAccountType.objects.create(
+            broker=b1, order=3,
+            name_en="Zero", name_ar="زيرو",
+            min_deposit_en="$200", min_deposit_ar="200 دولار",
+            spread_from_en="0.0 pips", spread_from_ar="0.0 نقطة",
+            commission_en="Up to $3.5/lot", commission_ar="حتى 3.5 دولار/لوت",
+            leverage_en="Unlimited", leverage_ar="غير محدود"
+        )
+
+        BrokerPlatformTab.objects.create(
+            broker=b1, order=1,
+            title_en="MetaTrader 4", title_ar="ميتاتريدر 4",
+            subtitle_en="Classic Choice", subtitle_ar="الخيار الكلاسيكي"
+        )
+        BrokerPlatformTab.objects.create(
+            broker=b1, order=2,
+            title_en="MetaTrader 5", title_ar="ميتاتريدر 5",
+            subtitle_en="Modern Standard", subtitle_ar="المعيار الحديث"
+        )
+        BrokerPlatformTab.objects.create(
+            broker=b1, order=3,
+            title_en="Social Trading", title_ar="التداول الاجتماعي",
+            subtitle_en="Copy Portfolios", subtitle_ar="نسخ المحافظ"
+        )
+        BrokerPlatformTab.objects.create(
+            broker=b1, order=4,
+            title_en="API Support", title_ar="دعم واجهة برمجة التطبيقات (API)",
+            subtitle_en="For Algo Traders", subtitle_ar="لمتداولي الخوارزميات"
+        )
 
         BrokerFAQ.objects.create(
             broker=b1, order=1,
-            question_en="Is Admiral Markets regulated?", question_ar="هل شركة أدميرال ماركتس مرخصة؟",
-            answer_en="Yes, Admiral Markets is regulated by top-tier financial authorities like the FCA in the UK and ASIC in Australia.",
-            answer_ar="نعم، شركة أدميرال ماركتس مرخصة من جهات رقابية قوية مثل سلطة السلوك المالي (FCA) في بريطانيا والهيئة الأسترالية (ASIC)."
+            question_en="Is Exness regulated?", question_ar="هل شركة إكسنس مرخصة؟",
+            answer_en="Yes, Exness is regulated by top-tier financial authorities like the FCA in the UK and CySEC in Cyprus.",
+            answer_ar="نعم، شركة إكسنس مرخصة من جهات رقابية قوية مثل سلطة السلوك المالي (FCA) في بريطانيا وهيئة الأوراق المالية القبرصية (CySEC)."
         )
+
 
         # Broker 2: Pepperstone
         b2 = Broker.objects.create(
@@ -170,7 +258,7 @@ class Command(BaseCommand):
         b5.financial_assets.add(asset_forex, asset_stocks, asset_indices, asset_commodities)
         b5.trading_platforms.add(plat_mt5)
 
-        # 11. Create 3 Articles
+        # 10. Create 3 Articles
         # Article 1: Quantitative Trading
         art1 = Article.objects.create(
             title_en="The Future of Quantitative Trading in 2024", title_ar="مستقبل التداول الكمي في عام 2024",
@@ -179,10 +267,8 @@ class Command(BaseCommand):
             content_ar="<p>يعتمد التداول الكمي على النماذج الرياضية والخوارزميات لتحديد الفرص الاستثمارية. ويساهم صعود التعلم الآلي في تغيير هذا المشهد.</p>",
             seo_title_en="Quantitative Trading Trends 2024", seo_title_ar="اتجاهات التداول الكمي 2024",
             seo_description_en="Comprehensive look into algorithmic trading trends and market liquidity.", seo_description_ar="نظرة شاملة على اتجاهات التداول الخوارزمي وسيولة السوق.",
-            category=cat_analysis,
             status='published'
         )
-        art1.tags.add(tag_trading, tag_investment)
 
         ArticleFAQ.objects.create(
             article=art1, order=1,
@@ -199,10 +285,8 @@ class Command(BaseCommand):
             content_ar="<p>يتطلب اختيار الوسيط تحليل التراخيص، الفروق السعرية (الاسبريد)، العمولات، وجودة دعم العملاء.</p>",
             seo_title_en="Selecting a Reliable Forex Broker Guide", seo_title_ar="دليل اختيار وسيط فوركس موثوق",
             seo_description_en="Step-by-step guide to verifying regulatory licenses and trading conditions.", seo_description_ar="دليل خطوة بخطوة للتحقق من تراخيص الهيئات الرقابية وظروف التداول.",
-            category=cat_basics,
             status='published'
         )
-        art2.tags.add(tag_trading, tag_forex)
 
         # Article 3: Regulators comparison
         art3 = Article.objects.create(
@@ -212,9 +296,7 @@ class Command(BaseCommand):
             content_ar="<p>تحمي الهيئات التنظيمية المالية المستثمرين من الاحتيال. تشمل أفضل الهيئات الرقابية FCA في بريطانيا، وASIC في أستراليا، وCySEC في قبرص.</p>",
             seo_title_en="Guide to Global Financial Regulatory Bodies", seo_title_ar="دليل الهيئات الرقابية المالية العالمية",
             seo_description_en="Learn about the differences between Tier-1, Tier-2, and offshore regulatory licenses.", seo_description_ar="تعرف على الفروق بين تراخيص الفئة الأولى والفئة الثانية والتراخيص الخارجية (الأوفشور).",
-            category=cat_basics,
             status='published'
         )
-        art3.tags.add(tag_trading, tag_investment)
 
         self.stdout.write(self.style.SUCCESS("Successfully seeded 5 brokers and 3 articles!"))

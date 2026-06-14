@@ -18,6 +18,8 @@ class CustomUser(AbstractUser):
     preferred_language = models.CharField(max_length=5, choices=PREFERRED_LANGUAGE_CHOICES, default='ar')
     bio = models.TextField(blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    facebook_url = models.URLField(max_length=500, blank=True, null=True)
+    linkedin_url = models.URLField(max_length=500, blank=True, null=True)
 
     class Meta:
         permissions = [

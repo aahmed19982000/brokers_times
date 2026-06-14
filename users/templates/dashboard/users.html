@@ -1,0 +1,320 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Users List / الأعضاء - Brokers Times{% endblock %}
+
+{% block nav_users %}active{% endblock %}
+{% block section_name %}Users & Permissions / الأعضاء والصلاحيات{% endblock %}
+
+{% block extra_head %}
+<style>
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 600px) {
+        .page-header-container {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+
+    .page-title-area h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.3rem;
+    }
+
+    .page-title-area p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .btn-action {
+        background: var(--accent);
+        color: white;
+        text-decoration: none;
+        padding: 0.7rem 1.4rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-action:hover {
+        background: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-action svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.5;
+    }
+
+    .table-container {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        overflow: hidden;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .data-table th, .data-table td {
+        padding: 1.2rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .data-table th {
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .data-table td {
+        color: var(--text-color);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .data-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+        background: rgba(255, 255, 255, 0.01);
+    }
+
+    .user-avatar-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar-cell img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-avatar-placeholder-cell {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(99, 102, 241, 0.15);
+        color: #a5b4fc;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .user-meta-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-username {
+        font-weight: 600;
+        color: white;
+        font-size: 0.95rem;
+    }
+
+    .user-email {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .badge-pill {
+        display: inline-block;
+        padding: 0.25rem 0.7rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.3rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .badge-primary {
+        background: rgba(79, 70, 229, 0.15);
+        color: #a5b4fc;
+        border: 1px solid rgba(79, 70, 229, 0.3);
+    }
+
+    .badge-success {
+        background: rgba(16, 185, 129, 0.15);
+        color: #a7f3d0;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fde68a;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .badge-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-edit-inline {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: color 0.2s ease;
+    }
+
+    .btn-edit-inline:hover {
+        color: #818cf8;
+        text-decoration: underline;
+    }
+
+    .no-data-state {
+        padding: 3.5rem;
+        text-align: center;
+        color: var(--text-muted);
+    }
+
+    .no-data-state svg {
+        width: 48px;
+        height: 48px;
+        stroke: var(--text-muted);
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-title-area">
+        <h1>Users List / الأعضاء والموظفين</h1>
+        <p>Manage portal writers, editors, system roles, and detailed publishing permissions.</p>
+    </div>
+    
+    <a href="{% url 'dashboard_users_add' %}" class="btn-action">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Add New User / إضافة عضو جديد</span>
+    </a>
+</div>
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>User / العضو</th>
+                    <th>Full Name / الاسم</th>
+                    <th>System Role / الرتبة</th>
+                    <th>Permissions / الصلاحيات</th>
+                    <th>Status / الحالة</th>
+                    <th>Actions / إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <div class="user-avatar-cell">
+                            {% if u.avatar %}
+                                <img src="{{ u.avatar.url }}" alt="Avatar">
+                            {% else %}
+                                <span class="user-avatar-placeholder-cell">{{ u.username|slice:":2"|upper }}</span>
+                            {% endif %}
+                            <div class="user-meta-info">
+                                <span class="user-username">{{ u.username }}</span>
+                                <span class="user-email">{{ u.email }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="font-weight: 500;">{{ u.first_name }} {{ u.last_name }}</span>
+                    </td>
+                    <td>
+                        {% if u.role == 'admin' %}
+                            <span class="badge-pill badge-primary">Admin / مدير</span>
+                        {% elif u.role == 'editor' %}
+                            <span class="badge-pill badge-warning">Editor / محرر رئيسي</span>
+                        {% elif u.role == 'writer' %}
+                            <span class="badge-pill badge-success">Writer / كاتب</span>
+                        {% else %}
+                            <span class="badge-pill badge-secondary">User / عضو عادي</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.is_superuser %}
+                            <span class="badge-pill badge-primary" style="background: rgba(79,70,229,0.25);">Superuser / كل الصلاحيات</span>
+                        {% else %}
+                            {% if u.user_permissions.all %}
+                                {% for perm in u.user_permissions.all %}
+                                    <span class="badge-pill badge-secondary">{{ perm.name }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="badge-pill badge-secondary" style="color: #9ca3af; border: none; background: transparent;">No explicit permissions</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.is_active %}
+                            <span class="badge-pill badge-success" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2);">Active / نشط</span>
+                        {% else %}
+                            <span class="badge-pill badge-danger" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);">Suspended / معطل</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'dashboard_users_edit' u.pk %}" class="btn-edit-inline">Edit / تعديل &rarr;</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="no-data-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <p style="margin-top: 1rem; font-weight: 500;">No users found in the system.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

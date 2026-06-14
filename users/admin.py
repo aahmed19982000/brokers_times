@@ -9,13 +9,13 @@ class CustomUserAdmin(UserAdmin):
     
     fieldsets = UserAdmin.fieldsets + (
         ('Custom Profile Fields', {
-            'fields': ('role', 'preferred_language', 'bio', 'avatar')
+            'fields': ('role', 'preferred_language', 'bio', 'avatar', 'facebook_url', 'linkedin_url')
         }),
     )
     
     add_fieldsets = UserAdmin.add_fieldsets + (
         ('Custom Profile Fields', {
-            'fields': ('role', 'preferred_language', 'bio', 'avatar')
+            'fields': ('role', 'preferred_language', 'bio', 'avatar', 'facebook_url', 'linkedin_url')
         }),
     )
 

@@ -21,6 +21,7 @@ class BestBrokersList(models.Model):
     seo_description = models.TextField(blank=True)
     
     featured_image = models.ImageField(upload_to='best_brokers/', blank=True, null=True)
+    featured_image_alt = models.CharField(max_length=255, blank=True)
     content = RichTextField(blank=True)
     
     # Metadata / Publishing Status

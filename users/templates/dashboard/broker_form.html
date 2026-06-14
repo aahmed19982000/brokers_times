@@ -496,7 +496,6 @@
     }
 
     .select-add-regulator-btn {
-        max-width: 180px;
         cursor: pointer;
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -512,6 +511,160 @@
         background: rgba(255, 255, 255, 0.06);
         color: #fff;
         border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Custom Search Select Component */
+    .custom-search-select-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .custom-search-dropdown-menu {
+        position: absolute;
+        top: 105%;
+        left: 0;
+        z-index: 1000;
+        min-width: 280px;
+        background: #111827;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        padding: 0.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .custom-search-input {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #fff;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .custom-search-input:focus {
+        border-color: #3b82f6;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .custom-search-options-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 200px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    /* Scrollbar styling for options list */
+    .custom-search-options-list::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-search-options-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-search-options-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+    .custom-search-options-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .custom-search-option-item {
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .custom-search-option-item:hover {
+        background: rgba(59, 130, 246, 0.1);
+        color: #fff;
+    }
+
+    .custom-add-new-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.6rem 0.8rem;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px dashed rgba(16, 185, 129, 0.3);
+        border-radius: 8px;
+        color: #a7f3d0;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 0.2rem;
+    }
+
+    .custom-add-new-option:hover {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.5);
+        color: #fff;
+    }
+
+    .custom-add-btn-small {
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: #10b981;
+        color: #fff;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .custom-loading-indicator {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        text-align: center;
+        padding: 0.4rem;
+        animation: pulseSearch 1.5s infinite;
+    }
+
+    @keyframes pulseSearch {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+    }
+
+    /* Custom Single Search Select Trigger styling */
+    .custom-single-search-select {
+        position: relative;
+        width: 100%;
+    }
+
+    .custom-single-select-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #fff;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-height: 42px;
+    }
+
+    .custom-single-select-trigger:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .custom-select-arrow {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        margin-left: 10px;
     }
 
     /* Available Trading Assets Custom Checkboxes */
@@ -665,11 +818,83 @@
         align-items: center;
         gap: 1rem;
     }
+    
+    /* Custom Modal Dialog Styles */
+    .custom-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(9, 13, 22, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .custom-modal-backdrop.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .custom-modal-content {
+        background: #111726;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+        overflow: hidden;
+    }
+    .custom-modal-backdrop.show .custom-modal-content {
+        transform: scale(1);
+    }
+    .custom-modal-header {
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .custom-modal-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .close-modal-btn {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.2s;
+        line-height: 1;
+    }
+    .close-modal-btn:hover {
+        color: #fff;
+    }
+    .custom-modal-body {
+        padding: 1.5rem;
+    }
+    .custom-modal-footer {
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.01);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.8rem;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<form method="post" id="broker-form">
+<form method="post" id="broker-form" enctype="multipart/form-data">
     {% csrf_token %}
     
     <!-- Hidden textareas that sync with contenteditable DIVs on submit -->
@@ -696,7 +921,7 @@
             <!-- Left Navigation Sidebar -->
             <div class="editor-sidebar">
                 <ul class="editor-sidebar-menu">
-                    <li class="editor-menu-item active" id="li-metadata">
+                    <li class="editor-menu-item" id="li-metadata">
                         <a href="#section-metadata">
                             <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                             <span>Metadata</span>
@@ -712,6 +937,24 @@
                         <a href="#section-specs">
                             <svg viewBox="0 0 24 24"><path d="M20 7h-9L9 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
                             <span>Specifications</span>
+                        </a>
+                    </li>
+                    <li class="editor-menu-item" id="li-pros-cons">
+                        <a href="#section-pros-cons">
+                            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span>Pros & Cons</span>
+                        </a>
+                    </li>
+                    <li class="editor-menu-item" id="li-account-types">
+                        <a href="#section-account-types">
+                            <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            <span>Account Types</span>
+                        </a>
+                    </li>
+                    <li class="editor-menu-item" id="li-platforms">
+                        <a href="#section-platforms">
+                            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            <span>Platforms</span>
                         </a>
                     </li>
                     <li class="editor-menu-item" id="li-faqs">
@@ -790,6 +1033,44 @@
                                 <span class="label-lang-indicator">AR</span>
                             </label>
                             <textarea name="seo_description_ar" id="id_seo_description_ar" class="form-input-editor" style="direction: rtl;" placeholder="مراجعة الخبراء لشركة أدميرال ماركتس من حيث الرسوم والتراخيص والمنصات...">{{ broker.seo_description_ar|default_if_none:'' }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Logo Upload Row -->
+                    <div class="form-row" style="margin-top: 2rem;">
+                        <div class="form-group-editor" style="grid-column: span 2;">
+                            <label for="id_logo">Broker Logo / لوجو الشركة</label>
+                            <input type="file" name="logo" id="id_logo" accept="image/*" class="form-input-editor">
+                            {% if broker.logo %}
+                                <div class="image-preview-container" style="display: flex; align-items: center; gap: 1.5rem; margin-top: 1rem; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                                    <img src="{{ broker.logo.url }}" alt="{{ broker.logo_alt|default:'Broker Logo' }}" class="image-preview-thumb" style="max-height: 80px; max-width: 150px; object-fit: contain; border-radius: 8px; background: #fff; padding: 6px;">
+                                    <div class="image-preview-info" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <span style="font-size: 0.85rem; font-weight: 600; color: #9ca3af;">Currently Uploaded Logo / الشعار الحالي</span>
+                                        <label class="clear-image-checkbox" style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #ef4444; cursor: pointer;">
+                                            <input type="checkbox" name="logo-clear" id="logo-clear_id" style="accent-color: #ef4444;">
+                                            Clear Logo / إزالة الشعار
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Logo Alt Text Row -->
+                    <div class="form-row" style="margin-top: 1rem;">
+                        <div class="form-group-editor">
+                            <label for="id_logo_alt_en">
+                                <span>Logo Alt Text (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <input type="text" name="logo_alt_en" id="id_logo_alt_en" class="form-input-editor" placeholder="e.g. Admiral Markets official logo" value="{{ broker.logo_alt_en|default_if_none:'' }}">
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_logo_alt_ar">
+                                <span>النص البديل للشعار (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <input type="text" name="logo_alt_ar" id="id_logo_alt_ar" class="form-input-editor" style="direction: rtl;" placeholder="مثال: شعار شركة أدميرال ماركتس الرسمي" value="{{ broker.logo_alt_ar|default_if_none:'' }}">
                         </div>
                     </div>
                 </div>
@@ -894,14 +1175,32 @@
                                 {% endfor %}
                             </div>
                             
-                            <select class="select-add-regulator-btn" id="regulator-dropdown" onchange="addRegulatorFromDropdown()">
-                                <option value="">+ Add Regulator</option>
-                                {% for regulator in regulators %}
-                                    <option value="{{ regulator.id }}" id="opt-reg-{{ regulator.id }}" {% if regulator.id in selected_regulators %}style="display:none;"{% endif %}>
-                                        {{ regulator.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+                            <div class="custom-search-select-container" id="regulator-search-select-container">
+                                <button type="button" class="select-add-regulator-btn" id="regulator-search-select-trigger" onclick="toggleRegulatorSearchMenu(event)">
+                                    + Add Regulator / إضافة هيئة رقابية
+                                </button>
+                                
+                                <div class="custom-search-dropdown-menu" id="regulator-search-dropdown-menu" style="display: none;">
+                                    <input type="text" class="custom-search-input" id="regulator-search-input" placeholder="Search or add new... / ابحث أو أضف هيئة..." oninput="filterRegulators(this.value)" autocomplete="off">
+                                    
+                                    <ul class="custom-search-options-list" id="regulator-options-list">
+                                        {% for regulator in regulators %}
+                                            <li class="custom-search-option-item" data-id="{{ regulator.id }}" id="li-reg-{{ regulator.id }}" {% if regulator.id in selected_regulators %}style="display:none;"{% endif %} onclick="selectRegulatorFromSearch({{ regulator.id }}, '{{ regulator.name }}')">
+                                                {{ regulator.name }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    
+                                    <div class="custom-add-new-option" id="regulator-add-new-option" style="display: none;" onclick="createNewRegulatorAjax()">
+                                        <span>+ Add regulator: <strong id="new-regulator-name-display"></strong></span>
+                                        <span class="custom-add-btn-small">Add / إضافة</span>
+                                    </div>
+                                    
+                                    <div class="custom-loading-indicator" id="regulator-loading-indicator" style="display: none;">
+                                        Saving / جاري الحفظ...
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- Hidden multiple select to submit data -->
                             <select name="regulators" id="hidden-regulators-select" multiple style="display:none;">
@@ -912,15 +1211,52 @@
                         </div>
                     </div>
 
-                    <!-- Min Deposit, Withdrawal Time, Base Currencies -->
+                    <!-- Min Deposit, Base Currencies -->
                     <div class="form-row">
                         <div class="form-group-editor">
                             <label for="id_min_deposit">Min. Deposit ($) / الحد الأدنى للإيداع بالدولار</label>
                             <input type="number" name="min_deposit" id="id_min_deposit" step="0.01" class="form-input-editor" placeholder="100" value="{{ broker.min_deposit|default:'100' }}">
                         </div>
+                        
                         <div class="form-group-editor">
-                            <label for="id_base_currencies">Base Currencies / العملات الأساسية للحساب</label>
-                            <input type="text" name="base_currencies" id="id_base_currencies" class="form-input-editor" placeholder="USD, EUR, GBP" value="{{ broker.base_currencies|default:'USD, EUR, GBP' }}">
+                            <label>Base Currencies / العملات الأساسية للحساب</label>
+                            <div class="regulator-badges-wrapper">
+                                <div class="regulator-badges-list" id="currency-badges-list">
+                                    <!-- Populated dynamically by JS -->
+                                </div>
+                                
+                                <div class="custom-search-select-container" id="currency-search-select-container">
+                                    <button type="button" class="select-add-regulator-btn" id="currency-search-select-trigger" onclick="toggleCurrencySearchMenu(event)">
+                                        + Add Currency / إضافة عملة
+                                    </button>
+                                    
+                                    <div class="custom-search-dropdown-menu" id="currency-search-dropdown-menu" style="display: none;">
+                                        <input type="text" class="custom-search-input" id="currency-search-input" placeholder="Search or add... / ابحث أو أضف..." oninput="filterCurrencies(this.value)" autocomplete="off">
+                                        
+                                        <ul class="custom-search-options-list" id="currency-options-list">
+                                            <li class="custom-search-option-item" data-val="USD" onclick="selectCurrency('USD')">USD</li>
+                                            <li class="custom-search-option-item" data-val="EUR" onclick="selectCurrency('EUR')">EUR</li>
+                                            <li class="custom-search-option-item" data-val="GBP" onclick="selectCurrency('GBP')">GBP</li>
+                                            <li class="custom-search-option-item" data-val="AED" onclick="selectCurrency('AED')">AED</li>
+                                            <li class="custom-search-option-item" data-val="SAR" onclick="selectCurrency('SAR')">SAR</li>
+                                            <li class="custom-search-option-item" data-val="QAR" onclick="selectCurrency('QAR')">QAR</li>
+                                            <li class="custom-search-option-item" data-val="KWD" onclick="selectCurrency('KWD')">KWD</li>
+                                            <li class="custom-search-option-item" data-val="EGP" onclick="selectCurrency('EGP')">EGP</li>
+                                            <li class="custom-search-option-item" data-val="CHF" onclick="selectCurrency('CHF')">CHF</li>
+                                            <li class="custom-search-option-item" data-val="JPY" onclick="selectCurrency('JPY')">JPY</li>
+                                            <li class="custom-search-option-item" data-val="CAD" onclick="selectCurrency('CAD')">CAD</li>
+                                            <li class="custom-search-option-item" data-val="AUD" onclick="selectCurrency('AUD')">AUD</li>
+                                        </ul>
+                                        
+                                        <div class="custom-add-new-option" id="currency-add-new-option" style="display: none;" onclick="createNewCurrencyDirectly()">
+                                            <span>+ Add currency: <strong id="new-currency-display"></strong></span>
+                                            <span class="custom-add-btn-small">Add / إضافة</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <input type="hidden" name="base_currencies" id="id_base_currencies" value="{{ broker.base_currencies|default:'USD, EUR, GBP' }}">
+                            </div>
                         </div>
                     </div>
 
@@ -944,21 +1280,86 @@
                     <div class="form-row">
                         <div class="form-group-editor">
                             <label for="id_headquarters">Headquarters / المقر الرئيسي للشركة</label>
-                            <select name="headquarters" id="id_headquarters" class="form-input-editor">
-                                <option value="">--------</option>
-                                {% for hq in headquarters %}
-                                    <option value="{{ hq.id }}" {% if broker.headquarters.id == hq.id %}selected{% endif %}>{{ hq.name }}</option>
-                                {% endfor %}
-                            </select>
+                            <div class="custom-single-search-select" id="headquarters-select-container" data-type="headquarters">
+                                <div class="custom-single-select-trigger" onclick="toggleSingleSearchMenu(event, 'headquarters')">
+                                    <span id="headquarters-selected-display">
+                                        {% if broker.headquarters %}
+                                            {{ broker.headquarters.name }}
+                                        {% else %}
+                                            Select Headquarters / اختر المقر الرئيسي
+                                        {% endif %}
+                                    </span>
+                                    <span class="custom-select-arrow">&#x25BC;</span>
+                                </div>
+                                
+                                <div class="custom-search-dropdown-menu" id="headquarters-dropdown-menu" style="display: none;">
+                                    <input type="text" class="custom-search-input" id="headquarters-search-input" placeholder="Search or add new... / ابحث أو أضف..." oninput="filterSingleOptions('headquarters', this.value)" autocomplete="off">
+                                    
+                                    <ul class="custom-search-options-list" id="headquarters-options-list">
+                                        <li class="custom-search-option-item" data-id="" onclick="selectSingleOption('headquarters', '', '--------')">
+                                            --------
+                                        </li>
+                                        {% for hq in headquarters %}
+                                            <li class="custom-search-option-item" data-id="{{ hq.id }}" id="li-hq-{{ hq.id }}" onclick="selectSingleOption('headquarters', '{{ hq.id }}', '{{ hq.name }}')">
+                                                {{ hq.name }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    
+                                    <div class="custom-add-new-option" id="headquarters-add-new-option" style="display: none;" onclick="createNewTaxonomyAjax('headquarters')">
+                                        <span>+ Add: <strong id="headquarters-new-name-display"></strong></span>
+                                        <span class="custom-add-btn-small">Add / إضافة</span>
+                                    </div>
+                                    
+                                    <div class="custom-loading-indicator" id="headquarters-loading-indicator" style="display: none;">
+                                        Saving / جاري الحفظ...
+                                    </div>
+                                </div>
+                                
+                                <input type="hidden" name="headquarters" id="id_headquarters" value="{{ broker.headquarters.id|default:'' }}">
+                            </div>
                         </div>
+                        
                         <div class="form-group-editor">
                             <label for="id_islamic_account">Islamic Account / حساب إسلامي خالي من فوائد التبييت</label>
-                            <select name="islamic_account" id="id_islamic_account" class="form-input-editor">
-                                <option value="">--------</option>
-                                {% for account in islamic_accounts %}
-                                    <option value="{{ account.id }}" {% if broker.islamic_account.id == account.id %}selected{% endif %}>{{ account.name }}</option>
-                                {% endfor %}
-                            </select>
+                            <div class="custom-single-search-select" id="islamic_account-select-container" data-type="islamic_account">
+                                <div class="custom-single-select-trigger" onclick="toggleSingleSearchMenu(event, 'islamic_account')">
+                                    <span id="islamic_account-selected-display">
+                                        {% if broker.islamic_account %}
+                                            {{ broker.islamic_account.name }}
+                                        {% else %}
+                                            Select Islamic Account / اختر حساب إسلامي
+                                        {% endif %}
+                                    </span>
+                                    <span class="custom-select-arrow">&#x25BC;</span>
+                                </div>
+                                
+                                <div class="custom-search-dropdown-menu" id="islamic_account-dropdown-menu" style="display: none;">
+                                    <input type="text" class="custom-search-input" id="islamic_account-search-input" placeholder="Search or add new... / ابحث أو أضف..." oninput="filterSingleOptions('islamic_account', this.value)" autocomplete="off">
+                                    
+                                    <ul class="custom-search-options-list" id="islamic_account-options-list">
+                                        <li class="custom-search-option-item" data-id="" onclick="selectSingleOption('islamic_account', '', '--------')">
+                                            --------
+                                        </li>
+                                        {% for account in islamic_accounts %}
+                                            <li class="custom-search-option-item" data-id="{{ account.id }}" id="li-islamic_account-{{ account.id }}" onclick="selectSingleOption('islamic_account', '{{ account.id }}', '{{ account.name }}')">
+                                                {{ account.name }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    
+                                    <div class="custom-add-new-option" id="islamic_account-add-new-option" style="display: none;" onclick="createNewTaxonomyAjax('islamic_account')">
+                                        <span>+ Add: <strong id="islamic_account-new-name-display"></strong></span>
+                                        <span class="custom-add-btn-small">Add / إضافة</span>
+                                    </div>
+                                    
+                                    <div class="custom-loading-indicator" id="islamic_account-loading-indicator" style="display: none;">
+                                        Saving / جاري الحفظ...
+                                    </div>
+                                </div>
+                                
+                                <input type="hidden" name="islamic_account" id="id_islamic_account" value="{{ broker.islamic_account.id|default:'' }}">
+                            </div>
                         </div>
                     </div>
 
@@ -976,7 +1377,263 @@
                     </div>
                 </div>
 
-                <!-- 4. FAQ Manager Section -->
+                <!-- 4. Pros & Cons Section -->
+                <div class="editor-card" id="section-pros-cons">
+                    <div class="editor-card-title">Pros &amp; Cons / المميزات والعيوب</div>
+
+                    <!-- Rating & Stats -->
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label for="id_rating">Overall Rating / التقييم العام (0-5)</label>
+                            <input type="number" name="rating" id="id_rating" class="form-input-editor" step="0.1" min="0" max="5" value="{{ broker.rating|default:'4.5' }}" placeholder="4.5">
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_execution_speed">Execution Speed % / سرعة التنفيذ</label>
+                            <input type="number" name="execution_speed" id="id_execution_speed" class="form-input-editor" min="0" max="100" value="{{ broker.execution_speed|default:'90' }}" placeholder="90">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label for="id_customer_support">Customer Support % / دعم العملاء</label>
+                            <input type="number" name="customer_support" id="id_customer_support" class="form-input-editor" min="0" max="100" value="{{ broker.customer_support|default:'90' }}" placeholder="90">
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_asset_variety">Asset Variety % / تنوع الأصول</label>
+                            <input type="number" name="asset_variety" id="id_asset_variety" class="form-input-editor" min="0" max="100" value="{{ broker.asset_variety|default:'90' }}" placeholder="90">
+                        </div>
+                    </div>
+
+                    <!-- Pros -->
+                    <div class="form-row" style="margin-top: 1.5rem;">
+                        <div class="form-group-editor">
+                            <label for="id_pros_en">
+                                <span>Pros (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <textarea name="pros_en" id="id_pros_en" class="form-input-editor" rows="5" placeholder="Fast execution&#10;Regulated by FCA&#10;Low minimum deposit">{{ broker.pros_en|default_if_none:'' }}</textarea>
+                            <small style="color:#6b7280; font-size:0.78rem; margin-top:0.3rem; display:block;">One advantage per line / ميزة واحدة في كل سطر</small>
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_pros_ar">
+                                <span>المميزات (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <textarea name="pros_ar" id="id_pros_ar" class="form-input-editor" rows="5" style="direction:rtl;" placeholder="تنفيذ سريع&#10;مرخصة من FCA&#10;حد إيداع منخفض">{{ broker.pros_ar|default_if_none:'' }}</textarea>
+                            <small style="color:#6b7280; font-size:0.78rem; margin-top:0.3rem; display:block;">ميزة واحدة في كل سطر / One advantage per line</small>
+                        </div>
+                    </div>
+
+                    <!-- Cons -->
+                    <div class="form-row">
+                        <div class="form-group-editor">
+                            <label for="id_cons_en">
+                                <span>Cons (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <textarea name="cons_en" id="id_cons_en" class="form-input-editor" rows="5" placeholder="Limited educational content&#10;High swap rates">{{ broker.cons_en|default_if_none:'' }}</textarea>
+                            <small style="color:#6b7280; font-size:0.78rem; margin-top:0.3rem; display:block;">One disadvantage per line / عيب واحد في كل سطر</small>
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_cons_ar">
+                                <span>العيوب (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <textarea name="cons_ar" id="id_cons_ar" class="form-input-editor" rows="5" style="direction:rtl;" placeholder="محتوى تعليمي محدود&#10;رسوم مبادلة مرتفعة">{{ broker.cons_ar|default_if_none:'' }}</textarea>
+                            <small style="color:#6b7280; font-size:0.78rem; margin-top:0.3rem; display:block;">عيب واحد في كل سطر / One disadvantage per line</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Account Types Section -->
+                <div class="editor-card" id="section-account-types">
+                    <div class="editor-card-title">
+                        <span>Account Types / أنواع الحسابات</span>
+                        <button type="button" class="btn-add-faq-text" onclick="addNewAccountType()">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>Add Account Type</span>
+                        </button>
+                    </div>
+
+                    <div class="faqs-list-container" id="account-types-list-container">
+                        {% for acc in account_types %}
+                        <div class="faq-repeater-row account-type-row" data-index="{{ forloop.counter0 }}">
+                            <button type="button" class="delete-faq-btn" onclick="deleteRow(this)">
+                                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            </button>
+                            <div class="form-row">
+                                <div class="form-group-editor">
+                                    <label><span>Account Name (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_name_en" class="form-input-editor" placeholder="Standard" value="{{ acc.name_en }}">
+                                </div>
+                                <div class="form-group-editor">
+                                    <label><span>اسم الحساب (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_name_ar" class="form-input-editor" style="direction:rtl;" placeholder="قياسي" value="{{ acc.name_ar }}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group-editor">
+                                    <label><span>Min. Deposit (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_min_deposit_en" class="form-input-editor" placeholder="$100" value="{{ acc.min_deposit_en }}">
+                                </div>
+                                <div class="form-group-editor">
+                                    <label><span>الحد الأدنى للإيداع (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_min_deposit_ar" class="form-input-editor" style="direction:rtl;" placeholder="١٠٠$" value="{{ acc.min_deposit_ar }}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group-editor">
+                                    <label><span>Spread From (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_spread_from_en" class="form-input-editor" placeholder="0.0 pips" value="{{ acc.spread_from_en }}">
+                                </div>
+                                <div class="form-group-editor">
+                                    <label><span>السبريد من (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_spread_from_ar" class="form-input-editor" style="direction:rtl;" placeholder="0.0 نقطة" value="{{ acc.spread_from_ar }}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group-editor">
+                                    <label><span>Commission (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_commission_en" class="form-input-editor" placeholder="$3.5/lot" value="{{ acc.commission_en }}">
+                                </div>
+                                <div class="form-group-editor">
+                                    <label><span>العمولة (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_commission_ar" class="form-input-editor" style="direction:rtl;" placeholder="3.5$ للعقد" value="{{ acc.commission_ar }}">
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0;">
+                                <div class="form-group-editor no-margin">
+                                    <label><span>Leverage (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_leverage_en" class="form-input-editor" placeholder="1:500" value="{{ acc.leverage_en }}">
+                                </div>
+                                <div class="form-group-editor no-margin">
+                                    <label><span>الرافعة المالية (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_leverage_ar" class="form-input-editor" style="direction:rtl;" placeholder="1:500" value="{{ acc.leverage_ar }}">
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="faq-repeater-row account-type-row" data-index="0">
+                            <button type="button" class="delete-faq-btn" onclick="deleteRow(this)">
+                                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            </button>
+                            <div class="form-row">
+                                <div class="form-group-editor">
+                                    <label><span>Account Name (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_name_en" class="form-input-editor" placeholder="Standard">
+                                </div>
+                                <div class="form-group-editor">
+                                    <label><span>اسم الحساب (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_name_ar" class="form-input-editor" style="direction:rtl;" placeholder="قياسي">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group-editor">
+                                    <label><span>Min. Deposit (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_min_deposit_en" class="form-input-editor" placeholder="$100">
+                                </div>
+                                <div class="form-group-editor">
+                                    <label><span>الحد الأدنى للإيداع (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_min_deposit_ar" class="form-input-editor" style="direction:rtl;" placeholder="١٠٠$">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group-editor">
+                                    <label><span>Spread From (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_spread_from_en" class="form-input-editor" placeholder="0.0 pips">
+                                </div>
+                                <div class="form-group-editor">
+                                    <label><span>السبريد من (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_spread_from_ar" class="form-input-editor" style="direction:rtl;" placeholder="0.0 نقطة">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group-editor">
+                                    <label><span>Commission (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_commission_en" class="form-input-editor" placeholder="$3.5/lot">
+                                </div>
+                                <div class="form-group-editor">
+                                    <label><span>العمولة (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_commission_ar" class="form-input-editor" style="direction:rtl;" placeholder="3.5$ للعقد">
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0;">
+                                <div class="form-group-editor no-margin">
+                                    <label><span>Leverage (EN)</span><span class="label-lang-indicator">EN</span></label>
+                                    <input type="text" name="account_leverage_en" class="form-input-editor" placeholder="1:500">
+                                </div>
+                                <div class="form-group-editor no-margin">
+                                    <label><span>الرافعة المالية (AR)</span><span class="label-lang-indicator">AR</span></label>
+                                    <input type="text" name="account_leverage_ar" class="form-input-editor" style="direction:rtl;" placeholder="1:500">
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 6. Platforms & Trading Technology Section -->
+                <div class="editor-card" id="section-platforms">
+                    <div class="editor-card-title">Platforms &amp; Trading Technology / المنصات وتكنولوجيا التداول</div>
+
+                    <div class="form-group-editor">
+                        <label>Trading Platforms / منصات التداول المتاحة</label>
+                        <div class="regulator-badges-wrapper">
+                            <div class="regulator-badges-list" id="platform-badges-list">
+                                {% for platform in trading_platforms %}
+                                    {% if platform.id in selected_trading_platforms %}
+                                        <span class="regulator-badge-custom" data-id="{{ platform.id }}">
+                                            {{ platform.name }}
+                                            <span class="regulator-badge-close" onclick="removePlatform({{ platform.id }})">&times;</span>
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <div class="custom-search-select-container" id="platform-search-select-container">
+                                <button type="button" class="select-add-regulator-btn" id="platform-search-select-trigger" onclick="togglePlatformSearchMenu(event)">
+                                    + Add Platform / إضافة منصة
+                                </button>
+
+                                <div class="custom-search-dropdown-menu" id="platform-search-dropdown-menu" style="display: none;">
+                                    <input type="text" class="custom-search-input" id="platform-search-input"
+                                        placeholder="Search or add new... / ابحث أو أضف منصة..."
+                                        oninput="filterPlatforms(this.value)" autocomplete="off">
+
+                                    <ul class="custom-search-options-list" id="platform-options-list">
+                                        {% for platform in trading_platforms %}
+                                            <li class="custom-search-option-item"
+                                                data-id="{{ platform.id }}"
+                                                id="li-plat-{{ platform.id }}"
+                                                {% if platform.id in selected_trading_platforms %}style="display:none;"{% endif %}
+                                                onclick="selectPlatformFromSearch({{ platform.id }}, '{{ platform.name }}')">
+                                                {{ platform.name }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+
+                                    <div class="custom-add-new-option" id="platform-add-new-option" style="display: none;" onclick="createNewPlatformAjax()">
+                                        <span>+ Add platform: <strong id="new-platform-name-display"></strong></span>
+                                        <span class="custom-add-btn-small">Add / إضافة</span>
+                                    </div>
+
+                                    <div class="custom-loading-indicator" id="platform-loading-indicator" style="display: none;">
+                                        Saving / جاري الحفظ...
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hidden multiple select to submit data -->
+                            <select name="trading_platforms" id="hidden-platforms-select" multiple style="display:none;">
+                                {% for platform in trading_platforms %}
+                                    <option value="{{ platform.id }}" {% if platform.id in selected_trading_platforms %}selected{% endif %}></option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. FAQ Manager Section -->
+
                 <div class="editor-card" id="section-faqs">
                     <div class="editor-card-title">
                         <span>FAQ Manager / إدارة الأسئلة الشائعة للشركة</span>
@@ -1109,6 +1766,9 @@
                     if (id === 'section-metadata') document.getElementById('li-metadata').classList.add('active');
                     if (id === 'section-review') document.getElementById('li-review').classList.add('active');
                     if (id === 'section-specs') document.getElementById('li-specs').classList.add('active');
+                    if (id === 'section-pros-cons') document.getElementById('li-pros-cons').classList.add('active');
+                    if (id === 'section-account-types') document.getElementById('li-account-types').classList.add('active');
+                    if (id === 'section-platforms') document.getElementById('li-platforms').classList.add('active');
                     if (id === 'section-faqs') document.getElementById('li-faqs').classList.add('active');
                 }
             });
@@ -1235,16 +1895,19 @@
         })
         .then(data => {
             if (placeholder && placeholder.parentNode) {
-                const imgNode = document.createElement('img');
-                imgNode.src = data.url;
-                imgNode.alt = "Uploaded Image";
-                imgNode.style.maxWidth = "100%";
-                imgNode.style.borderRadius = "8px";
-                imgNode.style.margin = "12px 0";
-                imgNode.style.display = "block";
-                
-                placeholder.parentNode.replaceChild(imgNode, placeholder);
-                syncEditor(currentLangTab);
+                openAltTextModal("Image").then(altText => {
+                    const finalAlt = altText !== null ? altText : "Image";
+                    const imgNode = document.createElement('img');
+                    imgNode.src = data.url;
+                    imgNode.alt = finalAlt;
+                    imgNode.style.maxWidth = "100%";
+                    imgNode.style.borderRadius = "8px";
+                    imgNode.style.margin = "12px 0";
+                    imgNode.style.display = "block";
+                    
+                    placeholder.parentNode.replaceChild(imgNode, placeholder);
+                    syncEditor(currentLangTab);
+                });
             }
         })
         .catch(error => {
@@ -1256,47 +1919,128 @@
         });
     }
 
-    // Regulators selection script
-    function addRegulatorFromDropdown() {
-        const dropdown = document.getElementById('regulator-dropdown');
-        const selectedId = dropdown.value;
-        if (!selectedId) return;
-        
-        const selectedOption = dropdown.options[dropdown.selectedIndex];
-        const name = selectedOption.text;
-        
-        // Add badge to UI list
-        const list = document.getElementById('regulator-badges-list');
-        const badge = document.createElement('span');
-        badge.className = 'regulator-badge-custom';
-        badge.setAttribute('data-id', selectedId);
-        badge.innerHTML = `${name} <span class="regulator-badge-close" onclick="removeRegulator(${selectedId})">&times;</span>`;
-        list.appendChild(badge);
-        
-        // Hide from selector option list
-        selectedOption.style.display = 'none';
-        dropdown.value = '';
-        
-        // Mark selected in hidden select options
-        const hiddenSelect = document.getElementById('hidden-regulators-select');
-        for (let i = 0; i < hiddenSelect.options.length; i++) {
-            if (hiddenSelect.options[i].value == selectedId) {
-                hiddenSelect.options[i].selected = true;
-                break;
+    // Close menus when clicking outside
+    document.addEventListener('click', function(event) {
+        // Regulators dropdown
+        const regContainer = document.getElementById('regulator-search-select-container');
+        const regMenu = document.getElementById('regulator-search-dropdown-menu');
+        if (regContainer && regMenu && !regContainer.contains(event.target)) {
+            regMenu.style.display = 'none';
+        }
+
+        // Currencies dropdown
+        const curContainer = document.getElementById('currency-search-select-container');
+        const curMenu = document.getElementById('currency-search-dropdown-menu');
+        if (curContainer && curMenu && !curContainer.contains(event.target)) {
+            curMenu.style.display = 'none';
+        }
+
+        // Single selects (Headquarters, Deposit Limit, Islamic Account)
+        const singleSelectors = ['headquarters', 'deposit_limit', 'islamic_account'];
+        singleSelectors.forEach(type => {
+            const container = document.getElementById(`${type}-select-container`);
+            const menu = document.getElementById(`${type}-dropdown-menu`);
+            if (container && menu && !container.contains(event.target)) {
+                menu.style.display = 'none';
             }
+        });
+    });
+
+    // ==========================================
+    // Multi-Select: Regulators selection script
+    // ==========================================
+    function toggleRegulatorSearchMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('regulator-search-dropdown-menu');
+        const isHidden = menu.style.display === 'none';
+        
+        if (isHidden) {
+            menu.style.display = 'flex';
+            document.getElementById('regulator-search-input').focus();
+        } else {
+            menu.style.display = 'none';
         }
     }
 
+    function filterRegulators(query) {
+        const normalizedQuery = query.toLowerCase().trim();
+        const items = document.querySelectorAll('#regulator-options-list .custom-search-option-item');
+        const hiddenSelect = document.getElementById('hidden-regulators-select');
+        let visibleCount = 0;
+        let exactMatchExists = false;
+
+        const selectedIds = Array.from(hiddenSelect.options)
+            .filter(opt => opt.selected)
+            .map(opt => opt.value);
+
+        items.forEach(item => {
+            const name = item.textContent.toLowerCase().trim();
+            const id = item.getAttribute('data-id');
+            const isSelected = selectedIds.includes(id);
+
+            if (name === normalizedQuery) {
+                exactMatchExists = true;
+            }
+
+            if (name.includes(normalizedQuery) && !isSelected) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const addOption = document.getElementById('regulator-add-new-option');
+        if (normalizedQuery.length > 0 && !exactMatchExists) {
+            addOption.style.display = 'flex';
+            document.getElementById('new-regulator-name-display').textContent = query;
+        } else {
+            addOption.style.display = 'none';
+        }
+    }
+
+    function selectRegulatorFromSearch(id, name) {
+        const list = document.getElementById('regulator-badges-list');
+        const badge = document.createElement('span');
+        badge.className = 'regulator-badge-custom';
+        badge.setAttribute('data-id', id);
+        badge.innerHTML = `${name} <span class="regulator-badge-close" onclick="removeRegulator(${id})">&times;</span>`;
+        list.appendChild(badge);
+        
+        const optLi = document.getElementById(`li-reg-${id}`);
+        if (optLi) optLi.style.display = 'none';
+        
+        const hiddenSelect = document.getElementById('hidden-regulators-select');
+        let optionExists = false;
+        for (let i = 0; i < hiddenSelect.options.length; i++) {
+            if (hiddenSelect.options[i].value == id) {
+                hiddenSelect.options[i].selected = true;
+                optionExists = true;
+                break;
+            }
+        }
+        
+        if (!optionExists) {
+            const newOpt = document.createElement('option');
+            newOpt.value = id;
+            newOpt.selected = true;
+            hiddenSelect.appendChild(newOpt);
+        }
+        
+        const searchInput = document.getElementById('regulator-search-input');
+        searchInput.value = '';
+        filterRegulators('');
+        
+        document.getElementById('regulator-search-dropdown-menu').style.display = 'none';
+    }
+
     function removeRegulator(id) {
-        // Remove badge UI element
         const badge = document.querySelector(`.regulator-badge-custom[data-id="${id}"]`);
         if (badge) badge.remove();
         
-        // Redisplay option in selector
-        const option = document.getElementById(`opt-reg-${id}`);
-        if (option) option.style.display = '';
+        const option = document.getElementById(`li-reg-${id}`);
+        if (option) option.style.display = 'block';
         
-        // Mark unselected in hidden select options
         const hiddenSelect = document.getElementById('hidden-regulators-select');
         for (let i = 0; i < hiddenSelect.options.length; i++) {
             if (hiddenSelect.options[i].value == id) {
@@ -1304,6 +2048,336 @@
                 break;
             }
         }
+    }
+
+    function createNewRegulatorAjax() {
+        const input = document.getElementById('regulator-search-input');
+        const name = input.value.trim();
+        if (!name) return;
+
+        const addOption = document.getElementById('regulator-add-new-option');
+        const loadingIndicator = document.getElementById('regulator-loading-indicator');
+        
+        addOption.style.display = 'none';
+        loadingIndicator.style.display = 'block';
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('type', 'regulator');
+
+        fetch('/dashboard/taxonomy/create-ajax/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error creating regulator');
+            }
+            return response.json();
+        })
+        .then(data => {
+            loadingIndicator.style.display = 'none';
+
+            // Check if already selected to prevent duplicates
+            const hiddenSelect = document.getElementById('hidden-regulators-select');
+            const selectedIds = Array.from(hiddenSelect.options)
+                .filter(opt => opt.selected)
+                .map(opt => opt.value);
+            
+            if (selectedIds.includes(String(data.id))) {
+                alert('This regulator is already added / هذه الهيئة مضافة بالفعل');
+                return;
+            }
+
+            // Add new li option
+            const listUl = document.getElementById('regulator-options-list');
+            const newLi = document.createElement('li');
+            newLi.className = 'custom-search-option-item';
+            newLi.setAttribute('data-id', data.id);
+            newLi.id = `li-reg-${data.id}`;
+            newLi.textContent = data.name;
+            newLi.onclick = function() {
+                selectRegulatorFromSearch(data.id, data.name);
+            };
+            listUl.appendChild(newLi);
+
+            selectRegulatorFromSearch(data.id, data.name);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to save regulator / فشل حفظ الهيئة الرقابية');
+            loadingIndicator.style.display = 'none';
+            addOption.style.display = 'flex';
+        });
+    }
+
+    // ==========================================
+    // Single-Select Custom Searchable Selects
+    // ==========================================
+    function toggleSingleSearchMenu(event, type) {
+        event.stopPropagation();
+        
+        // Close other dropdowns
+        const allMenus = document.querySelectorAll('.custom-search-dropdown-menu');
+        allMenus.forEach(m => {
+            if (m.id !== `${type}-dropdown-menu`) m.style.display = 'none';
+        });
+
+        const menu = document.getElementById(`${type}-dropdown-menu`);
+        const isHidden = menu.style.display === 'none';
+        
+        if (isHidden) {
+            menu.style.display = 'flex';
+            document.getElementById(`${type}-search-input`).focus();
+        } else {
+            menu.style.display = 'none';
+        }
+    }
+
+    function filterSingleOptions(type, query) {
+        const normalizedQuery = query.toLowerCase().trim();
+        const items = document.querySelectorAll(`#${type}-options-list .custom-search-option-item`);
+        let exactMatchExists = false;
+
+        items.forEach(item => {
+            const name = item.textContent.toLowerCase().trim();
+            const id = item.getAttribute('data-id');
+
+            // Skip -------- option
+            if (id === "") {
+                item.style.display = normalizedQuery.length === 0 ? 'block' : 'none';
+                return;
+            }
+
+            if (name === normalizedQuery) {
+                exactMatchExists = true;
+            }
+
+            if (name.includes(normalizedQuery)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const addOption = document.getElementById(`${type}-add-new-option`);
+        if (normalizedQuery.length > 0 && !exactMatchExists) {
+            addOption.style.display = 'flex';
+            document.getElementById(`${type}-new-name-display`).textContent = query;
+        } else {
+            addOption.style.display = 'none';
+        }
+    }
+
+    function selectSingleOption(type, id, name) {
+        const display = document.getElementById(`${type}-selected-display`);
+        display.textContent = name;
+
+        const hiddenInput = document.getElementById(`id_${type}`);
+        hiddenInput.value = id;
+
+        // Reset search input and dropdown menu
+        const searchInput = document.getElementById(`${type}-search-input`);
+        searchInput.value = '';
+        filterSingleOptions(type, '');
+
+        document.getElementById(`${type}-dropdown-menu`).style.display = 'none';
+    }
+
+    function createNewTaxonomyAjax(type) {
+        const input = document.getElementById(`${type}-search-input`);
+        const name = input.value.trim();
+        if (!name) return;
+
+        const addOption = document.getElementById(`${type}-add-new-option`);
+        const loadingIndicator = document.getElementById(`${type}-loading-indicator`);
+        
+        addOption.style.display = 'none';
+        loadingIndicator.style.display = 'block';
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('type', type);
+
+        fetch('/dashboard/taxonomy/create-ajax/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error creating taxonomy item');
+            }
+            return response.json();
+        })
+        .then(data => {
+            loadingIndicator.style.display = 'none';
+
+            // Add new li item to options list
+            const listUl = document.getElementById(`${type}-options-list`);
+            const newLi = document.createElement('li');
+            newLi.className = 'custom-search-option-item';
+            newLi.setAttribute('data-id', data.id);
+            newLi.id = `li-${type}-${data.id}`;
+            newLi.textContent = data.name;
+            newLi.onclick = function() {
+                selectSingleOption(type, data.id, data.name);
+            };
+            listUl.appendChild(newLi);
+
+            // Automatically select it
+            selectSingleOption(type, data.id, data.name);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to save / فشل حفظ العنصر');
+            loadingIndicator.style.display = 'none';
+            addOption.style.display = 'flex';
+        });
+    }
+
+    // ==========================================
+    // Currencies Tags Multi-Select Selector
+    // ==========================================
+    let selectedCurrencies = [];
+
+    // Parse existing base currencies on page load
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputVal = document.getElementById('id_base_currencies').value;
+        if (inputVal) {
+            selectedCurrencies = inputVal.split(',').map(c => c.trim()).filter(c => c.length > 0);
+        }
+        renderCurrencyBadges();
+    });
+
+    function toggleCurrencySearchMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('currency-search-dropdown-menu');
+        const isHidden = menu.style.display === 'none';
+        
+        if (isHidden) {
+            menu.style.display = 'flex';
+            document.getElementById('currency-search-input').focus();
+        } else {
+            menu.style.display = 'none';
+        }
+    }
+
+    function filterCurrencies(query) {
+        const normalizedQuery = query.toUpperCase().trim();
+        const items = document.querySelectorAll('#currency-options-list .custom-search-option-item');
+        let exactMatchExists = false;
+
+        items.forEach(item => {
+            const val = item.getAttribute('data-val').toUpperCase();
+            const isSelected = selectedCurrencies.includes(val);
+
+            if (val === normalizedQuery) {
+                exactMatchExists = true;
+            }
+
+            if (val.includes(normalizedQuery) && !isSelected) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const addOption = document.getElementById('currency-add-new-option');
+        if (normalizedQuery.length > 0 && !exactMatchExists && !selectedCurrencies.includes(normalizedQuery)) {
+            addOption.style.display = 'flex';
+            document.getElementById('new-currency-display').textContent = normalizedQuery;
+        } else {
+            addOption.style.display = 'none';
+        }
+    }
+
+    function selectCurrency(val) {
+        val = val.toUpperCase().trim();
+        if (!selectedCurrencies.includes(val)) {
+            selectedCurrencies.push(val);
+            updateBaseCurrenciesInput();
+        }
+        
+        // Hide from selector list
+        const optionItem = document.querySelector(`#currency-options-list [data-val="${val}"]`);
+        if (optionItem) optionItem.style.display = 'none';
+
+        // Reset search field
+        const searchInput = document.getElementById('currency-search-input');
+        searchInput.value = '';
+        filterCurrencies('');
+
+        document.getElementById('currency-search-dropdown-menu').style.display = 'none';
+    }
+
+    function createNewCurrencyDirectly() {
+        const input = document.getElementById('currency-search-input');
+        const val = input.value.toUpperCase().trim();
+        if (!val) return;
+
+        if (selectedCurrencies.includes(val)) {
+            alert('Currency already added / العملة مضافة بالفعل');
+            return;
+        }
+
+        // Add to selectable list in case it's removed and searched again
+        const listUl = document.getElementById('currency-options-list');
+        const newLi = document.createElement('li');
+        newLi.className = 'custom-search-option-item';
+        newLi.setAttribute('data-val', val);
+        newLi.textContent = val;
+        newLi.onclick = function() {
+            selectCurrency(val);
+        };
+        listUl.appendChild(newLi);
+
+        selectCurrency(val);
+    }
+
+    function removeCurrency(val) {
+        selectedCurrencies = selectedCurrencies.filter(c => c !== val);
+        updateBaseCurrenciesInput();
+
+        // Redisplay option in search menu list
+        const optionItem = document.querySelector(`#currency-options-list [data-val="${val}"]`);
+        if (optionItem) optionItem.style.display = 'block';
+    }
+
+    function updateBaseCurrenciesInput() {
+        const input = document.getElementById('id_base_currencies');
+        input.value = selectedCurrencies.join(', ');
+        renderCurrencyBadges();
+    }
+
+    function renderCurrencyBadges() {
+        const listContainer = document.getElementById('currency-badges-list');
+        listContainer.innerHTML = '';
+        
+        selectedCurrencies.forEach(val => {
+            const badge = document.createElement('span');
+            badge.className = 'regulator-badge-custom';
+            badge.innerHTML = `${val} <span class="regulator-badge-close" onclick="removeCurrency('${val}')">&times;</span>`;
+            listContainer.appendChild(badge);
+        });
+
+        // Hide option items that are currently selected in dropdown list on render
+        const items = document.querySelectorAll('#currency-options-list .custom-search-option-item');
+        items.forEach(item => {
+            const val = item.getAttribute('data-val');
+            if (selectedCurrencies.includes(val)) {
+                item.style.display = 'none';
+            }
+        });
     }
 
     // FAQ dynamic list repeater
@@ -1366,5 +2440,305 @@
         const row = btn.closest('.faq-repeater-row');
         if (row) row.remove();
     }
+
+    // Generic row delete (for account types, platform tabs)
+    function deleteRow(btn) {
+        const row = btn.closest('.faq-repeater-row');
+        if (row) row.remove();
+    }
+
+    // Account Types dynamic repeater
+    let accountTypeIndexCount = document.querySelectorAll('.account-type-row').length;
+
+    function addNewAccountType() {
+        const list = document.getElementById('account-types-list-container');
+        const row = document.createElement('div');
+        row.className = 'faq-repeater-row account-type-row';
+        row.setAttribute('data-index', accountTypeIndexCount);
+        row.innerHTML = `
+            <button type="button" class="delete-faq-btn" onclick="deleteRow(this)">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label><span>Account Name (EN)</span><span class="label-lang-indicator">EN</span></label>
+                    <input type="text" name="account_name_en" class="form-input-editor" placeholder="Standard">
+                </div>
+                <div class="form-group-editor">
+                    <label><span>اسم الحساب (AR)</span><span class="label-lang-indicator">AR</span></label>
+                    <input type="text" name="account_name_ar" class="form-input-editor" style="direction:rtl;" placeholder="قياسي">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label><span>Min. Deposit (EN)</span><span class="label-lang-indicator">EN</span></label>
+                    <input type="text" name="account_min_deposit_en" class="form-input-editor" placeholder="$100">
+                </div>
+                <div class="form-group-editor">
+                    <label><span>الحد الأدنى للإيداع (AR)</span><span class="label-lang-indicator">AR</span></label>
+                    <input type="text" name="account_min_deposit_ar" class="form-input-editor" style="direction:rtl;" placeholder="١٠٠$">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label><span>Spread From (EN)</span><span class="label-lang-indicator">EN</span></label>
+                    <input type="text" name="account_spread_from_en" class="form-input-editor" placeholder="0.0 pips">
+                </div>
+                <div class="form-group-editor">
+                    <label><span>السبريد من (AR)</span><span class="label-lang-indicator">AR</span></label>
+                    <input type="text" name="account_spread_from_ar" class="form-input-editor" style="direction:rtl;" placeholder="0.0 نقطة">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label><span>Commission (EN)</span><span class="label-lang-indicator">EN</span></label>
+                    <input type="text" name="account_commission_en" class="form-input-editor" placeholder="$3.5/lot">
+                </div>
+                <div class="form-group-editor">
+                    <label><span>العمولة (AR)</span><span class="label-lang-indicator">AR</span></label>
+                    <input type="text" name="account_commission_ar" class="form-input-editor" style="direction:rtl;" placeholder="3.5$ للعقد">
+                </div>
+            </div>
+            <div class="form-row" style="margin-bottom:0;">
+                <div class="form-group-editor no-margin">
+                    <label><span>Leverage (EN)</span><span class="label-lang-indicator">EN</span></label>
+                    <input type="text" name="account_leverage_en" class="form-input-editor" placeholder="1:500">
+                </div>
+                <div class="form-group-editor no-margin">
+                    <label><span>الرافعة المالية (AR)</span><span class="label-lang-indicator">AR</span></label>
+                    <input type="text" name="account_leverage_ar" class="form-input-editor" style="direction:rtl;" placeholder="1:500">
+                </div>
+            </div>
+        `;
+        list.appendChild(row);
+        accountTypeIndexCount++;
+    }
+
+    // ==========================================
+    // Trading Platforms — Regulator-style logic
+    // ==========================================
+
+    function togglePlatformSearchMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('platform-search-dropdown-menu');
+        const isHidden = menu.style.display === 'none' || menu.style.display === '';
+        menu.style.display = isHidden ? 'flex' : 'none';
+        if (isHidden) {
+            document.getElementById('platform-search-input').focus();
+        }
+    }
+
+    function filterPlatforms(query) {
+        const q = query.toLowerCase().trim();
+        const items = document.querySelectorAll('#platform-options-list .custom-search-option-item');
+        let exactMatch = false;
+
+        items.forEach(item => {
+            const text = item.textContent.trim().toLowerCase();
+            if (text === q) exactMatch = true;
+            const isSelected = document.querySelector(`#hidden-platforms-select option[value="${item.getAttribute('data-id')}"]`)?.selected;
+            if (text.includes(q) && !isSelected) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const addOption = document.getElementById('platform-add-new-option');
+        if (q.length > 0 && !exactMatch) {
+            addOption.style.display = 'flex';
+            document.getElementById('new-platform-name-display').textContent = query.trim();
+        } else {
+            addOption.style.display = 'none';
+        }
+    }
+
+    function selectPlatformFromSearch(id, name) {
+        // Add badge
+        const list = document.getElementById('platform-badges-list');
+        const existing = list.querySelector(`[data-id="${id}"]`);
+        if (!existing) {
+            const badge = document.createElement('span');
+            badge.className = 'regulator-badge-custom';
+            badge.setAttribute('data-id', id);
+            badge.innerHTML = `${name} <span class="regulator-badge-close" onclick="removePlatform(${id})">&times;</span>`;
+            list.appendChild(badge);
+        }
+
+        // Mark option as selected in hidden select
+        const opt = document.querySelector(`#hidden-platforms-select option[value="${id}"]`);
+        if (opt) opt.selected = true;
+
+        // Hide option from list
+        const li = document.getElementById(`li-plat-${id}`);
+        if (li) li.style.display = 'none';
+
+        // Reset search
+        document.getElementById('platform-search-input').value = '';
+        filterPlatforms('');
+        document.getElementById('platform-search-dropdown-menu').style.display = 'none';
+    }
+
+    function removePlatform(id) {
+        // Remove badge
+        const badge = document.querySelector(`#platform-badges-list [data-id="${id}"]`);
+        if (badge) badge.remove();
+
+        // Deselect option in hidden select
+        const opt = document.querySelector(`#hidden-platforms-select option[value="${id}"]`);
+        if (opt) opt.selected = false;
+
+        // Restore option in dropdown list
+        const li = document.getElementById(`li-plat-${id}`);
+        if (li) li.style.display = 'block';
+    }
+
+    function createNewPlatformAjax() {
+        const input = document.getElementById('platform-search-input');
+        const name = input.value.trim();
+        if (!name) return;
+
+        const addOption = document.getElementById('platform-add-new-option');
+        const loadingIndicator = document.getElementById('platform-loading-indicator');
+        addOption.style.display = 'none';
+        loadingIndicator.style.display = 'block';
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('type', 'trading_platform');
+
+        fetch('/dashboard/taxonomy/create-ajax/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            loadingIndicator.style.display = 'none';
+
+            // Add to hidden select if not there
+            let opt = document.querySelector(`#hidden-platforms-select option[value="${data.id}"]`);
+            if (!opt) {
+                opt = document.createElement('option');
+                opt.value = data.id;
+                document.getElementById('hidden-platforms-select').appendChild(opt);
+
+                // Also add to the list
+                const li = document.createElement('li');
+                li.className = 'custom-search-option-item';
+                li.setAttribute('data-id', data.id);
+                li.id = `li-plat-${data.id}`;
+                li.textContent = data.name;
+                li.onclick = function() { selectPlatformFromSearch(data.id, data.name); };
+                document.getElementById('platform-options-list').appendChild(li);
+            }
+
+            selectPlatformFromSearch(data.id, data.name);
+        })
+        .catch(() => {
+            loadingIndicator.style.display = 'none';
+            addOption.style.display = 'flex';
+            alert('Failed to save platform / فشل حفظ المنصة');
+        });
+    }
+
+    // Close platform dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#platform-search-select-container')) {
+            const menu = document.getElementById('platform-search-dropdown-menu');
+            if (menu) menu.style.display = 'none';
+        }
+    });
+
+    // Edit alternative text (Alt Text) on image double click
+    document.addEventListener('dblclick', function(e) {
+        if (e.target.tagName === 'IMG' && e.target.closest('.wysiwyg-editor')) {
+            const currentAlt = e.target.getAttribute('alt') || '';
+            openAltTextModal(currentAlt).then(newAlt => {
+                if (newAlt !== null) {
+                    e.target.setAttribute('alt', newAlt);
+                    const editor = e.target.closest('.wysiwyg-editor');
+                    const lang = editor.id === 'editor-en' ? 'en' : 'ar';
+                    syncEditor(lang);
+                }
+            });
+        }
+    });
+
+    // Modal dialog control scripts
+    let currentModalResolve = null;
+
+    function openAltTextModal(initialValue = '') {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('alt-text-modal');
+            const input = document.getElementById('modal-alt-text-input');
+            const saveBtn = document.getElementById('modal-alt-text-save-btn');
+            
+            input.value = initialValue;
+            modal.style.display = 'flex';
+            
+            // Force redraw
+            modal.offsetHeight; 
+            modal.classList.add('show');
+            
+            input.focus();
+            
+            currentModalResolve = resolve;
+            
+            // Handle save
+            saveBtn.onclick = function() {
+                const value = input.value.trim();
+                closeAltTextModal();
+                resolve(value);
+            };
+            
+            // Handle Enter keypress
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveBtn.click();
+                }
+            };
+        });
+    }
+
+    function closeAltTextModal() {
+        const modal = document.getElementById('alt-text-modal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        if (currentModalResolve) {
+            currentModalResolve(null);
+            currentModalResolve = null;
+        }
+    }
 </script>
+
+<!-- Custom Alt Text Modal Dialog HTML -->
+<div id="alt-text-modal" class="custom-modal-backdrop" style="display: none;">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h3>Alt Text (SEO) / النص البديل للصورة</h3>
+            <button type="button" class="close-modal-btn" onclick="closeAltTextModal()">&times;</button>
+        </div>
+        <div class="custom-modal-body">
+            <p style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 1rem; line-height: 1.4;">
+                Alt text is used by search engines and screen readers to describe the image.
+                <br>
+                يُستخدم النص البديل بواسطة محركات البحث وقارئات الشاشة لوصف الصورة.
+            </p>
+            <div class="form-group-editor no-margin">
+                <input type="text" id="modal-alt-text-input" class="form-input-editor" placeholder="Describe the image... / اكتب وصفاً للصورة..." style="width: 100%;">
+            </div>
+        </div>
+        <div class="custom-modal-footer">
+            <button type="button" class="btn-editor-secondary" onclick="closeAltTextModal()">Cancel / إلغاء</button>
+            <button type="button" class="btn-editor-primary" id="modal-alt-text-save-btn">Save / حفظ</button>
+        </div>
+    </div>
+</div>
 {% endblock %}

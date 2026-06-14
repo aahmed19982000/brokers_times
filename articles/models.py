@@ -1,13 +1,5 @@
 from django.db import models
-from categories.models import Category
 from ckeditor.fields import RichTextField
-
-class Tag(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True, blank=True)
-
-    def __str__(self):
-        return self.name
 
 class Article(models.Model):
     STATUS_CHOICES = [
@@ -19,10 +11,7 @@ class Article(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
     content = RichTextField(blank=True)
     featured_image = models.ImageField(upload_to='articles/', blank=True, null=True)
-    
-    # Metadata
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='articles')
-    tags = models.ManyToManyField(Tag, related_name='articles', blank=True)
+    featured_image_alt = models.CharField(max_length=255, blank=True)
     
     # SEO Settings
     seo_title = models.CharField(max_length=255, blank=True)

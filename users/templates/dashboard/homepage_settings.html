@@ -1,0 +1,268 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Homepage Configuration / إعدادات الرئيسية - Brokers Times{% endblock %}
+
+{% block nav_homepage_settings %}active{% endblock %}
+{% block section_name %}Homepage Configuration / إعدادات الصفحة الرئيسية{% endblock %}
+
+{% block extra_head %}
+<style>
+    .editor-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .editor-card {
+        background: #111726;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .editor-card-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+    
+    .form-group-editor {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .form-group-editor label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .form-group-editor label span:last-child {
+        font-size: 0.75rem;
+        color: var(--primary);
+    }
+
+    .form-input-editor {
+        background: #0d1322 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
+    }
+    
+    .form-input-editor:focus {
+        outline: none !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="editor-wrapper">
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- Success Alert Messages -->
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert-message" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #a7f3d0; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 600;">
+                    {{ msg }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Card 1: Hero Featured Popular Review -->
+        <div class="editor-card">
+            <div class="editor-card-title">
+                <span>Hero Featured Broker / الشركة المروج لها في واجهة الموقع</span>
+            </div>
+            
+            <div class="form-row" style="margin-bottom: 0;">
+                <div class="form-group-editor">
+                    <label for="id_hero_featured_broker">
+                        <span>Select Hero Broker (Top Right Banner Card)</span>
+                        <span>اختر شركة التداول المفضلة (البانر العلوي)</span>
+                    </label>
+                    <select name="hero_featured_broker" id="id_hero_featured_broker" class="form-input-editor">
+                        <option value="">--------- None / لا شيء ---------</option>
+                        {% for b in brokers %}
+                            <option value="{{ b.pk }}" {% if settings.hero_featured_broker_id == b.pk %}selected{% endif %}>{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Top Rated Trading Brokers -->
+        <div class="editor-card">
+            <div class="editor-card-title">
+                <span>Top Rated Brokers Grid / أفضل شركات التداول المعروضة</span>
+            </div>
+            
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.4;">
+                Select the 3 brokers that will appear in the "Top Rated Trading Brokers" comparison section on the homepage from left to right (or top to bottom).
+                <br>
+                اختر شركات التداول الثلاثة التي ستظهر في قسم مقارنة "أفضل الشركات" بالصفحة الرئيسية من اليمين إلى اليسار.
+            </p>
+
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label for="id_featured_broker_1">
+                        <span>First Broker (Position 1)</span>
+                        <span>الشركة الأولى (الخيار الأول)</span>
+                    </label>
+                    <select name="featured_broker_1" id="id_featured_broker_1" class="form-input-editor">
+                        <option value="">--------- None / لا شيء ---------</option>
+                        {% for b in brokers %}
+                            <option value="{{ b.pk }}" {% if settings.featured_broker_1_id == b.pk %}selected{% endif %}>{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label for="id_featured_broker_2">
+                        <span>Second Broker (Position 2)</span>
+                        <span>الشركة الثانية (الخيار الثاني)</span>
+                    </label>
+                    <select name="featured_broker_2" id="id_featured_broker_2" class="form-input-editor">
+                        <option value="">--------- None / لا شيء ---------</option>
+                        {% for b in brokers %}
+                            <option value="{{ b.pk }}" {% if settings.featured_broker_2_id == b.pk %}selected{% endif %}>{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-bottom: 0;">
+                <div class="form-group-editor">
+                    <label for="id_featured_broker_3">
+                        <span>Third Broker (Position 3)</span>
+                        <span>الشركة الثالثة (الخيار الثالث)</span>
+                    </label>
+                    <select name="featured_broker_3" id="id_featured_broker_3" class="form-input-editor">
+                        <option value="">--------- None / لا شيء ---------</option>
+                        {% for b in brokers %}
+                            <option value="{{ b.pk }}" {% if settings.featured_broker_3_id == b.pk %}selected{% endif %}>{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Our Curated Lists -->
+        <div class="editor-card">
+            <div class="editor-card-title">
+                <span>Curated Lists / قوائم المقارنة المنسقة</span>
+            </div>
+            
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.4;">
+                Select the 4 curated lists that will appear in the "Our Curated Lists" section on the homepage from left to right.
+                <br>
+                اختر القوائم الأربعة المنسقة التي ستظهر في قسم "قوائمنا المنسقة لعام 2026" بالصفحة الرئيسية.
+            </p>
+
+            <div class="form-row">
+                <div class="form-group-editor">
+                    <label for="id_featured_list_1">
+                        <span>First List (Position 1)</span>
+                        <span>القائمة الأولى (العمود 1)</span>
+                    </label>
+                    <select name="featured_list_1" id="id_featured_list_1" class="form-input-editor">
+                        <option value="">--------- None / لا شيء ---------</option>
+                        {% for l in lists %}
+                            <option value="{{ l.pk }}" {% if settings.featured_list_1_id == l.pk %}selected{% endif %}>{{ l.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group-editor">
+                    <label for="id_featured_list_2">
+                        <span>Second List (Position 2)</span>
+                        <span>القائمة الثانية (العمود 2)</span>
+                    </label>
+                    <select name="featured_list_2" id="id_featured_list_2" class="form-input-editor">
+                        <option value="">--------- None / لا شيء ---------</option>
+                        {% for l in lists %}
+                            <option value="{{ l.pk }}" {% if settings.featured_list_2_id == l.pk %}selected{% endif %}>{{ l.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-bottom: 0;">
+                <div class="form-group-editor">
+                    <label for="id_featured_list_3">
+                        <span>Third List (Position 3)</span>
+                        <span>القائمة الثالثة (العمود 3)</span>
+                    </label>
+                    <select name="featured_list_3" id="id_featured_list_3" class="form-input-editor">
+                        <option value="">--------- None / لا شيء ---------</option>
+                        {% for l in lists %}
+                            <option value="{{ l.pk }}" {% if settings.featured_list_3_id == l.pk %}selected{% endif %}>{{ l.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group-editor">
+                    <label for="id_featured_list_4">
+                        <span>Fourth List (Position 4)</span>
+                        <span>القائمة الرابعة (العمود 4)</span>
+                    </label>
+                    <select name="featured_list_4" id="id_featured_list_4" class="form-input-editor">
+                        <option value="">--------- None / لا شيء ---------</option>
+                        {% for l in lists %}
+                            <option value="{{ l.pk }}" {% if settings.featured_list_4_id == l.pk %}selected{% endif %}>{{ l.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'dashboard' %}" class="btn-editor-secondary" style="padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 8px; font-weight: 600; text-align: center; border: 1px solid rgba(255,255,255,0.08); display: inline-flex; align-items: center; justify-content: center;">
+                    Cancel / إلغاء
+                </a>
+                <button type="submit" class="btn-editor-primary" style="padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: none;">
+                    Save Settings / حفظ التغييرات
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

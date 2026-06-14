@@ -1,0 +1,623 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE }}" {% if request.LANGUAGE_CODE == 'ar' %}dir="rtl" class="rtl-layout"{% else %}dir="ltr" class="ltr-layout"{% endif %}>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Brokers Times{% endblock %}</title>
+    
+    <!-- Google Fonts: Outfit for English, Cairo for Arabic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0b3168;
+            --primary-hover: #1e40af;
+            --accent: #10b981;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --footer-bg: #eef2f6;
+            --footer-top-bg: #071f43;
+            
+            /* Responsive Font stack */
+            --font-en: 'Outfit', sans-serif;
+            --font-ar: 'Cairo', sans-serif;
+        }
+
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Directional Typography selection */
+        .ltr-layout body, .ltr-layout input, .ltr-layout button, .ltr-layout select, .ltr-layout textarea {
+            font-family: var(--font-en);
+        }
+        
+        .rtl-layout body, .rtl-layout input, .rtl-layout button, .rtl-layout select, .rtl-layout textarea {
+            font-family: var(--font-ar);
+        }
+
+        /* Container helper */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        /* Header / Navbar Styles */
+        header.site-header {
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .navbar-brand span {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .ltr-layout .navbar-brand span {
+            font-family: var(--font-en);
+        }
+
+        .rtl-layout .navbar-brand span {
+            font-family: var(--font-ar);
+            font-weight: 800;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 auto;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 4px;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .btn-login {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .btn-login:hover {
+            color: var(--primary);
+        }
+
+        .btn-join {
+            background-color: var(--primary);
+            color: var(--bg-white);
+            padding: 0.6rem 1.4rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-join:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-join:active {
+            transform: scale(0.98);
+        }
+
+        /* Language Switcher Link */
+        .lang-switcher {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.3rem 0.6rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: none;
+        }
+
+        .lang-switcher:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        .mobile-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Footer Styles */
+        footer.site-footer {
+            width: 100%;
+        }
+
+        /* Dark blue bar with checkmarks */
+        .footer-regulatory-bar {
+            background-color: var(--footer-top-bg);
+            color: var(--bg-white);
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .regulatory-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .regulatory-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .regulatory-item svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 3;
+        }
+
+        /* Risk warning block */
+        .footer-risk-warning-bar {
+            background-color: var(--footer-top-bg);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 1.5rem 0;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-risk-warning-bar strong {
+            color: var(--bg-white);
+        }
+
+        /* Main footer structure */
+        .footer-main {
+            background-color: var(--footer-bg);
+            padding: 4rem 0 2rem 0;
+            color: var(--text-dark);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-column p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin-top: 0.8rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Brand styling in footer */
+        .footer-brand {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* Contact us column icons */
+        .contact-social-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 1.2rem;
+        }
+
+        .contact-icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background-color: var(--bg-white);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .contact-icon-btn:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+            background-color: rgba(11, 49, 104, 0.03);
+        }
+
+        .contact-icon-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        /* Copyright bar */
+        .footer-copyright {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .footer-copyright p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Mobile navigation responsiveness */
+        @media (max-width: 900px) {
+            .navbar {
+                position: relative;
+            }
+
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 72px;
+                left: 0;
+                width: 100%;
+                background-color: var(--bg-white);
+                border-bottom: 1px solid var(--border-color);
+                padding: 1.5rem;
+                gap: 1.2rem;
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.show {
+                display: flex;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .navbar-actions .btn-join {
+                display: none;
+            }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container navbar">
+            <a href="{% url 'home' %}" class="navbar-brand">
+                <span>Brokers Times</span>
+            </a>
+            
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li>
+                        <a href="#" class="nav-link active">
+                            {% if request.LANGUAGE_CODE == 'ar' %}أفضل 10 وسطاء{% else %}Top 10 Brokers{% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link">
+                            {% if request.LANGUAGE_CODE == 'ar' %}التقييمات{% else %}Reviews{% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link">
+                            {% if request.LANGUAGE_CODE == 'ar' %}المقارنة{% else %}Compare{% endif %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link">
+                            {% if request.LANGUAGE_CODE == 'ar' %}التعليم{% else %}Education{% endif %}
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="navbar-actions">
+                <!-- Language Toggler Form -->
+                <form action="{% url 'set_language' %}" method="post" id="lang-switcher-form" style="display:inline;">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                    <input name="language" type="hidden" id="selected-language" value="">
+                    {% if request.LANGUAGE_CODE == 'ar' %}
+                        <button type="button" class="lang-switcher" onclick="switchLanguage('en')">English</button>
+                    {% else %}
+                        <button type="button" class="lang-switcher" onclick="switchLanguage('ar')">العربية</button>
+                    {% endif %}
+                </form>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="btn-login">
+                        {% if request.LANGUAGE_CODE == 'ar' %}لوحة التحكم{% else %}Dashboard{% endif %}
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-login">
+                        {% if request.LANGUAGE_CODE == 'ar' %}تسجيل الدخول{% else %}Login{% endif %}
+                    </a>
+                    <a href="{% url 'register' %}" class="btn-join">
+                        {% if request.LANGUAGE_CODE == 'ar' %}إنضم الآن{% else %}Join Now{% endif %}
+                    </a>
+                {% endif %}
+                
+                <button class="mobile-toggle" onclick="toggleMenu()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Block -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        
+        <!-- Regulatory top dark blue bar -->
+        <div class="footer-regulatory-bar">
+            <div class="container regulatory-grid">
+                <div class="regulatory-item">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}مرخص من FCA{% else %}FCA Regulated{% endif %}</span>
+                </div>
+                <div class="regulatory-item">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}مرخص من ASIC{% else %}ASIC Regulated{% endif %}</span>
+                </div>
+                <div class="regulatory-item">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}مرخص من CySEC{% else %}CySEC Regulated{% endif %}</span>
+                </div>
+                <div class="regulatory-item">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}مرخص من DFSA{% else %}DFSA Regulated{% endif %}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Warning dark block -->
+        <div class="footer-risk-warning-bar">
+            <div class="container">
+                {% if request.LANGUAGE_CODE == 'ar' %}
+                    <strong>تحذير من المخاطر:</strong> ينطوي التداول في الأسواق المالية على مخاطر جسيمة على رأس المال المستثمر. قبل البدء، تأكد من فهمك الكامل للمخاطر وتلقي التدريب اللازم. لا تستثمر أبداً أموالاً لا يمكنك تحمل خسارتها. جميع المعلومات المقدمة على موقع "Brokers Times" هي لأغراض تعليمية وإعلامية فقط ولا تشكل نصيحة استثمارية.
+                {% else %}
+                    <strong>Risk Warning:</strong> Trading in financial markets involves significant risk to your invested capital. Before starting, ensure you fully understand the risks and receive the necessary training. Never invest money you cannot afford to lose. All information provided on "Brokers Times" is for educational and informational purposes only and does not constitute investment advice.
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Main Footer Links Grid -->
+        <div class="footer-main">
+            <div class="container footer-grid">
+                
+                <!-- Column 1: Brand Info -->
+                <div class="footer-column">
+                    <a href="{% url 'home' %}" class="footer-brand">Brokers Times</a>
+                    <p>
+                        {% if request.LANGUAGE_CODE == 'ar' %}
+                            منصتك الأولى لمراجعة وتقييم شركات التداول في العالم العربي. شفافية، دقة، ومصداقية في التقييمات لمساعدتك على اختيار الوسيط الأنسب لتطلعاتك.
+                        {% else %}
+                            Your number one platform for reviewing and evaluating trading brokers in the Arab world. Transparency, accuracy, and reliability in reviews to help you choose the best broker for your needs.
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div class="footer-column">
+                    <h3>{% if request.LANGUAGE_CODE == 'ar' %}روابط سريعة{% else %}Quick Links{% endif %}</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">{% if request.LANGUAGE_CODE == 'ar' %}أفضل 10 وسطاء{% else %}Top 10 Brokers{% endif %}</a></li>
+                        <li><a href="#">{% if request.LANGUAGE_CODE == 'ar' %}أكاديمية التداول{% else %}Trading Academy{% endif %}</a></li>
+                        <li><a href="#">{% if request.LANGUAGE_CODE == 'ar' %}أخبار السوق{% else %}Market News{% endif %}</a></li>
+                        <li><a href="#">{% if request.LANGUAGE_CODE == 'ar' %}مقارنة الشركات{% else %}Compare Firms{% endif %}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Legal -->
+                <div class="footer-column">
+                    <h3>{% if request.LANGUAGE_CODE == 'ar' %}الصفحات القانونية{% else %}Legal{% endif %}</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">{% if request.LANGUAGE_CODE == 'ar' %}سياسة الخصوصية{% else %}Privacy Policy{% endif %}</a></li>
+                        <li><a href="#">{% if request.LANGUAGE_CODE == 'ar' %}شروط الخدمة{% else %}Terms of Service{% endif %}</a></li>
+                        <li><a href="#">{% if request.LANGUAGE_CODE == 'ar' %}إخلاء المسؤولية{% else %}Disclaimer{% endif %}</a></li>
+                        <li><a href="#">{% if request.LANGUAGE_CODE == 'ar' %}سياسة ملفات الارتباط{% else %}Cookie Policy{% endif %}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Contact -->
+                <div class="footer-column">
+                    <h3>{% if request.LANGUAGE_CODE == 'ar' %}اتصل بنا{% else %}Contact Us{% endif %}</h3>
+                    <p style="margin-top: 0;">
+                        {% if request.LANGUAGE_CODE == 'ar' %}
+                            هل لديك سؤال أو استفسار؟ فريق الخبراء لدينا متواجد لمساعدتك في أي وقت.
+                        {% else %}
+                            Have a question or inquiry? Our team of experts is available to help you at any time.
+                        {% endif %}
+                    </p>
+                    <div class="contact-social-row">
+                        <button class="contact-icon-btn" title="Email Us">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </button>
+                        <button class="contact-icon-btn" title="Share Website">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Copyright footer bottom -->
+            <div class="container footer-copyright">
+                <p>
+                    {% if request.LANGUAGE_CODE == 'ar' %}
+                        &copy; 2026 Brokers Times. جميع الحقوق محفوظة. تحذير من المخاطر: ينطوي تداول الفوركس وعقود الفروقات (CFDs) على مستوى عالٍ من المخاطر وقد يؤدي إلى خسارة رأس المال المستثمر.
+                    {% else %}
+                        &copy; 2026 Brokers Times. All rights reserved. Risk Warning: Trading forex and CFDs involves a high level of risk and can result in the loss of your invested capital.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+    </footer>
+
+    <!-- JavaScript to toggle mobile navigation and switch language -->
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById('navMenu');
+            menu.classList.toggle('show');
+        }
+
+        function switchLanguage(lang) {
+            document.getElementById('selected-language').value = lang;
+            document.getElementById('lang-switcher-form').submit();
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@ from .models import BestBrokersList, BestBrokersListItem, BestBrokersListFAQ
 
 @register(BestBrokersList)
 class BestBrokersListTranslationOptions(TranslationOptions):
-    fields = ('title', 'seo_title', 'seo_description', 'content')
+    fields = ('title', 'seo_title', 'seo_description', 'content', 'featured_image_alt')
 
 @register(BestBrokersListItem)
 class BestBrokersListItemTranslationOptions(TranslationOptions):

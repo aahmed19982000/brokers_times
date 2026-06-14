@@ -1,0 +1,888 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}
+    {% if request.LANGUAGE_CODE == 'ar' %}Brokers Times - الدليل الشامل لاختيار أفضل شركات التداول{% else %}Brokers Times - The Definitive Guide to Best Trading Brokers{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Public Homepage Custom Styles */
+    .hero-section {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .hero-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-tag {
+        background-color: #e2e8f0;
+        color: var(--primary);
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+    }
+
+    .hero-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        line-height: 1.15;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-title span {
+        background-color: var(--primary);
+        color: var(--bg-white);
+        padding: 0.1rem 0.5rem;
+        display: inline-block;
+        border-radius: 4px;
+    }
+
+    .hero-desc {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 2.2rem;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+        background-color: var(--primary);
+        color: var(--bg-white);
+        padding: 0.85rem 1.8rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 6px -1px rgba(11, 49, 104, 0.15);
+        transition: background-color 0.2s;
+    }
+
+    .btn-hero-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .btn-hero-secondary {
+        background-color: transparent;
+        color: var(--text-dark);
+        padding: 0.85rem 1.8rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid var(--border-color);
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .btn-hero-secondary:hover {
+        background-color: #f1f5f9;
+        border-color: var(--text-muted);
+    }
+
+    /* Hero Review Card right side */
+    .hero-card {
+        background-color: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    .hero-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.2rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .hero-card-header span:first-child {
+        color: var(--text-muted);
+    }
+
+    .hero-card-header .rating {
+        color: #f59e0b;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .hero-broker-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-broker-logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        background-color: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .hero-broker-name h4 {
+        font-size: 1.1rem;
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    .hero-broker-name p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .hero-badge-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.75rem 1rem;
+        background-color: rgba(16, 185, 129, 0.05);
+        color: #065f46;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+    }
+
+    .hero-badge-item svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--accent);
+        fill: none;
+        stroke-width: 2.5;
+    }
+
+    /* Section Global Headers */
+    .section-container {
+        padding: 5rem 0;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 3rem;
+    }
+
+    .section-title h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.4rem;
+    }
+
+    .section-title p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+    }
+
+    .section-link {
+        text-decoration: none;
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: gap 0.2s;
+    }
+
+    .section-link:hover {
+        gap: 10px;
+    }
+
+    /* Top Rated Grid */
+    .top-rated-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+    .broker-card {
+        background-color: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.8rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .top-choice-tag {
+        position: absolute;
+        top: 1.2rem;
+        right: 1.2rem;
+        background-color: var(--primary);
+        color: var(--bg-white);
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .rtl-layout .top-choice-tag {
+        right: auto;
+        left: 1.2rem;
+    }
+
+    .card-top {
+        margin-bottom: 1.5rem;
+    }
+
+    .card-logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.2rem;
+    }
+
+    .card-logo {
+        width: 44px;
+        height: 44px;
+        background-color: #f1f5f9;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .card-name-rating h4 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .stars {
+        color: #f59e0b;
+        font-size: 0.85rem;
+        margin-top: 2px;
+    }
+
+    .bullets-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .bullet-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .bullet-item svg {
+        width: 14px;
+        height: 14px;
+        stroke: var(--accent);
+        fill: none;
+        stroke-width: 2.5;
+    }
+
+    .card-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn-card-primary {
+        background-color: var(--primary);
+        color: var(--bg-white);
+        text-decoration: none;
+        padding: 0.65rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        transition: background-color 0.2s;
+    }
+
+    .btn-card-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .btn-card-secondary {
+        background-color: transparent;
+        color: var(--text-dark);
+        text-decoration: none;
+        padding: 0.65rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        transition: background-color 0.2s;
+    }
+
+    .btn-card-secondary:hover {
+        background-color: #f8fafc;
+    }
+
+    /* Curated lists grid */
+    .curated-section {
+        background-color: #f8fafc;
+    }
+
+    .curated-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .curated-card {
+        background-color: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 200px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .curated-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    .curated-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        background-color: rgba(11, 49, 104, 0.05);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.2rem;
+    }
+
+    .curated-icon svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+    }
+
+    .curated-card h4 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.3rem;
+    }
+
+    .curated-card p {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    .curated-explore {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 1rem;
+        transition: gap 0.2s;
+    }
+
+    .curated-explore:hover {
+        gap: 10px;
+    }
+
+    /* Articles educational section */
+    .articles-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 2.5rem;
+    }
+
+    .article-large-card {
+        background-color: var(--text-dark);
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        height: 480px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    /* Dark gradient overlay for overlaying text */
+    .article-large-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 60%;
+        background: linear-gradient(0deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0) 100%);
+        z-index: 1;
+    }
+
+    /* Visual image background placeholder */
+    .article-large-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #1e293b;
+        background-size: cover;
+        background-position: center;
+        z-index: 0;
+        opacity: 0.75;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="%231e293b"/><path d="M0,50 Q25,20 50,50 T100,50" fill="none" stroke="%23334155" stroke-width="2"/></svg>');
+    }
+
+    .article-large-content {
+        position: relative;
+        z-index: 2;
+        padding: 2.5rem;
+        color: var(--bg-white);
+    }
+
+    .article-category-tag {
+        background-color: #3b82f6;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        display: inline-block;
+        margin-bottom: 0.8rem;
+    }
+
+    .article-large-content h3 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+    }
+
+    .article-large-content p {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .articles-sidebar-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sidebar-article-item {
+        display: grid;
+        grid-template-columns: 1fr 2.5fr;
+        gap: 1.2rem;
+        align-items: center;
+    }
+
+    .sidebar-article-thumb {
+        height: 80px;
+        border-radius: 8px;
+        background-color: #1e293b;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-weight: bold;
+    }
+
+    .sidebar-article-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .sidebar-article-cat {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #3b82f6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .sidebar-article-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1.4;
+        text-decoration: none;
+    }
+
+    .sidebar-article-title:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+
+    .sidebar-article-desc {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    /* Responsiveness */
+    @media (max-width: 900px) {
+        .hero-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .top-rated-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .curated-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .articles-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .hero-title {
+            font-size: 2.2rem;
+        }
+
+        .top-rated-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .curated-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- 1. Hero Section -->
+<section class="hero-section">
+    <div class="container hero-grid">
+        
+        <div class="hero-content">
+            <span class="hero-tag">
+                {% if request.LANGUAGE_CODE == 'ar' %}معيار الموثوقية{% else %}The Standard of Reliability{% endif %}
+            </span>
+            <h1 class="hero-title">
+                {% if request.LANGUAGE_CODE == 'ar' %}
+                    الدليل الشامل لاختيار <span>أفضل شركات التداول</span>
+                {% else %}
+                    The Definitive Guide to Choosing the <span>Best Trading Brokers</span>
+                {% endif %}
+            </h1>
+            <p class="hero-desc">
+                {% if request.LANGUAGE_CODE == 'ar' %}
+                    نقوم بمراجعة وتحليل مئات شركات التداول لنقدم لك تقييمات دقيقة وبيانات واقعية ومقارنات شفافة لتتداول بثقة وأمان كامل.
+                {% else %}
+                    We review and analyze hundreds of trading firms to provide you with accurate data, realistic ratings, and transparent comparisons to help you invest with confidence.
+                {% endif %}
+            </p>
+            <div class="hero-actions">
+                <a href="#" class="btn-hero-primary">
+                    {% if request.LANGUAGE_CODE == 'ar' %}مقارنة الشركات &rarr;{% else %}Compare Brokers &rarr;{% endif %}
+                </a>
+                <a href="#" class="btn-hero-secondary">
+                    {% if request.LANGUAGE_CODE == 'ar' %}أفضل 10 شركات{% else %}Top 10 Companies{% endif %}
+                </a>
+            </div>
+        </div>
+
+        <!-- Hero review card right side -->
+        <div class="hero-card">
+            {% if homepage_settings.hero_featured_broker %}
+                {% with hb=homepage_settings.hero_featured_broker %}
+                <div class="hero-card-header">
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}الوسيط المميز{% else %}Featured Broker{% endif %}</span>
+                    <span class="rating">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/></svg>
+                        4.9 / 5
+                    </span>
+                </div>
+                
+                <div class="hero-broker-profile">
+                    {% if hb.logo %}
+                        <img src="{{ hb.logo.url }}" alt="{{ hb.name }}" style="width: 50px; height: 50px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color);">
+                    {% else %}
+                        <div class="hero-broker-logo">{{ hb.name|slice:":2"|upper }}</div>
+                    {% endif %}
+                    <div class="hero-broker-name">
+                        <a href="{% url 'broker_review_detail' hb.slug %}" style="text-decoration: none; color: inherit;"><h4>{{ hb.name }}</h4></a>
+                        <p>{% if request.LANGUAGE_CODE == 'ar' %}الحد الأدنى للإيداع: {% else %}Minimum Deposit: {% endif %} ${{ hb.min_deposit }}</p>
+                    </div>
+                </div>
+
+                <div class="hero-badge-item">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}البلد المقر: {% else %}HQ Country: {% endif %} {{ hb.headquarters.name|default:"Global" }}</span>
+                </div>
+
+                <div class="hero-badge-item" style="background-color: rgba(59, 130, 246, 0.05); color: #1e3a8a;">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="stroke: #3b82f6;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}سحب فوري ورسوم مخفضة{% else %}Instant Withdrawals & Low Spreads{% endif %}</span>
+                </div>
+                {% endwith %}
+            {% else %}
+                <!-- Fallback Exness Card -->
+                <div class="hero-card-header">
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}أكثر تقييم رواجاً{% else %}Most Popular Review{% endif %}</span>
+                    <span class="rating">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/></svg>
+                        4.9 / 5
+                    </span>
+                </div>
+                
+                <div class="hero-broker-profile">
+                    <div class="hero-broker-logo">EX</div>
+                    <div class="hero-broker-name">
+                        <h4>Exness Broker</h4>
+                        <p>{% if request.LANGUAGE_CODE == 'ar' %}سبريد منخفض يبدأ من 0.0 نقطة{% else %}Spreads starting from 0.0 pips{% endif %}</p>
+                    </div>
+                </div>
+
+                <div class="hero-badge-item">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}مرخص وخاضع لرقابة هيئة FCA البريطانية{% else %}FCA Regulated & Licensed{% endif %}</span>
+                </div>
+
+                <div class="hero-badge-item" style="background-color: rgba(59, 130, 246, 0.05); color: #1e3a8a;">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="stroke: #3b82f6;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}عمليات سحب وإيداع فورية{% else %}Instant Withdrawals & Deposits{% endif %}</span>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+<!-- 2. Top Rated Brokers Section -->
+<section class="section-container">
+    <div class="container">
+        
+        <div class="section-header">
+            <div class="section-title">
+                <h2>{% if request.LANGUAGE_CODE == 'ar' %}أفضل شركات التداول الموثوقة{% else %}Top Rated Trading Brokers{% endif %}</h2>
+                <p>{% if request.LANGUAGE_CODE == 'ar' %}تقييمات مبنية على أكثر من 100 معيار تقني ورقابي دقيق.{% else %}Ratings based on over 100 technical and regulatory criteria.{% endif %}</p>
+            </div>
+            <a href="#" class="section-link">
+                {% if request.LANGUAGE_CODE == 'ar' %}عرض جميع التقييمات{% else %}View All Reviews{% endif %} &rarr;
+            </a>
+        </div>
+
+        <div class="top-rated-grid">
+            {% for b in featured_brokers %}
+            <div class="broker-card">
+                {% if forloop.first %}
+                <span class="top-choice-tag">{% if request.LANGUAGE_CODE == 'ar' %}الخيار الأول{% else %}Top Choice{% endif %}</span>
+                {% endif %}
+                <div class="card-top">
+                    <div class="card-logo-area">
+                        {% if b.logo %}
+                            <img src="{{ b.logo.url }}" alt="{{ b.name }}" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color);">
+                        {% else %}
+                            <div class="card-logo">{{ b.name|slice:":2"|upper }}</div>
+                        {% endif %}
+                        <div class="card-name-rating">
+                            <h4>{{ b.name }}</h4>
+                            <div class="stars">★★★★★</div>
+                        </div>
+                    </div>
+                    
+                    <ul class="bullets-list">
+                        <li class="bullet-item">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>{% if request.LANGUAGE_CODE == 'ar' %}الحد الأدنى للإيداع: {% else %}Min Deposit: {% endif %} ${{ b.min_deposit }}</span>
+                        </li>
+                        <li class="bullet-item">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>{% if request.LANGUAGE_CODE == 'ar' %}وقت السحب: {% else %}Withdrawal Time: {% endif %} {{ b.withdrawal_time|default:"Instant" }}</span>
+                        </li>
+                        <li class="bullet-item">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>{% if request.LANGUAGE_CODE == 'ar' %}العملات الأساسية: {% else %}Base Currencies: {% endif %} {{ b.base_currencies }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-buttons">
+                    <a href="#" class="btn-card-primary">{% if request.LANGUAGE_CODE == 'ar' %}فتح حساب{% else %}Open Account{% endif %}</a>
+                    <a href="{% url 'broker_review_detail' b.slug %}" class="btn-card-secondary">{% if request.LANGUAGE_CODE == 'ar' %}التقييم الكامل{% else %}Full Review{% endif %}</a>
+                </div>
+            </div>
+            {% empty %}
+                <p style="grid-column: span 3; text-align: center; color: var(--text-muted); padding: 3rem;">
+                    {% if request.LANGUAGE_CODE == 'ar' %}لم يتم اختيار وسطاء لعرضهم بعد.{% else %}No featured brokers selected yet.{% endif %}
+                </p>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<!-- 3. Curated Lists Section -->
+<section class="section-container curated-section">
+    <div class="container">
+        
+        <div class="section-header" style="justify-content: center; text-align: center; margin-bottom: 4rem;">
+            <div class="section-title">
+                <h2>{% if request.LANGUAGE_CODE == 'ar' %}قوائمنا المنسقة لعام 2026{% else %}Our Curated Lists for 2026{% endif %}</h2>
+                <p style="margin-top: 0.4rem;">
+                    {% if request.LANGUAGE_CODE == 'ar' %}
+                        لقد قمنا بتصنيف شركات التداول بناءً على الاحتياجات الخاصة للمتداولين في منطقتنا لتسهيل رحلتك الاستثمارية.
+                    {% else %}
+                        We have categorized brokers based on the specific needs of traders in our region to help you find the perfect partner.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="curated-grid">
+            {% for l in featured_lists %}
+            <div class="curated-card">
+                <div>
+                    <div class="curated-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 0 0 1-4 10 15.3 0 0 1-4-10 15.3 0 0 1 4-10z"></path></svg>
+                    </div>
+                    <h4>{{ l.title }}</h4>
+                    <p>{{ l.seo_description|truncatechars:90 }}</p>
+                </div>
+                <a href="#" class="curated-explore">{% if request.LANGUAGE_CODE == 'ar' %}استكشف القائمة{% else %}Explore List{% endif %} &rarr;</a>
+            </div>
+            {% empty %}
+                <p style="grid-column: span 4; text-align: center; color: var(--text-muted); padding: 3rem;">
+                    {% if request.LANGUAGE_CODE == 'ar' %}لم يتم اختيار قوائم مقارنة لعرضها بعد.{% else %}No featured comparison lists selected yet.{% endif %}
+                </p>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<!-- 4. Educational Section -->
+<section class="section-container">
+    <div class="container">
+        
+        <div class="section-header">
+            <div class="section-title">
+                <h2>{% if request.LANGUAGE_CODE == 'ar' %}التحليلات والمقالات التعليمية{% else %}Educational Analysis & Articles{% endif %}</h2>
+                <p>{% if request.LANGUAGE_CODE == 'ar' %}تعلم أساسيات التداول واطلع على أحدث تحليلات السوق اليومية.{% else %}Learn the basics of trading and read our daily in-depth market updates.{% endif %}</p>
+            </div>
+            <a href="#" class="btn-hero-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.85rem; background-color: #f1f5f9;">
+                {% if request.LANGUAGE_CODE == 'ar' %}المركز التعليمي{% else %}Education Center{% endif %}
+            </a>
+        </div>
+
+        <div class="articles-grid">
+            
+            <!-- Large Left Article -->
+            {% if featured_article %}
+            <div class="article-large-card">
+                {% if featured_article.featured_image %}
+                    <div class="article-large-bg" style="background-image: url('{{ featured_article.featured_image.url }}'); opacity: 0.5;"></div>
+                {% else %}
+                    <div class="article-large-bg"></div>
+                {% endif %}
+                <div class="article-large-content">
+                    <span class="article-category-tag">{% if request.LANGUAGE_CODE == 'ar' %}آخر مقال منشور{% else %}Latest Article{% endif %}</span>
+                    <h3>{{ featured_article.title }}</h3>
+                    <p>{{ featured_article.seo_description|truncatechars:180 }}</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="article-large-card" style="background-color: #1e293b; display: flex; align-items: center; justify-content: center;">
+                <p style="color: var(--text-muted);">{% if request.LANGUAGE_CODE == 'ar' %}لا توجد مقالات منشورة بعد.{% else %}No published articles yet.{% endif %}</p>
+            </div>
+            {% endif %}
+
+            <!-- Right Sidebar Articles -->
+            <div class="articles-sidebar-list">
+                {% for art in sidebar_articles %}
+                <div class="sidebar-article-item">
+                    {% if art.featured_image %}
+                        <img src="{{ art.featured_image.url }}" alt="{{ art.title }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);">
+                    {% else %}
+                        <div class="sidebar-article-thumb">{{ art.title|slice:":2"|upper }}</div>
+                    {% endif %}
+                    <div class="sidebar-article-content">
+                        <span class="sidebar-article-cat">{% if request.LANGUAGE_CODE == 'ar' %}تعليم{% else %}Education{% endif %}</span>
+                        <a href="#" class="sidebar-article-title">{{ art.title }}</a>
+                        <p class="sidebar-article-desc">{{ art.seo_description|truncatechars:80 }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                    {% if not featured_article %}
+                        <p style="color: var(--text-muted); text-align: center; padding: 2rem;">
+                            {% if request.LANGUAGE_CODE == 'ar' %}لا توجد مقالات إضافية منشورة.{% else %}No additional published articles.{% endif %}
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

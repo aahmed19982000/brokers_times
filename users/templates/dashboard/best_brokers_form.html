@@ -512,6 +512,78 @@
         font-weight: 600;
         margin-top: 0.2rem;
     }
+    
+    /* Custom Modal Dialog Styles */
+    .custom-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(9, 13, 22, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .custom-modal-backdrop.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .custom-modal-content {
+        background: #111726;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+        overflow: hidden;
+    }
+    .custom-modal-backdrop.show .custom-modal-content {
+        transform: scale(1);
+    }
+    .custom-modal-header {
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .custom-modal-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .close-modal-btn {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.2s;
+        line-height: 1;
+    }
+    .close-modal-btn:hover {
+        color: #fff;
+    }
+    .custom-modal-body {
+        padding: 1.5rem;
+    }
+    .custom-modal-footer {
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.01);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.8rem;
+    }
 </style>
 {% endblock %}
 
@@ -747,7 +819,7 @@
                             <input type="file" name="featured_image" accept="image/*" class="form-input-editor">
                             {% if best_list.featured_image %}
                                 <div class="image-preview-container">
-                                    <img src="{{ best_list.featured_image.url }}" alt="Featured Image" class="image-preview-thumb">
+                                    <img src="{{ best_list.featured_image.url }}" alt="{{ best_list.featured_image_alt|default:'Featured Image' }}" class="image-preview-thumb">
                                     <div class="image-preview-info">
                                         <span style="font-size: 0.85rem; font-weight: 600;">Currently Uploaded Image</span>
                                         <label class="clear-image-checkbox">
@@ -757,6 +829,24 @@
                                     </div>
                                 </div>
                             {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Featured Image Alt Text Row -->
+                    <div class="form-row" style="margin-top: 1rem;">
+                        <div class="form-group-editor">
+                            <label for="id_featured_image_alt_en">
+                                <span>Featured Image Alt Text (English)</span>
+                                <span class="label-lang-indicator">EN</span>
+                            </label>
+                            <input type="text" name="featured_image_alt_en" id="id_featured_image_alt_en" class="form-input-editor" placeholder="e.g. List of top forex brokers" value="{{ best_list.featured_image_alt_en|default_if_none:'' }}">
+                        </div>
+                        <div class="form-group-editor">
+                            <label for="id_featured_image_alt_ar">
+                                <span>النص البديل للصورة الرئيسية (العربية)</span>
+                                <span class="label-lang-indicator">AR</span>
+                            </label>
+                            <input type="text" name="featured_image_alt_ar" id="id_featured_image_alt_ar" class="form-input-editor" style="direction: rtl;" placeholder="مثال: قائمة بأفضل وسطاء الفوركس" value="{{ best_list.featured_image_alt_ar|default_if_none:'' }}">
                         </div>
                     </div>
                 </div>
@@ -1029,16 +1119,19 @@
         })
         .then(data => {
             if (placeholder && placeholder.parentNode) {
-                const imgNode = document.createElement('img');
-                imgNode.src = data.url;
-                imgNode.alt = "Uploaded Image";
-                imgNode.style.maxWidth = "100%";
-                imgNode.style.borderRadius = "8px";
-                imgNode.style.margin = "12px 0";
-                imgNode.style.display = "block";
-                
-                placeholder.parentNode.replaceChild(imgNode, placeholder);
-                syncEditor(currentLangTab);
+                openAltTextModal("Image").then(altText => {
+                    const finalAlt = altText !== null ? altText : "Image";
+                    const imgNode = document.createElement('img');
+                    imgNode.src = data.url;
+                    imgNode.alt = finalAlt;
+                    imgNode.style.maxWidth = "100%";
+                    imgNode.style.borderRadius = "8px";
+                    imgNode.style.margin = "12px 0";
+                    imgNode.style.display = "block";
+                    
+                    placeholder.parentNode.replaceChild(imgNode, placeholder);
+                    syncEditor(currentLangTab);
+                });
             }
         })
         .catch(error => {
@@ -1177,5 +1270,95 @@
         const row = btn.closest('.faq-repeater-row');
         if (row) row.remove();
     }
+
+    // Edit alternative text (Alt Text) on image double click
+    document.addEventListener('dblclick', function(e) {
+        if (e.target.tagName === 'IMG' && e.target.closest('.wysiwyg-editor')) {
+            const currentAlt = e.target.getAttribute('alt') || '';
+            openAltTextModal(currentAlt).then(newAlt => {
+                if (newAlt !== null) {
+                    e.target.setAttribute('alt', newAlt);
+                    const editor = e.target.closest('.wysiwyg-editor');
+                    const lang = editor.id === 'editor-en' ? 'en' : 'ar';
+                    syncEditor(lang);
+                }
+            });
+        }
+    });
+
+    // Modal dialog control scripts
+    let currentModalResolve = null;
+
+    function openAltTextModal(initialValue = '') {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('alt-text-modal');
+            const input = document.getElementById('modal-alt-text-input');
+            const saveBtn = document.getElementById('modal-alt-text-save-btn');
+            
+            input.value = initialValue;
+            modal.style.display = 'flex';
+            
+            // Force redraw
+            modal.offsetHeight; 
+            modal.classList.add('show');
+            
+            input.focus();
+            
+            currentModalResolve = resolve;
+            
+            // Handle save
+            saveBtn.onclick = function() {
+                const value = input.value.trim();
+                closeAltTextModal();
+                resolve(value);
+            };
+            
+            // Handle Enter keypress
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveBtn.click();
+                }
+            };
+        });
+    }
+
+    function closeAltTextModal() {
+        const modal = document.getElementById('alt-text-modal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        if (currentModalResolve) {
+            currentModalResolve(null);
+            currentModalResolve = null;
+        }
+    }
 </script>
+
+<!-- Custom Alt Text Modal Dialog HTML -->
+<div id="alt-text-modal" class="custom-modal-backdrop" style="display: none;">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h3>Alt Text (SEO) / النص البديل للصورة</h3>
+            <button type="button" class="close-modal-btn" onclick="closeAltTextModal()">&times;</button>
+        </div>
+        <div class="custom-modal-body">
+            <p style="font-size: 0.85rem; color: #9ca3af; margin-bottom: 1rem; line-height: 1.4;">
+                Alt text is used by search engines and screen readers to describe the image.
+                <br>
+                يُستخدم النص البديل بواسطة محركات البحث وقارئات الشاشة لوصف الصورة.
+            </p>
+            <div class="form-group-editor no-margin">
+                <input type="text" id="modal-alt-text-input" class="form-input-editor" placeholder="Describe the image... / اكتب وصفاً للصورة..." style="width: 100%;">
+            </div>
+        </div>
+        <div class="custom-modal-footer">
+            <button type="button" class="btn-editor-secondary" onclick="closeAltTextModal()">Cancel / إلغاء</button>
+            <button type="button" class="btn-editor-primary" id="modal-alt-text-save-btn">Save / حفظ</button>
+        </div>
+    </div>
+</div>
 {% endblock %}

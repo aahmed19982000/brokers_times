@@ -217,9 +217,20 @@
                 {% for broker in brokers %}
                 <tr>
                     <td>
-                        <div class="broker-name-cell">
-                            <span class="broker-main-name">{{ broker.name }}</span>
-                            <span class="broker-sub-slug">/{{ broker.slug }}</span>
+                        <div class="broker-identity-wrapper" style="display: flex; align-items: center; gap: 12px;">
+                            {% if broker.logo %}
+                                <div class="broker-logo-circle" style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: white; border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 3px;">
+                                    <img src="{{ broker.logo.url }}" alt="{{ broker.logo_alt|default:broker.name }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                </div>
+                            {% else %}
+                                <div class="broker-logo-placeholder" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-muted); font-weight: 700; font-size: 0.95rem; border: 1px solid rgba(255, 255, 255, 0.08);">
+                                    {{ broker.name|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="broker-name-cell">
+                                <span class="broker-main-name">{{ broker.name }}</span>
+                                <span class="broker-sub-slug">/{{ broker.slug }}</span>
+                            </div>
                         </div>
                     </td>
                     <td>
@@ -260,7 +271,7 @@
                         <div class="no-data-state">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
                             <h3>No Brokers Found</h3>
-                            <p>Try seeding the database or creating a new broker in the Admin panel.</p>
+                            <p>Try seeding the database or creating a new broker using the button above.</p>
                         </div>
                     </td>
                 </tr>
