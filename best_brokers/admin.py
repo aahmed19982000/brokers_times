@@ -16,3 +16,5 @@ class BestBrokersListAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
     inlines = [BestBrokersListItemInline, BestBrokersListFAQInline]
+
+

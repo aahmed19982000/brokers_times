@@ -8,7 +8,8 @@ from .views import (
     DashboardUsersView, DashboardUserCreateView, DashboardUserUpdateView,
     DashboardHomepageSettingsView,
     DashboardNewsView, DashboardNewsCreateView, DashboardNewsUpdateView,
-    DashboardCategoriesView, DashboardCategoryCreateView, DashboardCategoryUpdateView
+    DashboardCategoriesView, DashboardCategoryCreateView, DashboardCategoryUpdateView,
+    DashboardRankedBrokersView, APIBestBrokersLookupView
 )
 
 urlpatterns = [
@@ -28,6 +29,8 @@ urlpatterns = [
     path('dashboard/best-brokers/', DashboardBestBrokersView.as_view(), name='dashboard_best_brokers'),
     path('dashboard/best-brokers/add/', DashboardBestBrokersCreateView.as_view(), name='dashboard_best_brokers_add'),
     path('dashboard/best-brokers/<int:pk>/edit/', DashboardBestBrokersUpdateView.as_view(), name='dashboard_best_brokers_edit'),
+    path('dashboard/ranked-brokers/', DashboardRankedBrokersView.as_view(), name='dashboard_ranked_brokers'),
+    path('dashboard/api/best-brokers/lookup/', APIBestBrokersLookupView.as_view(), name='api_best_brokers_lookup'),
     path('dashboard/users/', DashboardUsersView.as_view(), name='dashboard_users'),
     path('dashboard/users/add/', DashboardUserCreateView.as_view(), name='dashboard_users_add'),
     path('dashboard/users/<int:pk>/edit/', DashboardUserUpdateView.as_view(), name='dashboard_users_edit'),
@@ -39,3 +42,4 @@ urlpatterns = [
     path('dashboard/categories/add/', DashboardCategoryCreateView.as_view(), name='dashboard_categories_add'),
     path('dashboard/categories/<int:pk>/edit/', DashboardCategoryUpdateView.as_view(), name='dashboard_categories_edit'),
 ]
+

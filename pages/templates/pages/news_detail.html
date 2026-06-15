@@ -1,5 +1,6 @@
 {% extends 'pages/base.html' %}
 {% load i18n %}
+{% load shortcodes %}
 
 {% block title %}{{ news_article.seo_title|default:news_article.title }} | Brokers Times{% endblock %}
 
@@ -162,16 +163,7 @@
     {% endif %}
 
     <div class="news-detail-content">
-        {{ news_article.content|safe }}
+        {{ news_article.content|render_shortcodes|safe }}
     </div>
-
-    
-            <div class="related-broker-info">
-                <h3>About {{ news_article.broker.name }}</h3>
-                <p>Read our comprehensive review and analysis of {{ news_article.broker.name }}, including features, pros, cons, and user ratings.</p>
-                <a href="{% url 'broker_review_detail' news_article.broker.slug %}" class="btn-view-broker">Read Full Broker Review</a>
-            </div>
-        </div>
-    {% endif %}
 </div>
 {% endblock %}

@@ -294,6 +294,7 @@
                         {% else %}
                         <span style="color: var(--text-muted); font-size: 0.85rem;">View Only</span>
                         {% endif %}
+                        <a href="{% url 'best_brokers_list_detail' list.slug %}" target="_blank" class="btn-edit-inline" style="color: var(--accent); margin-left: 0.75rem;">View / عرض</a>
                     </td>
                 </tr>
                 {% empty %}

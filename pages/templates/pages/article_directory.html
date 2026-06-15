@@ -1,0 +1,824 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}Education & Articles - Brokers Times{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Category Filter Bar */
+    .edu-filter-bar {
+        background-color: var(--bg-white);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+        position: sticky;
+        top: 72px; /* Navbar sticky */
+        z-index: 99;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01);
+    }
+
+    .edu-filter-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .edu-filter-links {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .edu-filter-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .edu-filter-link {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: color 0.2s ease, border-color 0.2s ease;
+        padding-bottom: 4px;
+        border-bottom: 2px solid transparent;
+    }
+
+    .edu-filter-link:hover {
+        color: var(--primary);
+    }
+
+    .edu-filter-link.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+
+    /* Inline Search Form */
+    .edu-search-form {
+        position: relative;
+        min-width: 200px;
+    }
+
+    .edu-search-input {
+        padding: 0.5rem 1rem 0.5rem 2rem;
+        font-size: 0.88rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background-color: #f8fafc;
+        width: 100%;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    .edu-search-input:focus {
+        background-color: var(--bg-white);
+        border-color: #3b82f6;
+    }
+
+    .edu-search-btn {
+        position: absolute;
+        left: 0.65rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .edu-search-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2.5;
+    }
+
+    /* Main Grid Layout */
+    .edu-main-section {
+        padding: 3.5rem 0;
+        background-color: var(--bg-white);
+    }
+
+    .edu-hero-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 3.5rem;
+        margin-bottom: 5rem;
+    }
+
+    /* Featured Article styling */
+    .featured-article-card {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .featured-image-wrapper {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        aspect-ratio: 16 / 9;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+    }
+
+    .featured-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .featured-image-wrapper:hover img {
+        transform: scale(1.02);
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: 1.25rem;
+        left: 1.25rem;
+        background-color: var(--primary);
+        color: var(--bg-white);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.35rem 0.75rem;
+        border-radius: 4px;
+    }
+
+    .featured-meta {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .featured-title {
+        font-size: 2.4rem;
+        font-weight: 800;
+        line-height: 1.15;
+        color: var(--text-dark);
+        margin: 0.5rem 0;
+    }
+
+    .featured-title a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .featured-title a:hover {
+        color: #3b82f6;
+    }
+
+    .featured-desc {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    /* Sidebar Content */
+    .edu-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 3.5rem;
+    }
+
+    /* Trending List styling */
+    .trending-box h3 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 1.75rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+    }
+
+    .trending-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .trending-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .trending-num-category {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .trending-num {
+        color: var(--text-muted);
+        margin-right: 4px;
+    }
+
+    .trending-category {
+        color: #3b82f6;
+    }
+
+    .trending-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        line-height: 1.35;
+        color: var(--text-dark);
+    }
+
+    .trending-title a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .trending-title a:hover {
+        color: #3b82f6;
+    }
+
+    /* Subscription Box */
+    .subscribe-box {
+        background-color: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2.25rem;
+        text-align: center;
+    }
+
+    .subscribe-box h4 {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .subscribe-box p {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .subscribe-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .subscribe-input {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        font-size: 0.88rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background-color: var(--bg-white);
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    .subscribe-input:focus {
+        border-color: #3b82f6;
+    }
+
+    .btn-subscribe {
+        background-color: var(--primary);
+        color: var(--bg-white);
+        border: none;
+        padding: 0.65rem;
+        border-radius: 6px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-subscribe:hover {
+        background-color: var(--primary-hover);
+    }
+
+    /* Latest Articles Grid Section */
+    .latest-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.25rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
+    }
+
+    .latest-section-header h2 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-dark);
+    }
+
+    .slider-arrows {
+        display: flex;
+        gap: 8px;
+    }
+
+    .slider-arrow-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-white);
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-dark);
+        transition: all 0.2s ease;
+    }
+
+    .slider-arrow-btn:hover {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    .slider-arrow-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2.5;
+    }
+
+    .latest-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
+
+    /* Article Card Styling */
+    .article-card {
+        background-color: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .article-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    .article-card-image {
+        aspect-ratio: 16 / 10;
+        background-color: #f1f5f9;
+        overflow: hidden;
+    }
+
+    .article-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .article-card-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .article-card-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+
+    .article-card-category {
+        color: #3b82f6;
+    }
+
+    .article-card-readtime {
+        color: var(--text-muted);
+    }
+
+    .article-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        line-height: 1.35;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+    }
+
+    .article-card-title a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .article-card-title a:hover {
+        color: #3b82f6;
+    }
+
+    .article-card-footer {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 1rem;
+    }
+
+    .author-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #eff6ff;
+        color: #1d4ed8;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dbeafe;
+    }
+
+    .author-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .author-name {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .author-role {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        letter-spacing: 0.25px;
+    }
+
+    /* Load More Button Container */
+    .load-more-container {
+        text-align: center;
+        margin-bottom: 5rem;
+    }
+
+    .btn-load-more {
+        display: inline-flex;
+        align-items: center;
+        background-color: var(--bg-white);
+        color: var(--text-dark);
+        border: 1px solid var(--border-color);
+        padding: 0.75rem 2rem;
+        border-radius: 6px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-load-more:hover {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    /* Call to Action Banner */
+    .cta-banner {
+        background-color: var(--footer-top-bg);
+        border-radius: 12px;
+        padding: 3rem 4rem;
+        color: var(--bg-white);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2.5rem;
+        box-shadow: 0 10px 25px -5px rgba(7, 31, 67, 0.15);
+    }
+
+    .cta-content {
+        max-width: 600px;
+    }
+
+    .cta-content h2 {
+        font-size: 1.85rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .cta-content p {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.6;
+    }
+
+    .cta-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-cta-primary {
+        background-color: var(--bg-white);
+        color: var(--primary);
+        padding: 0.75rem 1.75rem;
+        border-radius: 6px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-cta-primary:hover {
+        background-color: #f1f5f9;
+    }
+
+    .btn-cta-secondary {
+        background-color: transparent;
+        color: var(--bg-white);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        padding: 0.75rem 1.75rem;
+        border-radius: 6px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cta-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Utility Empty state */
+    .edu-empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 4rem 2rem;
+        border: 1px dashed var(--border-color);
+        border-radius: 12px;
+    }
+
+    .edu-empty-state svg {
+        width: 40px;
+        height: 40px;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .edu-empty-state h4 {
+        font-size: 1.15rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+    }
+
+    .edu-empty-state p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 1.25rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .edu-hero-grid {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+        .cta-banner {
+            padding: 2.5rem;
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+        }
+        .cta-content {
+            max-width: 100%;
+        }
+        .cta-actions {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .edu-filter-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .edu-search-form {
+            width: 100%;
+        }
+        .featured-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 1. Category Filter Bar -->
+<section class="edu-filter-bar">
+    <div class="container edu-filter-container">
+        <!-- Categories links -->
+        <div class="edu-filter-links">
+            <span class="edu-filter-label">Filter By:</span>
+            <a href="?category=all" class="edu-filter-link {% if not category_val or category_val == 'all' %}active{% endif %}">All Analysis</a>
+            <a href="?category=analysis" class="edu-filter-link {% if category_val == 'analysis' %}active{% endif %}">Market News</a>
+            <a href="?category=basics" class="edu-filter-link {% if category_val == 'basics' %}active{% endif %}">Trading Basics</a>
+            <a href="?category=strategies" class="edu-filter-link {% if category_val == 'strategies' %}active{% endif %}">Advanced Strategies</a>
+            <a href="?category=regulations" class="edu-filter-link {% if category_val == 'regulations' %}active{% endif %}">Regulations</a>
+        </div>
+
+        <!-- Search Bar -->
+        <form method="get" action="{% url 'article_directory' %}" class="edu-search-form">
+            {% if category_val %}
+                <input type="hidden" name="category" value="{{ category_val }}">
+            {% endif %}
+            <button type="submit" class="edu-search-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+            <input type="text" name="q" value="{{ q_val }}" placeholder="Search articles..." class="edu-search-input">
+        </form>
+    </div>
+</section>
+
+<!-- 2. Main Content Hero & Grid Section -->
+<section class="edu-main-section">
+    <div class="container">
+        
+        <!-- Hero Layout: Featured & Trending Sidebars -->
+        <div class="edu-hero-grid">
+            <!-- Left Side: Featured Article -->
+            <div class="featured-article-area">
+                {% if featured_article %}
+                    <div class="featured-article-card">
+                        <div class="featured-image-wrapper">
+                            <span class="featured-badge">Featured: {{ featured_article.category_name }}</span>
+                            {% if featured_article.featured_image %}
+                                <img src="{{ featured_article.featured_image.url }}" alt="{{ featured_article.featured_image_alt|default:featured_article.title }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80" alt="Featured Article Placeholder">
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="featured-meta">By {{ featured_article.author_name }} &middot; {{ featured_article.created_at|date:"F d, Y" }}</div>
+                            <h2 class="featured-title">
+                                <a href="{% url 'home' %}">{{ featured_article.title }}</a>
+                            </h2>
+                            <p class="featured-desc">
+                                {{ featured_article.seo_description|default:"Explore our professional analysis and breakdown of the current trading landscape and financial markets." }}
+                            </p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="edu-empty-state" style="padding: 10rem 2rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                            <path d="M12 17v5M9 22h6"></path>
+                        </svg>
+                        <h4>No featured article</h4>
+                        <p>No published articles match the current filter selection.</p>
+                        <a href="{% url 'article_directory' %}" class="btn-clear-filters">Reset filters</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Side: Trending & Newsletter -->
+            <div class="edu-sidebar">
+                <!-- Trending Now list -->
+                <div class="trending-box">
+                    <h3>Trending Now</h3>
+                    <div class="trending-list">
+                        {% for trend in trending_articles %}
+                            <div class="trending-item">
+                                <div class="trending-num-category">
+                                    <span class="trending-num">{{ trend.num }}</span>
+                                    <span class="trending-category">{{ trend.category }}</span>
+                                </div>
+                                <h4 class="trending-title">
+                                    <a href="#">{{ trend.title }}</a>
+                                </h4>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Newsletter Briefing Box -->
+                <div class="subscribe-box">
+                    <h4>Weekly Briefing</h4>
+                    <p>Join 45,000+ traders receiving our institutional-grade market data every Monday.</p>
+                    <form method="post" action="#" class="subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
+                        <input type="email" placeholder="Email address" required class="subscribe-input">
+                        <button type="submit" class="btn-subscribe">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest from our Analysts Section -->
+        <div class="latest-articles-area">
+            <div class="latest-section-header">
+                <h2>Latest from our Analysts</h2>
+                <div class="slider-arrows">
+                    <button class="slider-arrow-btn" title="Previous page">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="slider-arrow-btn" title="Next page">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="latest-grid">
+                {% for art in grid_articles %}
+                    <div class="article-card">
+                        <div class="article-card-image">
+                            {% if art.featured_image %}
+                                <img src="{{ art.featured_image.url }}" alt="{{ art.title }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&q=80" alt="Placeholder Image">
+                            {% endif %}
+                        </div>
+                        <div class="article-card-content">
+                            <div class="article-card-meta">
+                                <span class="article-card-category">{{ art.category_name }}</span>
+                                <span class="article-card-readtime">{{ art.read_time }}</span>
+                            </div>
+                            <h3 class="article-card-title">
+                                <a href="{% url 'home' %}">{{ art.title }}</a>
+                            </h3>
+                            <div class="article-card-footer">
+                                <div class="author-avatar">{{ art.author_initials }}</div>
+                                <div class="author-info">
+                                    <span class="author-name">{{ art.author_name }}</span>
+                                    <span class="author-role">{{ art.author_role }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    {% if featured_article %}
+                        <!-- If there's only 1 article in total (which is featured), we don't show an empty state, it's just fine -->
+                    {% else %}
+                        <div class="edu-empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <h4>No articles found</h4>
+                            <p>No analyst articles matched your criteria. Try adjusting your filters.</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Load More Articles button -->
+            <div class="load-more-container">
+                <button class="btn-load-more" onclick="alert('All articles loaded.');">Load More Articles</button>
+            </div>
+        </div>
+
+        <!-- CTA banner at the bottom -->
+        <div class="cta-banner">
+            <div class="cta-content">
+                <h2>Institutional Insights, Delivered Daily.</h2>
+                <p>Our research team synthesizes global macro trends into actionable intelligence for professional traders and informed investors.</p>
+            </div>
+            <div class="cta-actions">
+                <a href="#" class="btn-cta-primary">Start Reading</a>
+                <a href="#" class="btn-cta-secondary">View Samples</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

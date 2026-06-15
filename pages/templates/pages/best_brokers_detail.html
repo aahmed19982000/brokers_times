@@ -1,0 +1,187 @@
+{% extends 'pages/base.html' %}
+{% load i18n %}
+{% load shortcodes %}
+{% load brokers_parser %}
+
+{% block title %}{{ best_list.seo_title|default:best_list.title }} | Brokers Times{% endblock %}
+
+{% block content %}
+<style>
+    .best-brokers-detail-header {
+        background: var(--bg-white);
+        border-bottom: 1px solid var(--border-color);
+        padding: 4rem 0 3rem 0;
+        margin-bottom: 3rem;
+    }
+
+    .best-brokers-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    .best-brokers-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        line-height: 1.2;
+        margin-bottom: 1rem;
+        text-align: left;
+    }
+
+    .best-brokers-subtitle {
+        font-size: 1.15rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 0;
+        text-align: left;
+    }
+
+    .best-brokers-image-wrapper {
+        margin-bottom: 3rem;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        max-width: 1000px;
+        margin: 0 auto 3rem auto;
+    }
+
+    .best-brokers-image {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .best-brokers-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #334155;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: left;
+    }
+
+    .best-brokers-content h2, 
+    .best-brokers-content h3 {
+        color: var(--text-dark);
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+
+    .best-brokers-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .best-brokers-content img {
+        max-width: 100%;
+        border-radius: 12px;
+        margin: 2rem 0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .best-brokers-content a {
+        color: var(--primary);
+        text-decoration: underline;
+    }
+
+    /* FAQ Section */
+    .best-brokers-faq-section {
+        max-width: 800px;
+        margin: 5rem auto 3rem auto;
+        border-top: 1px solid var(--border-color);
+        padding-top: 3rem;
+        text-align: left;
+    }
+
+    .best-brokers-faq-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 2rem;
+    }
+
+    .faq-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .faq-accordion-item {
+        background: #ffffff;
+        border: 1px solid #e5eaf2;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: border-color 0.2s;
+    }
+
+    .faq-accordion-item:hover {
+        border-color: #cbd5e1;
+    }
+
+    .faq-accordion-question {
+        padding: 1.25rem 1.5rem;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #0f172a;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+    }
+
+    .faq-accordion-answer {
+        padding: 0 1.5rem 1.25rem 1.5rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #475569;
+    }
+</style>
+
+<!-- Header Area -->
+<div class="best-brokers-detail-header">
+    <div class="best-brokers-container">
+        <h1 class="best-brokers-title">{{ best_list.title }}</h1>
+        {% if best_list.seo_description %}
+            <p class="best-brokers-subtitle">{{ best_list.seo_description }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="best-brokers-container" style="margin-bottom: 5rem;">
+    <!-- Featured Image -->
+    {% if best_list.featured_image %}
+        <div class="best-brokers-image-wrapper">
+            <img src="{{ best_list.featured_image.url }}" alt="{{ best_list.featured_image_alt|default:best_list.title }}" class="best-brokers-image">
+        </div>
+    {% endif %}
+
+    <!-- Rich Text Content with shortcodes rendered -->
+    <div class="best-brokers-content">
+        {{ page|parse_best_brokers }}
+    </div>
+
+    <!-- FAQ Accordion -->
+    {% if best_list.faqs.all %}
+        <div class="best-brokers-faq-section">
+            <h2 class="best-brokers-faq-title">
+                {% if request.LANGUAGE_CODE == 'ar' %}الأسئلة الشائعة{% else %}Frequently Asked Questions{% endif %}
+            </h2>
+            <div class="faq-accordion">
+                {% for faq in best_list.faqs.all %}
+                    <div class="faq-accordion-item">
+                        <div class="faq-accordion-question">
+                            <span>{{ faq.question }}</span>
+                        </div>
+                        <div class="faq-accordion-answer">
+                            {{ faq.answer }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

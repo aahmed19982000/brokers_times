@@ -416,22 +416,22 @@
             <nav>
                 <ul class="nav-menu" id="navMenu">
                     <li>
-                        <a href="#" class="nav-link active">
+                        <a href="{% url 'home' %}" class="nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}">
                             Top 10 Brokers
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link">
+                        <a href="{% url 'broker_directory' %}" class="nav-link{% if request.resolver_match.url_name == 'broker_directory' %} active{% endif %}">
                             Reviews
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link">
+                        <a href="{% url 'compare_list' %}" class="nav-link{% if request.resolver_match.url_name == 'compare_list' %} active{% endif %}">
                             Compare
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link">
+                        <a href="{% url 'article_directory' %}" class="nav-link{% if request.resolver_match.url_name == 'article_directory' %} active{% endif %}">
                             Education
                         </a>
                     </li>

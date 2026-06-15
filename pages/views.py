@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView, ListView
+from django.db.models import Q
 from pages.models import HomepageSettings
 from articles.models import Article
 from brokers.models import Broker
+from best_brokers.models import BestBrokersList
 
 class HomeView(TemplateView):
     template_name = 'pages/home.html'
@@ -93,4 +95,164 @@ class BrokerReviewDetailView(DetailView):
             'trading_platforms': broker.trading_platforms.all(),
         })
         return context
+
+
+class BrokerDirectoryView(ListView):
+    model = Broker
+    template_name = 'pages/broker_directory.html'
+    context_object_name = 'brokers'
+    paginate_by = 12
+
+    def get_queryset(self):
+        queryset = Broker.objects.all().order_by('-rating')
+        
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            queryset = queryset.filter(Q(name__icontains=q) | Q(seo_description__icontains=q))
+
+        regulation = self.request.GET.get('regulation', '').strip()
+        if regulation:
+            queryset = queryset.filter(regulators__slug=regulation)
+
+        instrument = self.request.GET.get('instrument', '').strip()
+        if instrument:
+            queryset = queryset.filter(financial_assets__slug=instrument)
+
+        min_deposit = self.request.GET.get('min_deposit', '').strip()
+        if min_deposit:
+            try:
+                queryset = queryset.filter(min_deposit__lte=float(min_deposit))
+            except ValueError:
+                pass
+
+        platform = self.request.GET.get('platform', '').strip()
+        if platform:
+            queryset = queryset.filter(trading_platforms__slug=platform)
+
+        return queryset.distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from categories.models import Regulator, FinancialAsset, TradingPlatform
+        context['regulators'] = Regulator.objects.all()
+        context['instruments'] = FinancialAsset.objects.all()
+        context['platforms'] = TradingPlatform.objects.all()
+        
+        context['q_val'] = self.request.GET.get('q', '').strip()
+        context['regulation_val'] = self.request.GET.get('regulation', '').strip()
+        context['instrument_val'] = self.request.GET.get('instrument', '').strip()
+        context['min_deposit_val'] = self.request.GET.get('min_deposit', '').strip()
+        context['platform_val'] = self.request.GET.get('platform', '').strip()
+        return context
+
+
+class ArticleDirectoryView(ListView):
+    model = Article
+    template_name = 'pages/article_directory.html'
+    context_object_name = 'articles'
+    paginate_by = 12
+
+    def get_queryset(self):
+        # Only show published articles, ordered by created_at descending
+        queryset = list(Article.objects.filter(status='published').order_by('-created_at'))
+        
+        # Attach dynamic fields (category, author, read time) to each article in python
+        for art in queryset:
+            # 1. Category mapping
+            if 'quantitative' in art.slug:
+                art.category_slug = 'strategies'
+                art.category_name = 'Advanced Strategies'
+            elif 'broker' in art.slug:
+                art.category_slug = 'basics'
+                art.category_name = 'Trading Basics'
+            elif 'regulator' in art.slug:
+                art.category_slug = 'regulations'
+                art.category_name = 'Regulations'
+            else:
+                art.category_slug = 'analysis'
+                art.category_name = 'Market Analysis'
+                
+            # 2. Author mapping
+            if art.category_slug == 'strategies':
+                art.author_name = 'David Kross'
+                art.author_initials = 'DK'
+                art.author_role = 'QUANT SPECIALIST'
+            elif art.category_slug == 'basics':
+                art.author_name = 'Elena Moretti'
+                art.author_initials = 'EM'
+                art.author_role = 'SENIOR BEHAVIORAL ANALYST'
+            elif art.category_slug == 'regulations':
+                art.author_name = 'Sarah Whitmore'
+                art.author_initials = 'SW'
+                art.author_role = 'LEGAL COMPLIANCE HEAD'
+            else:
+                art.author_name = 'Julian Sterling'
+                art.author_initials = 'JS'
+                art.author_role = 'CHIEF MARKET ANALYST'
+                
+            # 3. Read time mapping
+            if art.category_slug == 'strategies':
+                art.read_time = '12 min read'
+            elif art.category_slug == 'basics':
+                art.read_time = '8 min read'
+            elif art.category_slug == 'regulations':
+                art.read_time = '15 min read'
+            else:
+                art.read_time = '10 min read'
+
+        # Filter by category if query parameter 'category' is passed
+        category_filter = self.request.GET.get('category', '').strip().lower()
+        if category_filter and category_filter != 'all':
+            queryset = [art for art in queryset if art.category_slug == category_filter]
+
+        # Search filter
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            queryset = [art for art in queryset if q.lower() in art.title.lower() or q.lower() in art.content.lower()]
+            
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # 1. Trending Articles mockup (from screenshot)
+        context['trending_articles'] = [
+            {'num': '01', 'category': 'CRYPTO', 'title': "Bitcoin's Halving Aftermath: 6 Months Later"},
+            {'num': '02', 'category': 'FOREX', 'title': "Why the Japanese Yen Carry Trade Still Matters"},
+            {'num': '03', 'category': 'COMMODITIES', 'title': "Gold vs. Silver: The Diversification Dilemma"}
+        ]
+        
+        # 2. Get featured article
+        # The first item in the queryset is treated as the featured article (if any exist)
+        object_list = self.get_queryset()
+        if object_list:
+            context['featured_article'] = object_list[0]
+            # Grid articles are the remaining ones
+            context['grid_articles'] = object_list[1:]
+        else:
+            context['featured_article'] = None
+            context['grid_articles'] = []
+            
+        # 3. Current filter values
+        context['category_val'] = self.request.GET.get('category', '').strip().lower()
+        context['q_val'] = self.request.GET.get('q', '').strip()
+        
+        return context
+
+
+class CompareListView(TemplateView):
+    template_name = 'pages/compare_list.html'
+
+
+class BestBrokersListDetailView(DetailView):
+    model = BestBrokersList
+    template_name = 'pages/best_brokers_detail.html'
+    context_object_name = 'best_list'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page'] = self.object
+        return context
+
+
 

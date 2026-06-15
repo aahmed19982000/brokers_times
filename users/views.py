@@ -88,6 +88,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
             'trading_platforms': trading_platforms,
             'selected_trading_platforms': [],
             'is_edit': False,
+            'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
         return render(request, 'dashboard/broker_form.html', context)
     def post(self, request):
@@ -229,6 +230,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
             'account_types': broker.account_types.all(),
             'platform_tabs': broker.platform_tabs.all(),
             'is_edit': True,
+            'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
         return render(request, 'dashboard/broker_form.html', context)
     def post(self, request, pk):
@@ -417,6 +419,7 @@ class DashboardArticleCreateView(LoginRequiredMixin, View):
     def get(self, request):
         context = {
             'is_edit': False,
+            'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
         return render(request, 'dashboard/article_form.html', context)
     def post(self, request):
@@ -460,6 +463,7 @@ class DashboardArticleUpdateView(LoginRequiredMixin, View):
             'article': article,
             'faqs': article.faqs.all(),
             'is_edit': True,
+            'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
         return render(request, 'dashboard/article_form.html', context)
     def post(self, request, pk):
@@ -502,6 +506,8 @@ class DashboardBestBrokersCreateView(LoginRequiredMixin, View):
     def get(self, request):
         context = {
             'is_edit': False,
+            'brokers': Broker.objects.all().order_by('name'),
+            'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
         return render(request, 'dashboard/best_brokers_form.html', context)
     def post(self, request):
@@ -527,23 +533,6 @@ class DashboardBestBrokersCreateView(LoginRequiredMixin, View):
             if request.FILES.get('featured_image'):
                 best_list.featured_image = request.FILES.get('featured_image')
                 best_list.save()
-            # Save ranked items
-            broker_ids = request.POST.getlist('item_broker')
-            ranks = request.POST.getlist('item_rank')
-            desc_ens = request.POST.getlist('item_description')
-            desc_ars = request.POST.getlist('item_description')
-            for i in range(len(broker_ids)):
-                b_id = broker_ids[i]
-                if not b_id:
-                    continue
-                rk = ranks[i] if i < len(ranks) else (i + 1)
-                d = desc_ens[i].strip() if i < len(desc_ens) else ""
-                BestBrokersListItem.objects.create(
-                    best_brokers_list=best_list,
-                    broker_id=b_id,
-                    rank=rk,
-                    description = d,
-                )
             # Save FAQs
             faq_questions = request.POST.getlist('faq_question')
             faq_answers = request.POST.getlist('faq_answer')
@@ -566,6 +555,8 @@ class DashboardBestBrokersUpdateView(LoginRequiredMixin, View):
             'items': best_list.items.all(),
             'faqs': best_list.faqs.all(),
             'is_edit': True,
+            'brokers': Broker.objects.all().order_by('name'),
+            'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
         return render(request, 'dashboard/best_brokers_form.html', context)
     def post(self, request, pk):
@@ -592,24 +583,6 @@ class DashboardBestBrokersUpdateView(LoginRequiredMixin, View):
             elif request.POST.get('featured_image-clear') == 'on':
                 best_list.featured_image = None
             best_list.save()
-            # Update ranked items
-            best_list.items.all().delete()
-            broker_ids = request.POST.getlist('item_broker')
-            ranks = request.POST.getlist('item_rank')
-            desc_ens = request.POST.getlist('item_description')
-            desc_ars = request.POST.getlist('item_description')
-            for i in range(len(broker_ids)):
-                b_id = broker_ids[i]
-                if not b_id:
-                    continue
-                rk = ranks[i] if i < len(ranks) else (i + 1)
-                d = desc_ens[i].strip() if i < len(desc_ens) else ""
-                BestBrokersListItem.objects.create(
-                    best_brokers_list=best_list,
-                    broker_id=b_id,
-                    rank=rk,
-                    description = d,
-                )
             # Update FAQs
             best_list.faqs.all().delete()
             faq_questions = request.POST.getlist('faq_question')
@@ -708,6 +681,7 @@ class DashboardNewsCreateView(LoginRequiredMixin, View):
     def get(self, request):
         context = {
             'is_edit': False,
+            'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
         return render(request, 'dashboard/news_form.html', context)
     def post(self, request):
@@ -738,6 +712,7 @@ class DashboardNewsUpdateView(LoginRequiredMixin, View):
         context = {
             'news_article': news_article,
             'is_edit': True,
+            'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
         return render(request, 'dashboard/news_form.html', context)
     def post(self, request, pk):
@@ -837,3 +812,114 @@ class DashboardCategoryUpdateView(LoginRequiredMixin, UserPassesTestMixin, Templ
             item.icon = request.FILES.get('icon')
         item.save()
         return redirect(f'/dashboard/categories/?type={model_name}')
+
+
+class DashboardRankedBrokersView(LoginRequiredMixin, View):
+    def get(self, request):
+        lists = BestBrokersList.objects.all().order_by('title')
+
+        list_id = request.GET.get('list_id')
+        selected_list = None
+        if list_id:
+            selected_list = get_object_or_404(BestBrokersList, pk=list_id)
+        elif lists.exists():
+            selected_list = lists.first()
+
+        items = selected_list.items.all().order_by('rank') if selected_list else []
+        brokers = Broker.objects.all().order_by('name')
+        global_list = BestBrokersList.objects.filter(is_global=True).first()
+
+        context = {
+            'lists': lists,
+            'selected_list': selected_list,
+            'items': items,
+            'brokers': brokers,
+            'global_list': global_list,
+        }
+        return render(request, 'dashboard/ranked_brokers.html', context)
+
+    def post(self, request):
+        action = request.POST.get('action', 'save_ranks')
+
+        # ── تعيين قائمة كعالمية [brokers_list] ──
+        if action == 'toggle_global':
+            list_id = request.POST.get('list_id')
+            selected_list = get_object_or_404(BestBrokersList, pk=list_id)
+            # إلغاء التفعيل عن أي قائمة سابقة وتفعيل المحددة
+            BestBrokersList.objects.filter(is_global=True).update(is_global=False)
+            selected_list.is_global = True
+            selected_list.save(update_fields=['is_global'])
+            return redirect(f'/dashboard/ranked-brokers/?list_id={selected_list.id}')
+
+        # ── الحفظ الاعتيادي للترتيب ──
+        list_id = request.POST.get('list_id')
+        selected_list = get_object_or_404(BestBrokersList, pk=list_id)
+
+        with transaction.atomic():
+            # Delete old rankings for this list
+            selected_list.items.all().delete()
+
+            # Save new ranked items
+            broker_ids = request.POST.getlist('item_broker')
+            ranks = request.POST.getlist('item_rank')
+            headlines = request.POST.getlist('item_headline')
+            descriptions = request.POST.getlist('item_description')
+            highlights = request.POST.getlist('item_highlights')
+            custom_deposits = request.POST.getlist('item_custom_deposit')
+
+            for i in range(len(broker_ids)):
+                b_id = broker_ids[i]
+                if not b_id:
+                    continue
+                rk = ranks[i] if i < len(ranks) else (i + 1)
+                hl = headlines[i].strip() if i < len(headlines) else ""
+                d = descriptions[i].strip() if i < len(descriptions) else ""
+                hi = highlights[i].strip() if i < len(highlights) else ""
+                cd = custom_deposits[i].strip() if i < len(custom_deposits) else ""
+                BestBrokersListItem.objects.create(
+                    best_brokers_list=selected_list,
+                    broker_id=b_id,
+                    rank=rk,
+                    headline=hl,
+                    description=d,
+                    highlights=hi,
+                    custom_deposit=cd,
+                )
+
+        return redirect(f'/dashboard/ranked-brokers/?list_id={selected_list.id}')
+
+
+from django.http import JsonResponse
+
+class APIBestBrokersLookupView(LoginRequiredMixin, View):
+    def get(self, request):
+        list_id = request.GET.get('id')
+        slug = request.GET.get('slug')
+        
+        if list_id:
+            try:
+                best_list = BestBrokersList.objects.get(pk=int(list_id))
+            except (ValueError, BestBrokersList.DoesNotExist):
+                return JsonResponse({'error': 'List not found'}, status=404)
+        elif slug:
+            try:
+                best_list = BestBrokersList.objects.get(slug=slug)
+            except BestBrokersList.DoesNotExist:
+                return JsonResponse({'error': 'List not found'}, status=404)
+        else:
+            return JsonResponse({'error': 'Missing id or slug parameter'}, status=400)
+            
+        items = best_list.items.all().order_by('rank')
+        brokers_data = []
+        for item in items:
+            brokers_data.append({
+                'id': item.broker.id,
+                'name': item.broker.name
+            })
+            
+        return JsonResponse({
+            'id': best_list.id,
+            'title': best_list.title,
+            'slug': best_list.slug,
+            'brokers': brokers_data
+        })

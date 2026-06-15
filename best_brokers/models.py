@@ -32,6 +32,13 @@ class BestBrokersList(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # تحديد إذا كانت هذه القائمة هي القائمة العالمية لشورت كود [brokers_list]
+    is_global = models.BooleanField(
+        default=False,
+        verbose_name="قائمة عالمية (Global List)",
+        help_text="إذا تم تفعيلها، ستظهر هذه القائمة في شورت كود [brokers_list] في جميع الصفحات"
+    )
+
     def __str__(self):
         return self.title
 
@@ -39,7 +46,10 @@ class BestBrokersListItem(models.Model):
     best_brokers_list = models.ForeignKey(BestBrokersList, on_delete=models.CASCADE, related_name='items')
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE, related_name='best_broker_items')
     rank = models.PositiveIntegerField()
+    headline = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
+    highlights = models.TextField(blank=True, help_text="One highlight per line / ميزة واحدة في كل سطر")
+    custom_deposit = models.CharField(max_length=100, blank=True, help_text="Custom deposit display text (e.g. $0 (Classic Account))")
 
     class Meta:
         ordering = ['rank']
@@ -59,3 +69,5 @@ class BestBrokersListFAQ(models.Model):
 
     def __str__(self):
         return f"{self.best_brokers_list.title} FAQ: {self.question[:50]}"
+
+

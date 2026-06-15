@@ -754,6 +754,9 @@
                                     <button type="button" class="toolbar-btn" title="Insert Image" onmousedown="event.preventDefault(); insertImagePrompt()">
                                         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                                     </button>
+                                    <button type="button" class="toolbar-btn" title="Insert Comparison List" onmousedown="event.preventDefault(); showInsertListModal()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>
+                                    </button>
                                 </div>
                                 
                                 <div class="toolbar-group">
@@ -915,13 +918,22 @@
         });
         
         countWords();
+        initVisualShortcodes();
     });
 
     // Synchronize HTML from contenteditable DIVs to standard form hidden textareas
     function syncEditor() {
         const editor = document.getElementById('editor');
         const textarea = document.getElementById('id_review_content');
-        if (editor && textarea) textarea.value = editor.innerHTML;
+        if (editor && textarea) {
+            const clone = editor.cloneNode(true);
+            const widgets = clone.querySelectorAll('.wysiwyg-shortcode-widget');
+            widgets.forEach(w => {
+                const shortcode = w.getAttribute('data-shortcode');
+                w.replaceWith(document.createTextNode(shortcode));
+            });
+            textarea.value = clone.innerHTML;
+        }
         countWords();
     }
 
@@ -929,7 +941,15 @@
     document.getElementById('article-form').addEventListener('submit', () => {
         const editor = document.getElementById('editor');
         const textarea = document.getElementById('id_review_content');
-        if (editor && textarea) textarea.value = editor.innerHTML;
+        if (editor && textarea) {
+            const clone = editor.cloneNode(true);
+            const widgets = clone.querySelectorAll('.wysiwyg-shortcode-widget');
+            widgets.forEach(w => {
+                const shortcode = w.getAttribute('data-shortcode');
+                w.replaceWith(document.createTextNode(shortcode));
+            });
+            textarea.value = clone.innerHTML;
+        }
     });
 
     // Translation tab switcher
@@ -1198,9 +1218,189 @@
             </div>
         </div>
         <div class="custom-modal-footer">
-            <button type="button" class="btn-editor-secondary" onclick="closeAltTextModal()">Cancel / إلغاء</button>
             <button type="button" class="btn-editor-primary" id="modal-alt-text-save-btn">Save / حفظ</button>
         </div>
     </div>
 </div>
+
+<!-- Insert Comparison List Modal Dialog HTML -->
+<div id="insert-list-modal" class="custom-modal-backdrop" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div class="custom-modal-content" style="max-width: 450px; background: #111726; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; width: 90%;">
+        <div class="custom-modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.75rem;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: white;">Insert Comparison List / إدراج قائمة مقارنة</h3>
+            <button type="button" onclick="closeInsertListModal()" style="background: none; border: none; color: #9ca3af; font-size: 1.5rem; cursor: pointer; padding: 0;">&times;</button>
+        </div>
+        <div class="custom-modal-body" style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label style="font-size: 0.85rem; color: #9ca3af; font-weight: 600;">Select Comparison List / اختر قائمة المقارنة</label>
+            <select id="insert-list-select" class="form-input-editor" style="width: 100%; background: #0d1322; border: 1px solid rgba(255,255,255,0.08); color: white; padding: 0.65rem 1rem; border-radius: 8px; font-size: 0.9rem;">
+                {% for l in best_brokers_lists %}
+                    <option value="{{ l.id }}">{{ l.title }} ({{ l.slug }})</option>
+                {% empty %}
+                    <option value="">No lists available / لا يوجد قوائم حالياً</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="custom-modal-footer" style="display: flex; justify-content: flex-end; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+            <button type="button" class="btn-editor-secondary" onclick="closeInsertListModal()" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.08); padding: 0.55rem 1.25rem; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancel / إلغاء</button>
+            <button type="button" class="btn-editor-primary" onclick="insertListShortcode()" style="background: var(--primary); color: white; border: none; padding: 0.55rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer;">Insert / إدراج</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fetch list info via AJAX
+    async function fetchListBrokers(listId) {
+        try {
+            const response = await fetch(`/dashboard/api/best-brokers/lookup/?id=${listId}`);
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (e) {
+            console.error("Error fetching list:", e);
+        }
+        return null;
+    }
+
+    async function fetchListBrokersBySlug(slug) {
+        try {
+            const response = await fetch(`/dashboard/api/best-brokers/lookup/?slug=${encodeURIComponent(slug)}`);
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (e) {
+            console.error("Error fetching list:", e);
+        }
+        return null;
+    }
+
+    // Replace shortcode texts with custom widgets on load
+    async function initVisualShortcodes() {
+        const editor = document.getElementById('editor');
+        if (!editor) return;
+        
+        let html = editor.innerHTML;
+        
+        // Match id-based: [comparison_list id="1"]
+        const idPattern = /\[comparison_list\s+id=["'](\d+)["']\]/g;
+        const idMatches = [...html.matchAll(idPattern)];
+        for (const match of idMatches) {
+            const fullText = match[0];
+            const listId = match[1];
+            
+            const data = await fetchListBrokers(listId);
+            const widgetHTML = await generateWidgetHTML(listId, data, `[comparison_list id="${listId}"]`);
+            html = html.replace(fullText, widgetHTML);
+        }
+
+        // Match slug-based: [comparison_list slug="xxx"]
+        const slugPattern = /\[comparison_list\s+slug=["']([^"']+)["']\]/g;
+        const slugMatches = [...html.matchAll(slugPattern)];
+        for (const match of slugMatches) {
+            const fullText = match[0];
+            const slug = match[1];
+            
+            const data = await fetchListBrokersBySlug(slug);
+            const listId = data ? data.id : '';
+            const widgetHTML = await generateWidgetHTML(listId, data, `[comparison_list slug="${slug}"]`);
+            html = html.replace(fullText, widgetHTML);
+        }
+        
+        editor.innerHTML = html;
+        syncEditor();
+    }
+
+    async function generateWidgetHTML(listId, data, shortcodeText) {
+        let pillsHTML = '';
+        if (data && data.brokers) {
+            data.brokers.forEach(b => {
+                pillsHTML += `
+                    <span class="editor-broker-pill" style="background: #0284c7; color: white !important; font-weight: 600; font-size: 0.8rem; padding: 0.25rem 0.6rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 6px; user-select: none;">
+                        <span>${b.name}</span>
+                        <span style="background: #eab308; color: #1e1b4b; border-radius: 2px; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; cursor: default; line-height: 1;">&times;</span>
+                    </span>
+                `;
+            });
+        }
+        const titleText = data ? data.title : 'Comparison List / قائمة مقارنة';
+        const listText = listId ? ` #${listId}` : '';
+        
+        return `
+            <div class="wysiwyg-shortcode-widget" data-shortcode='${shortcodeText}' contenteditable="false" style="display: flex; align-items: center; gap: 10px; background: #111726; border: 1px solid rgba(255,255,255,0.08); padding: 10px 14px; border-radius: 8px; margin: 15px 0; user-select: none; flex-wrap: wrap; text-align: left; direction: ltr;">
+                <div style="display: flex; gap: 6px; align-items: center; margin-right: 10px;">
+                    <button type="button" onclick="window.open('/dashboard/ranked-brokers/?list_id=${listId || ''}', '_blank')" style="background: #10b981; color: white; border: none; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <svg style="width:12px; height:12px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Edit
+                    </button>
+                    <button type="button" onclick="this.closest('.wysiwyg-shortcode-widget').remove(); syncEditor();" style="background: #ef4444; color: white; border: none; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <svg style="width:12px; height:12px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
+                        Delete
+                    </button>
+                </div>
+                <div style="font-weight: 700; color: #60a5fa; font-size: 0.85rem; padding-right: 10px; border-right: 1px solid rgba(255,255,255,0.1); margin-right: 5px;">
+                    ${titleText}${listText}
+                </div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                    ${pillsHTML || '<span style="color: var(--text-muted); font-size: 0.8rem;">No brokers / لا يوجد شركات</span>'}
+                </div>
+            </div>
+        `;
+    }
+
+    // Modal control for inserting shortcode
+    function showInsertListModal() {
+        const modal = document.getElementById('insert-list-modal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeInsertListModal() {
+        const modal = document.getElementById('insert-list-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    async function insertListShortcode() {
+        const select = document.getElementById('insert-list-select');
+        if (!select || !select.value) {
+            closeInsertListModal();
+            return;
+        }
+        const listId = select.value;
+        const shortcodeText = `[comparison_list id="${listId}"]`;
+        
+        const data = await fetchListBrokers(listId);
+        const widgetHTML = await generateWidgetHTML(listId, data, shortcodeText);
+        
+        insertHtmlAtCursor(widgetHTML);
+        syncEditor();
+        closeInsertListModal();
+    }
+
+    // Helper to insert HTML at cursor position in contenteditable
+    function insertHtmlAtCursor(html) {
+        let sel, range;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+                
+                const el = document.createElement("div");
+                el.innerHTML = html;
+                const frag = document.createDocumentFragment();
+                let node, lastNode;
+                while ((node = el.firstChild)) {
+                    lastNode = frag.appendChild(node);
+                }
+                range.insertNode(frag);
+                
+                if (lastNode) {
+                    range = range.cloneRange();
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+        }
+    }
+</script>
 {% endblock %}

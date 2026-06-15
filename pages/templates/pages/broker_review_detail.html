@@ -1,4 +1,5 @@
 {% extends 'pages/base.html' %}
+{% load shortcodes %}
 
 {% block title %}
     {% if request.LANGUAGE_CODE == 'ar' %}مراجعة شركة {{ broker.name }} - تراخيص وعمولات التداول{% else %}{{ broker.name }} Review - Regulation, Spreads & Fees{% endif %}
@@ -950,7 +951,7 @@
                     <h2 class="section-headline">{% if request.LANGUAGE_CODE == 'ar' %}المراجعة التفصيلية للوسيط{% else %}Detailed Review{% endif %}</h2>
                     <div class="detailed-review-body">
                         {% if broker.review_content %}
-                            {{ broker.review_content|safe }}
+                            {{ broker.review_content|render_shortcodes|safe }}
                         {% else %}
                             <p>{% if request.LANGUAGE_CODE == 'ar' %}المراجعة التفصيلية لهذا الوسيط قيد الإعداد حالياً وسيتم نشرها قريباً.{% else %}The detailed review for this broker is currently being written and will be published shortly.{% endif %}</p>
                         {% endif %}

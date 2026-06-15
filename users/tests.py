@@ -142,3 +142,120 @@ class DashboardTaxonomyCreateAjaxViewTest(TestCase):
         })
         self.assertEqual(response.status_code, 400)
 
+
+class DashboardRankedBrokersViewTest(TestCase):
+    def setUp(self):
+        self.writer_user = CustomUser.objects.create_user(
+            username="writer_user",
+            email="writer@example.com",
+            password="writerpassword",
+            role="writer"
+        )
+        self.broker1 = Broker.objects.create(name="Broker One", slug="broker-one", rating=4.8)
+        self.broker2 = Broker.objects.create(name="Broker Two", slug="broker-two", rating=4.5)
+        self.best_list = BestBrokersList.objects.create(
+            title="Best Forex",
+            slug="best-forex",
+            status="published"
+        )
+
+    def test_anonymous_redirect(self):
+        response = self.client.get(reverse('dashboard_ranked_brokers'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_get_ranked_brokers(self):
+        self.client.login(username="writer_user", password="writerpassword")
+        response = self.client.get(reverse('dashboard_ranked_brokers'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'dashboard/ranked_brokers.html')
+        self.assertEqual(response.context['selected_list'], self.best_list)
+
+    def test_post_save_rankings(self):
+        self.client.login(username="writer_user", password="writerpassword")
+        from best_brokers.models import BestBrokersListItem
+        
+        response = self.client.post(reverse('dashboard_ranked_brokers'), {
+            'list_id': self.best_list.id,
+            'item_broker': [self.broker1.id, self.broker2.id],
+            'item_rank': [1, 2],
+            'item_headline': ['Best overall', 'Best social trading'],
+            'item_description': ['Rank 1 Broker', 'Rank 2 Broker'],
+            'item_highlights': ["Low margin\nADGM", "CopyTrading"],
+            'item_custom_deposit': ["$0 (AED 0)", "$100 (AED 367)"]
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Verify saved in DB
+        items = list(BestBrokersListItem.objects.filter(best_brokers_list=self.best_list).order_by('rank'))
+        self.assertEqual(len(items), 2)
+        self.assertEqual(items[0].broker, self.broker1)
+        self.assertEqual(items[0].rank, 1)
+        self.assertEqual(items[0].headline, 'Best overall')
+        self.assertEqual(items[0].description, 'Rank 1 Broker')
+        self.assertEqual(items[0].highlights, "Low margin\nADGM")
+        self.assertEqual(items[0].custom_deposit, '$0 (AED 0)')
+        self.assertEqual(items[1].broker, self.broker2)
+        self.assertEqual(items[1].rank, 2)
+        self.assertEqual(items[1].headline, 'Best social trading')
+        self.assertEqual(items[1].description, 'Rank 2 Broker')
+        self.assertEqual(items[1].highlights, "CopyTrading")
+        self.assertEqual(items[1].custom_deposit, '$100 (AED 367)')
+
+
+class APIBestBrokersLookupViewTest(TestCase):
+    def setUp(self):
+        self.writer_user = CustomUser.objects.create_user(
+            username="writer_user",
+            email="writer@example.com",
+            password="writerpassword",
+            role="writer"
+        )
+        self.broker1 = Broker.objects.create(name="Broker One", slug="broker-one", rating=4.8)
+        self.best_list = BestBrokersList.objects.create(
+            title="Best Forex",
+            slug="best-forex",
+            status="published"
+        )
+        # Create an item in the list
+        from best_brokers.models import BestBrokersListItem
+        self.item = BestBrokersListItem.objects.create(
+            best_brokers_list=self.best_list,
+            broker=self.broker1,
+            rank=1
+        )
+
+    def test_anonymous_redirect(self):
+        response = self.client.get(reverse('api_best_brokers_lookup'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_lookup_by_id(self):
+        self.client.login(username="writer_user", password="writerpassword")
+        response = self.client.get(reverse('api_best_brokers_lookup'), {'id': self.best_list.id})
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['id'], self.best_list.id)
+        self.assertEqual(data['title'], self.best_list.title)
+        self.assertEqual(data['slug'], self.best_list.slug)
+        self.assertEqual(len(data['brokers']), 1)
+        self.assertEqual(data['brokers'][0]['id'], self.broker1.id)
+        self.assertEqual(data['brokers'][0]['name'], self.broker1.name)
+
+    def test_lookup_by_slug(self):
+        self.client.login(username="writer_user", password="writerpassword")
+        response = self.client.get(reverse('api_best_brokers_lookup'), {'slug': self.best_list.slug})
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['id'], self.best_list.id)
+
+    def test_missing_params(self):
+        self.client.login(username="writer_user", password="writerpassword")
+        response = self.client.get(reverse('api_best_brokers_lookup'))
+        self.assertEqual(response.status_code, 400)
+
+    def test_not_found(self):
+        self.client.login(username="writer_user", password="writerpassword")
+        response = self.client.get(reverse('api_best_brokers_lookup'), {'id': 9999})
+        self.assertEqual(response.status_code, 404)
+
+
+
