@@ -1,6 +1,6 @@
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="ltr-layout" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -163,23 +163,79 @@
             transform: scale(0.98);
         }
 
-        /* Language Switcher Link */
-        .lang-switcher {
-            text-decoration: none;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 0.3rem 0.6rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            background: none;
+        /* Dropdown Menus */
+        .nav-item-dropdown {
+            position: relative;
         }
 
-        .lang-switcher:hover {
-            border-color: var(--primary);
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background-color: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            min-width: 220px;
+            padding: 0.5rem 0;
+            list-style: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 1010;
+        }
+
+        .nav-item-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.6rem 1.2rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+            white-space: nowrap;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--bg-light);
             color: var(--primary);
+        }
+
+        .dropdown-item img.flag-icon {
+            border-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+
+        /* Arrow indicator for dropdown links */
+        .nav-link-dropdown {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-link-dropdown::after {
+            content: "";
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin-left: 4px;
+            vertical-align: middle;
+            border-top: 4px solid;
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+            transition: transform 0.2s;
+        }
+        .nav-item-dropdown:hover .nav-link-dropdown::after {
+            transform: rotate(180deg);
         }
 
         /* Mobile Menu Toggle */
@@ -410,31 +466,60 @@
     <header class="site-header">
         <div class="container navbar">
             <a href="{% url 'home' %}" class="navbar-brand">
-                <span>Brokers Times</span>
+                {% if site_settings.header_logo %}
+                    <img src="{{ site_settings.header_logo.url }}" alt="{{ site_settings.header_brand_name }}" style="height: 40px; width: auto; object-fit: contain;">
+                {% else %}
+                    <span>{{ site_settings.header_brand_name }}</span>
+                {% endif %}
             </a>
             
             <nav>
                 <ul class="nav-menu" id="navMenu">
-                    <li>
-                        <a href="{% url 'home' %}" class="nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}">
-                            Top 10 Brokers
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'broker_directory' %}" class="nav-link{% if request.resolver_match.url_name == 'broker_directory' %} active{% endif %}">
-                            Reviews
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'compare_list' %}" class="nav-link{% if request.resolver_match.url_name == 'compare_list' %} active{% endif %}">
-                            Compare
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'article_directory' %}" class="nav-link{% if request.resolver_match.url_name == 'article_directory' %} active{% endif %}">
-                            Education
-                        </a>
-                    </li>
+                    {% for link in global_header_links %}
+                        {% if link.url_or_route == 'compare_list' and global_compare_dropdown_lists %}
+                            <li class="nav-item-dropdown">
+                                <a href="{{ link.resolved_url }}" class="nav-link nav-link-dropdown{% if request.resolver_match.url_name == link.url_or_route %} active{% endif %}">
+                                    {{ link.title_en }}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for item in global_compare_dropdown_lists %}
+                                        <li>
+                                            <a href="{% url 'best_brokers_list_detail' item.slug %}" class="dropdown-item">
+                                                {% if item.country_flag %}
+                                                    <img src="https://flagcdn.com/w40/{{ item.country_flag }}.png" srcset="https://flagcdn.com/w80/{{ item.country_flag }}.png 2x" width="20" alt="flag" class="flag-icon" style="border-radius: 2px;">
+                                                {% endif %}
+                                                {{ item.title }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% elif 'top 10' in link.title_en|lower and global_top_10_dropdown_brokers %}
+                            <li class="nav-item-dropdown">
+                                <a href="{{ link.resolved_url }}" class="nav-link nav-link-dropdown{% if request.resolver_match.url_name == link.url_or_route %} active{% endif %}">
+                                    {{ link.title_en }}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for broker in global_top_10_dropdown_brokers %}
+                                        <li>
+                                            <a href="{% url 'broker_review_detail' broker.slug %}" class="dropdown-item" style="display: flex; align-items: center; gap: 8px;">
+                                                {% if broker.logo %}
+                                                    <img src="{{ broker.logo.url }}" alt="{{ broker.name }}" style="height: 16px; width: auto; object-fit: contain;">
+                                                {% endif %}
+                                                {{ broker.name }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{{ link.resolved_url }}" class="nav-link{% if request.resolver_match.url_name == link.url_or_route %} active{% endif %}">
+                                    {{ link.title_en }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
                 </ul>
             </nav>
             
@@ -442,18 +527,7 @@
                 <!-- Language Toggler Form -->
                 
 
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="btn-login">
-                        Dashboard
-                    </a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn-login">
-                        Login
-                    </a>
-                    <a href="{% url 'register' %}" class="btn-join">
-                        Join Now
-                    </a>
-                {% endif %}
+
                 
                 <button class="mobile-toggle" onclick="toggleMenu()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -477,39 +551,21 @@
         <!-- Regulatory top dark blue bar -->
         <div class="footer-regulatory-bar">
             <div class="container regulatory-grid">
-                <div class="regulatory-item">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>FCA Regulated</span>
-                </div>
-                <div class="regulatory-item">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>ASIC Regulated</span>
-                </div>
-                <div class="regulatory-item">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>CySEC Regulated</span>
-                </div>
-                <div class="regulatory-item">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>DFSA Regulated</span>
-                </div>
+                {% for badge in global_regulatory_badges %}
+                    <div class="regulatory-item">
+                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>{{ badge.text_en }}</span>
+                    </div>
+                {% endfor %}
             </div>
         </div>
 
         <!-- Risk Warning dark block -->
         <div class="footer-risk-warning-bar">
             <div class="container">
-                
-                    <strong>Risk Warning:</strong> Trading in financial markets involves significant risk to your invested capital. Before starting, ensure you fully understand the risks and receive the necessary training. Never invest money you cannot afford to lose. All information provided on "Brokers Times" is for educational and informational purposes only and does not constitute investment advice.
-                
+                <strong>Risk Warning:</strong> {{ site_settings.footer_risk_warning_en }}
             </div>
         </div>
 
@@ -519,33 +575,43 @@
                 
                 <!-- Column 1: Brand Info -->
                 <div class="footer-column">
-                    <a href="{% url 'home' %}" class="footer-brand">Brokers Times</a>
+                    <a href="{% url 'home' %}" class="footer-brand">
+                        {% if site_settings.header_logo %}
+                            <img src="{{ site_settings.header_logo.url }}" alt="{{ site_settings.header_brand_name }}" style="height: 35px; width: auto; object-fit: contain;">
+                        {% else %}
+                            {{ site_settings.header_brand_name }}
+                        {% endif %}
+                    </a>
                     <p>
-                        
-                            Your number one platform for reviewing and evaluating trading brokers in the Arab world. Transparency, accuracy, and reliability in reviews to help you choose the best broker for your needs.
-                        
+                        {{ site_settings.footer_about_en }}
                     </p>
                 </div>
 
                 <!-- Column 2: Quick Links -->
                 <div class="footer-column">
-                    <h3>Quick Links</h3>
+                    <h3>{{ site_settings.footer_col2_title_en }}</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Top 10 Brokers</a></li>
-                        <li><a href="#">Trading Academy</a></li>
-                        <li><a href="#">Market News</a></li>
-                        <li><a href="#">Compare Firms</a></li>
+                        {% for link in global_footer_quick_links %}
+                            <li>
+                                <a href="{{ link.resolved_url }}">
+                                    {{ link.title_en }}
+                                </a>
+                            </li>
+                        {% endfor %}
                     </ul>
                 </div>
 
                 <!-- Column 3: Legal -->
                 <div class="footer-column">
-                    <h3>Legal</h3>
+                    <h3>{{ site_settings.footer_col3_title_en }}</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Disclaimer</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
+                        {% for link in global_footer_legal_links %}
+                            <li>
+                                <a href="{{ link.resolved_url }}">
+                                    {{ link.title_en }}
+                                </a>
+                            </li>
+                        {% endfor %}
                     </ul>
                 </div>
 
@@ -553,26 +619,28 @@
                 <div class="footer-column">
                     <h3>Contact Us</h3>
                     <p style="margin-top: 0;">
-                        
-                            Have a question or inquiry? Our team of experts is available to help you at any time.
-                        
+                        {{ site_settings.footer_contact_text_en }}
                     </p>
                     <div class="contact-social-row">
-                        <button class="contact-icon-btn" title="Email Us">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                        </button>
-                        <button class="contact-icon-btn" title="Share Website">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <circle cx="18" cy="5" r="3"></circle>
-                                <circle cx="6" cy="12" r="3"></circle>
-                                <circle cx="18" cy="19" r="3"></circle>
-                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                            </svg>
-                        </button>
+                        {% if site_settings.contact_email %}
+                            <a href="mailto:{{ site_settings.contact_email }}" class="contact-icon-btn" title="Email Us">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </a>
+                        {% endif %}
+                        {% if site_settings.social_share_url %}
+                            <a href="{{ site_settings.social_share_url }}" target="_blank" class="contact-icon-btn" title="Social Link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                </svg>
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -581,25 +649,18 @@
             <!-- Copyright footer bottom -->
             <div class="container footer-copyright">
                 <p>
-                    
-                        &copy; 2026 Brokers Times. All rights reserved. Risk Warning: Trading forex and CFDs involves a high level of risk and can result in the loss of your invested capital.
-                    
+                    {{ site_settings.copyright_text_en|safe }}
                 </p>
             </div>
         </div>
 
     </footer>
 
-    <!-- JavaScript to toggle mobile navigation and switch language -->
+    <!-- JavaScript to toggle mobile navigation -->
     <script>
         function toggleMenu() {
             var menu = document.getElementById('navMenu');
             menu.classList.toggle('show');
-        }
-
-        function switchLanguage(lang) {
-            document.getElementById('selected-language').value = lang;
-            document.getElementById('lang-switcher-form').submit();
         }
     </script>
 </body>

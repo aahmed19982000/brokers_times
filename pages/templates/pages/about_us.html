@@ -1,0 +1,322 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}About Us - Brokers Times{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* About Us LTR Premium Styling */
+    .about-hero {
+        background: radial-gradient(circle at 10% 20%, #071f43 0%, #030a16 90%);
+        color: white;
+        padding: 6rem 0 7rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="none"/><path d="M0,50 Q25,25 50,50 T100,50" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></svg>');
+        opacity: 0.8;
+    }
+    .about-hero-tag {
+        display: inline-block;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981;
+        padding: 0.4rem 1.2rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .about-hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.25;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .about-hero-desc {
+        font-size: 1.2rem;
+        color: #94a3b8;
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+    
+    .about-section {
+        padding: 5.5rem 0;
+        background-color: var(--bg-white);
+    }
+    .section-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #071f43;
+        margin-bottom: 1rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background-color: #10b981;
+        border-radius: 2px;
+    }
+    .section-desc {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        margin-bottom: 3.5rem;
+        max-width: 700px;
+        line-height: 1.6;
+    }
+
+    /* Grid layouts */
+    .about-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+        margin-top: 2rem;
+    }
+    
+    /* Core Values / Pillar Cards */
+    .pillar-card {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 3rem 2.25rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        position: relative;
+    }
+    .pillar-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -5px rgba(0,0,0,0.05);
+        border-color: rgba(11, 49, 104, 0.15);
+    }
+    .pillar-icon-box {
+        width: 56px;
+        height: 56px;
+        background-color: rgba(11, 49, 104, 0.06);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0b3168;
+        margin-bottom: 1.75rem;
+    }
+    .pillar-icon-box svg {
+        width: 28px;
+        height: 28px;
+    }
+    .pillar-card h3 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #071f43;
+        margin-bottom: 1rem;
+    }
+    .pillar-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.65;
+    }
+
+    /* Corporate details styling */
+    .license-container {
+        background: radial-gradient(ellipse at top left, #111827, #030712);
+        border: 1px solid #1f2937;
+        border-radius: 24px;
+        padding: 3.5rem;
+        color: #f3f4f6;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .license-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #374151;
+        padding-bottom: 2rem;
+        margin-bottom: 2.5rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    .license-badge {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.25));
+        border: 1px solid #10b981;
+        color: #10b981;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 0.45rem 1.25rem;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .license-title-area h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ffffff, #d1d5db);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    .license-title-area p {
+        color: #9ca3af;
+        font-size: 0.95rem;
+    }
+    
+    .license-details-row {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .license-field {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 1.25rem;
+    }
+    .license-field:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .license-label {
+        font-size: 0.9rem;
+        color: #9ca3af;
+        font-weight: 600;
+    }
+    .license-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #ffffff;
+        text-align: right;
+    }
+
+    @media (max-width: 768px) {
+        .about-hero {
+            padding: 5rem 0;
+        }
+        .about-hero-title {
+            font-size: 2.4rem;
+        }
+        .license-container {
+            padding: 2rem 1.5rem;
+        }
+        .license-field {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        .license-value {
+            text-align: left;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 1. Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <span class="about-hero-tag">The Trading Intelligence Portal</span>
+        <h1 class="about-hero-title">About Us</h1>
+        <p class="about-hero-desc">
+            Brokers Times is dedicated to bringing transparency, clarity, and precision to the trading community. We serve as a comprehensive destination for broker reviews, financial news, market insights, and educational resources.
+        </p>
+    </div>
+</section>
+
+<!-- 2. Core Pillars -->
+<section class="about-section">
+    <div class="container">
+        <h2 class="section-title">Our Pillars</h2>
+        <p class="section-desc">We structure our platform around core competencies that help traders safeguard their capital and enhance their trading capabilities.</p>
+        
+        <div class="about-grid-3">
+            <!-- Pillar 1: Reviews -->
+            <div class="pillar-card">
+                <div class="pillar-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </div>
+                <h3>Broker Reviews</h3>
+                <p>We provide objective, rigorous assessments of global brokers. Our methodology checks regulatory compliance, fee structures, speed of execution, and customer support to help you partner with safe, reliable institutions.</p>
+            </div>
+            
+            <!-- Pillar 2: News -->
+            <div class="pillar-card">
+                <div class="pillar-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v11"></path>
+                        <path d="M12 12H7"></path>
+                        <path d="M12 8H7"></path>
+                        <path d="M12 16H7"></path>
+                        <path d="M21 8h-4"></path>
+                        <path d="M21 12h-4"></path>
+                        <path d="M21 16h-4"></path>
+                    </svg>
+                </div>
+                <h3>Market News & Analysis</h3>
+                <p>Stay informed with real-time financial reporting and critical analysis. We deliver updates on major currencies, commodities, equities, and digital assets, giving you the market context you need to trade effectively.</p>
+            </div>
+            
+            <!-- Pillar 3: Education -->
+            <div class="pillar-card">
+                <div class="pillar-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                </div>
+                <h3>Educational Academy</h3>
+                <p>Knowledge is a trader's best risk mitigation. Our educational resources cover basic trading principles, advanced strategies, and risk management guidelines to empower traders at all stages of their journey.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. Legal and Corporate Section -->
+<section class="about-section" style="background-color: #f8fafc; border-top: 1px solid var(--border-color);">
+    <div class="container">
+        <h2 class="section-title">Corporate Credentials</h2>
+        <p class="section-desc">Brokers Times operates with complete corporate transparency and is fully registered under corporate laws.</p>
+        
+        <div class="license-container">
+            <div class="license-header">
+                <div class="license-title-area">
+                    <h2>Legal & Licensing Info</h2>
+                    <p>Official registry status of the platform owner</p>
+                </div>
+                <span class="license-badge">Officially Licensed</span>
+            </div>
+            
+            <div class="license-details-row">
+                <div class="license-field">
+                    <span class="license-label">Legal Company Name</span>
+                    <span class="license-value">Brokers Times FZ-L.L.C</span>
+                </div>
+                <div class="license-field">
+                    <span class="license-label">Corporate Form</span>
+                    <span class="license-value">Free Zone Limited Liability Company (FZ-L.L.C)</span>
+                </div>
+                <div class="license-field">
+                    <span class="license-label">Licensing Status</span>
+                    <span class="license-value" style="color: #10b981;">Fully Licensed & Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

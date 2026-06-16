@@ -639,22 +639,9 @@
 {% block content %}
 <!-- 1. Category Filter Bar -->
 <section class="edu-filter-bar">
-    <div class="container edu-filter-container">
-        <!-- Categories links -->
-        <div class="edu-filter-links">
-            <span class="edu-filter-label">Filter By:</span>
-            <a href="?category=all" class="edu-filter-link {% if not category_val or category_val == 'all' %}active{% endif %}">All Analysis</a>
-            <a href="?category=analysis" class="edu-filter-link {% if category_val == 'analysis' %}active{% endif %}">Market News</a>
-            <a href="?category=basics" class="edu-filter-link {% if category_val == 'basics' %}active{% endif %}">Trading Basics</a>
-            <a href="?category=strategies" class="edu-filter-link {% if category_val == 'strategies' %}active{% endif %}">Advanced Strategies</a>
-            <a href="?category=regulations" class="edu-filter-link {% if category_val == 'regulations' %}active{% endif %}">Regulations</a>
-        </div>
-
+    <div class="container edu-filter-container" style="justify-content: center;">
         <!-- Search Bar -->
-        <form method="get" action="{% url 'article_directory' %}" class="edu-search-form">
-            {% if category_val %}
-                <input type="hidden" name="category" value="{{ category_val }}">
-            {% endif %}
+        <form method="get" action="{% url 'article_directory' %}" class="edu-search-form" style="width: 100%; max-width: 500px;">
             <button type="submit" class="edu-search-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <circle cx="11" cy="11" r="8"></circle>

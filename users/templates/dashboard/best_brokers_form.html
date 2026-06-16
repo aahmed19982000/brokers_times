@@ -584,6 +584,161 @@
         justify-content: flex-end;
         gap: 0.8rem;
     }
+
+    /* Custom Searchable Country Select Dropdown */
+    .custom-select-wrapper {
+        position: relative;
+        width: 100%;
+        user-select: none;
+        font-family: inherit;
+    }
+
+    .custom-select-trigger {
+        background: #0d1322;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: white;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 42px;
+        box-sizing: border-box;
+    }
+
+    .custom-select-trigger:hover {
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .custom-select-wrapper.open .custom-select-trigger {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .flag-icon-select {
+        width: 20px;
+        height: auto;
+        border-radius: 3px;
+        margin-right: 8px;
+        vertical-align: middle;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    #selected-flag-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .select-arrow-svg {
+        width: 16px;
+        height: 16px;
+        color: #9ca3af;
+        transition: transform 0.3s ease;
+    }
+
+    .custom-select-wrapper.open .select-arrow-svg {
+        transform: rotate(180deg);
+        color: #3b82f6;
+    }
+
+    .custom-select-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: #111726;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0.5rem;
+        box-sizing: border-box;
+    }
+
+    .custom-select-wrapper.open .custom-select-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .search-box-wrapper {
+        padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 0.25rem;
+    }
+
+    .search-box-wrapper input {
+        background: #0d1322;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .options-list {
+        max-height: 220px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }
+
+    /* Scrollbar styling for options list */
+    .options-list::-webkit-scrollbar {
+        width: 6px;
+    }
+    .options-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .options-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+    .options-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .option-item {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.88rem;
+        color: #d1d5db;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        transition: all 0.2s ease;
+    }
+
+    .option-item:hover {
+        background: rgba(59, 130, 246, 0.15);
+        color: white;
+    }
+
+    .option-item.selected {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .flag-icon-option {
+        width: 18px;
+        height: auto;
+        border-radius: 2px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .no-results-msg {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        color: #9ca3af;
+        text-align: center;
+        font-style: italic;
+    }
 </style>
 {% endblock %}
 
@@ -645,6 +800,126 @@
                         <div class="form-group-editor">
                             <label>URL Slug / الرابط المعرف</label>
                             <input type="text" name="slug" value="{{ best_list.slug|default:'' }}" required class="form-input-editor" placeholder="e.g. best-forex-brokers-2026 (without spaces)">
+                        </div>
+                    </div>
+
+                    <!-- Country Flag Selection -->
+                    <div class="form-row">
+                        <div class="form-group-editor" style="position: relative;">
+                            <label>Country Flag / علم الدولة</label>
+                            
+                            <div class="custom-select-wrapper" id="flag-select-wrapper">
+                                <!-- Selected Option Display (Trigger) -->
+                                <div class="custom-select-trigger" id="flag-select-trigger">
+                                    <span id="selected-flag-display">
+                                        {% if best_list.country_flag == 'ae' %}
+                                            <img src="https://flagcdn.com/w40/ae.png" alt="UAE" class="flag-icon-select">
+                                            <span>UAE / الإمارات 🇦🇪</span>
+                                        {% elif best_list.country_flag == 'sa' %}
+                                            <img src="https://flagcdn.com/w40/sa.png" alt="Saudi Arabia" class="flag-icon-select">
+                                            <span>Saudi Arabia / السعودية 🇸🇦</span>
+                                        {% elif best_list.country_flag == 'gb' %}
+                                            <img src="https://flagcdn.com/w40/gb.png" alt="United Kingdom" class="flag-icon-select">
+                                            <span>United Kingdom / بريطانيا 🇬🇧</span>
+                                        {% elif best_list.country_flag == 'cy' %}
+                                            <img src="https://flagcdn.com/w40/cy.png" alt="Cyprus" class="flag-icon-select">
+                                            <span>Cyprus / قبرص 🇨🇾</span>
+                                        {% elif best_list.country_flag == 'au' %}
+                                            <img src="https://flagcdn.com/w40/au.png" alt="Australia" class="flag-icon-select">
+                                            <span>Australia / أستراليا 🇦🇺</span>
+                                        {% elif best_list.country_flag == 'kw' %}
+                                            <img src="https://flagcdn.com/w40/kw.png" alt="Kuwait" class="flag-icon-select">
+                                            <span>Kuwait / الكويت 🇰🇼</span>
+                                        {% elif best_list.country_flag == 'bh' %}
+                                            <img src="https://flagcdn.com/w40/bh.png" alt="Bahrain" class="flag-icon-select">
+                                            <span>Bahrain / البحرين 🇧🇭</span>
+                                        {% elif best_list.country_flag == 'qa' %}
+                                            <img src="https://flagcdn.com/w40/qa.png" alt="Qatar" class="flag-icon-select">
+                                            <span>Qatar / قطر 🇶🇦</span>
+                                        {% elif best_list.country_flag == 'om' %}
+                                            <img src="https://flagcdn.com/w40/om.png" alt="Oman" class="flag-icon-select">
+                                            <span>Oman / عمان 🇴🇲</span>
+                                        {% elif best_list.country_flag == 'jo' %}
+                                            <img src="https://flagcdn.com/w40/jo.png" alt="Jordan" class="flag-icon-select">
+                                            <span>Jordan / الأردن 🇯🇴</span>
+                                        {% elif best_list.country_flag == 'eg' %}
+                                            <img src="https://flagcdn.com/w40/eg.png" alt="Egypt" class="flag-icon-select">
+                                            <span>Egypt / مصر 🇪🇬</span>
+                                        {% elif best_list.country_flag == 'us' %}
+                                            <img src="https://flagcdn.com/w40/us.png" alt="United States" class="flag-icon-select">
+                                            <span>United States / أمريكا 🇺🇸</span>
+                                        {% else %}
+                                            <span>No Flag / بدون علم</span>
+                                        {% endif %}
+                                    </span>
+                                    <svg class="select-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+
+                                <!-- Dropdown Container -->
+                                <div class="custom-select-dropdown" id="flag-select-dropdown">
+                                    <div class="search-box-wrapper">
+                                        <input type="text" id="flag-search-input" class="form-input-editor" placeholder="Search country / ابحث عن علم..." autocomplete="off">
+                                    </div>
+                                    <div class="options-list" id="flag-options-list">
+                                        <div class="option-item" data-value="" data-search="no flag بدون علم default">
+                                            <span>No Flag / بدون علم</span>
+                                        </div>
+                                        <div class="option-item" data-value="ae" data-search="uae emirates الامارات الإمارات ae">
+                                            <img src="https://flagcdn.com/w40/ae.png" alt="UAE" class="flag-icon-option">
+                                            <span>UAE / الإمارات 🇦🇪</span>
+                                        </div>
+                                        <div class="option-item" data-value="sa" data-search="saudi arabia ksa السعودية sa">
+                                            <img src="https://flagcdn.com/w40/sa.png" alt="Saudi Arabia" class="flag-icon-option">
+                                            <span>Saudi Arabia / السعودية 🇸🇦</span>
+                                        </div>
+                                        <div class="option-item" data-value="gb" data-search="united kingdom uk britain بريطانيا انجلترا gb">
+                                            <img src="https://flagcdn.com/w40/gb.png" alt="United Kingdom" class="flag-icon-option">
+                                            <span>United Kingdom / بريطانيا 🇬🇧</span>
+                                        </div>
+                                        <div class="option-item" data-value="cy" data-search="cyprus قبرص cy">
+                                            <img src="https://flagcdn.com/w40/cy.png" alt="Cyprus" class="flag-icon-option">
+                                            <span>Cyprus / قبرص 🇨🇾</span>
+                                        </div>
+                                        <div class="option-item" data-value="au" data-search="australia أستراليا استراليا au">
+                                            <img src="https://flagcdn.com/w40/au.png" alt="Australia" class="flag-icon-option">
+                                            <span>Australia / أستراليا 🇦🇺</span>
+                                        </div>
+                                        <div class="option-item" data-value="kw" data-search="kuwait الكويت kw">
+                                            <img src="https://flagcdn.com/w40/kw.png" alt="Kuwait" class="flag-icon-option">
+                                            <span>Kuwait / الكويت 🇰🇼</span>
+                                        </div>
+                                        <div class="option-item" data-value="bh" data-search="bahrain البحرين bh">
+                                            <img src="https://flagcdn.com/w40/bh.png" alt="Bahrain" class="flag-icon-option">
+                                            <span>Bahrain / البحرين 🇧🇭</span>
+                                        </div>
+                                        <div class="option-item" data-value="qa" data-search="qatar قطر qa">
+                                            <img src="https://flagcdn.com/w40/qa.png" alt="Qatar" class="flag-icon-option">
+                                            <span>Qatar / قطر 🇶🇦</span>
+                                        </div>
+                                        <div class="option-item" data-value="om" data-search="oman عمان om">
+                                            <img src="https://flagcdn.com/w40/om.png" alt="Oman" class="flag-icon-option">
+                                            <span>Oman / عمان 🇴🇲</span>
+                                        </div>
+                                        <div class="option-item" data-value="jo" data-search="jordan الاردن الأردن jo">
+                                            <img src="https://flagcdn.com/w40/jo.png" alt="Jordan" class="flag-icon-option">
+                                            <span>Jordan / الأردن 🇯🇴</span>
+                                        </div>
+                                        <div class="option-item" data-value="eg" data-search="egypt مصر eg">
+                                            <img src="https://flagcdn.com/w40/eg.png" alt="Egypt" class="flag-icon-option">
+                                            <span>Egypt / مصر 🇪🇬</span>
+                                        </div>
+                                        <div class="option-item" data-value="us" data-search="united states us usa امريكا أمريكا us">
+                                            <img src="https://flagcdn.com/w40/us.png" alt="United States" class="flag-icon-option">
+                                            <span>United States / أمريكا 🇺🇸</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Actual hidden input submitted to backend -->
+                            <input type="hidden" name="country_flag" id="country-flag-hidden-input" value="{{ best_list.country_flag|default:'' }}">
                         </div>
                     </div>
 
@@ -1409,5 +1684,105 @@
             }
         }
     }
+
+    // Custom searchable country flag dropdown
+    document.addEventListener('DOMContentLoaded', () => {
+        const wrapper = document.getElementById('flag-select-wrapper');
+        const trigger = document.getElementById('flag-select-trigger');
+        const searchInput = document.getElementById('flag-search-input');
+        const optionsList = document.getElementById('flag-options-list');
+        const optionItems = optionsList.querySelectorAll('.option-item');
+        const hiddenInput = document.getElementById('country-flag-hidden-input');
+        const displaySpan = document.getElementById('selected-flag-display');
+
+        if (!wrapper || !trigger || !searchInput || !optionsList || !hiddenInput || !displaySpan) {
+            return;
+        }
+
+        // Toggle dropdown
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = wrapper.classList.contains('open');
+            wrapper.classList.toggle('open');
+            if (!isOpen) {
+                searchInput.value = '';
+                // reset filtering
+                optionItems.forEach(item => item.style.display = 'flex');
+                const noResults = optionsList.querySelector('.no-results-msg');
+                if (noResults) noResults.remove();
+                
+                // Focus search input
+                setTimeout(() => searchInput.focus(), 100);
+            }
+        });
+
+        // Search options
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            let hasResults = false;
+
+            optionItems.forEach(item => {
+                const searchData = item.getAttribute('data-search').toLowerCase();
+                if (searchData.includes(query)) {
+                    item.style.display = 'flex';
+                    hasResults = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Handle no results message
+            let noResults = optionsList.querySelector('.no-results-msg');
+            if (!hasResults) {
+                if (!noResults) {
+                    noResults = document.createElement('div');
+                    noResults.className = 'no-results-msg';
+                    noResults.innerText = 'No matches found / لا توجد نتائج مطابقة';
+                    optionsList.appendChild(noResults);
+                }
+            } else if (noResults) {
+                noResults.remove();
+            }
+        });
+
+        // Select option
+        optionItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const val = item.getAttribute('data-value');
+                hiddenInput.value = val;
+                
+                // Update trigger display
+                displaySpan.innerHTML = item.innerHTML;
+                
+                // Update selected class
+                optionItems.forEach(opt => opt.classList.remove('selected'));
+                item.classList.add('selected');
+
+                // Close dropdown
+                wrapper.classList.remove('open');
+            });
+        });
+
+        // Click outside to close
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) {
+                wrapper.classList.remove('open');
+            }
+        });
+
+        // Prevent click inside dropdown from closing it (except on options)
+        document.getElementById('flag-select-dropdown').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Highlight initial selection
+        const initialVal = hiddenInput.value;
+        optionItems.forEach(item => {
+            if (item.getAttribute('data-value') === initialVal) {
+                item.classList.add('selected');
+            }
+        });
+    });
 </script>
 {% endblock %}

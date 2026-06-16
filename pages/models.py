@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse, NoReverseMatch
 
 class HomepageSettings(models.Model):
     # Hero popular review
@@ -21,3 +22,101 @@ class HomepageSettings(models.Model):
         
     def __str__(self):
         return "Homepage Configuration"
+
+
+class SiteSettings(models.Model):
+    # Header Settings
+    header_brand_name = models.CharField(max_length=100, default="Brokers Times")
+    header_logo = models.ImageField(upload_to='site_settings/', blank=True, null=True, verbose_name="Brand Logo")
+    
+    # Dropdown Page links
+    top_10_dropdown_brokers = models.ManyToManyField('brokers.Broker', related_name='top_10_dropdown_settings', blank=True, verbose_name="Top 10 Brokers Dropdown (Direct)")
+    compare_dropdown_lists = models.ManyToManyField('best_brokers.BestBrokersList', related_name='compare_settings', blank=True, verbose_name="Compare Dropdown Pages")
+    
+    # Footer Settings - About Us
+    footer_about_en = models.TextField(default="Your number one platform for reviewing and evaluating trading brokers in the Arab world. Transparency, accuracy, and reliability in reviews to help you choose the best broker for your needs.")
+    footer_about_ar = models.TextField(default="منصتكم الأولى لمراجعة وتقييم شركات التداول في العالم العربي. شفافية ودقة وموثوقية في التقييمات لمساعدتك في اختيار الوسيط الأنسب لاحتياجاتك.")
+    
+    # Footer Settings - Risk Warning
+    footer_risk_warning_en = models.TextField(default="Trading in financial markets involves significant risk to your invested capital. Before starting, ensure you fully understand the risks and receive the necessary training. Never invest money you cannot afford to lose. All information provided on \"Brokers Times\" is for educational and informational purposes only and does not constitute investment advice.")
+    footer_risk_warning_ar = models.TextField(default="ينطوي التداول في الأسواق المالية على مخاطر كبرى على رأس المال المستثمر. تأكد قبل البدء من فهمك الكامل للمخاطر وتلقيك التدريب اللازم. لا تستثمر أبداً أموالاً لا يمكنك تحمل خسارتها. جميع المعلومات المقدمة في \"بروكرز تايمز\" هي لأغراض تعليمية وإعلامية فقط ولا تشكل نصيحة استثمارية.")
+    
+    # Footer Settings - Column Titles
+    footer_col2_title_en = models.CharField(max_length=100, default="Quick Links")
+    footer_col2_title_ar = models.CharField(max_length=100, default="روابط سريعة")
+    footer_col3_title_en = models.CharField(max_length=100, default="Legal")
+    footer_col3_title_ar = models.CharField(max_length=100, default="قانوني")
+    
+    # Footer Settings - Contact Us
+    footer_contact_text_en = models.TextField(default="Have a question or inquiry? Our team of experts is available to help you at any time.")
+    footer_contact_text_ar = models.TextField(default="هل لديك سؤال أو استفسار؟ فريق الخبراء لدينا متاح لمساعدتك في أي وقت.")
+    contact_email = models.EmailField(default="support@brokerstimes.com")
+    social_share_url = models.URLField(max_length=500, default="https://twitter.com/brokerstimes")
+    
+    # Footer Settings - Copyright
+    copyright_text_en = models.TextField(default="&copy; 2026 Brokers Times. All rights reserved. Risk Warning: Trading forex and CFDs involves a high level of risk and can result in the loss of your invested capital.")
+    copyright_text_ar = models.TextField(default="&copy; 2026 بروكرز تايمز. جميع الحقوق محفوظة. تحذير المخاطر: تنطوي تداولات الفوركس وعقود الفروقات على مخاطر عالية وقد تؤدي لخسارة رأس المال.")
+
+    class Meta:
+        verbose_name = "Site Settings"
+        verbose_name_plural = "Site Settings"
+
+    def __str__(self):
+        return "Global Site Settings"
+
+
+class HeaderLink(models.Model):
+    title_en = models.CharField(max_length=100)
+    title_ar = models.CharField(max_length=100)
+    url_or_route = models.CharField(max_length=255, help_text="Can be a relative path e.g. /compare/ or named route home, compare_list, broker_directory, article_directory")
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"Header Link: {self.title_en} / {self.title_ar}"
+
+    @property
+    def resolved_url(self):
+        try:
+            return reverse(self.url_or_route)
+        except NoReverseMatch:
+            return self.url_or_route
+
+
+class FooterLink(models.Model):
+    COLUMN_CHOICES = (
+        ('col2', 'Quick Links (Column 2)'),
+        ('col3', 'Legal Links (Column 3)'),
+    )
+    title_en = models.CharField(max_length=100)
+    title_ar = models.CharField(max_length=100)
+    url_or_route = models.CharField(max_length=255)
+    column = models.CharField(max_length=10, choices=COLUMN_CHOICES, default='col2')
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"Footer Link ({self.get_column_display()}): {self.title_en}"
+
+    @property
+    def resolved_url(self):
+        try:
+            return reverse(self.url_or_route)
+        except NoReverseMatch:
+            return self.url_or_route
+
+
+class FooterRegulatoryBadge(models.Model):
+    text_en = models.CharField(max_length=100)
+    text_ar = models.CharField(max_length=100)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"Regulatory Badge: {self.text_en}"

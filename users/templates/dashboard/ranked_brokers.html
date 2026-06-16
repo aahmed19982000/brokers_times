@@ -517,7 +517,7 @@
     const brokerOptionsHTML = `
         <option value="">--- Select Broker / اختر الشركة ---</option>
         {% for b in brokers %}
-            <option value="{{ b.id }}">{{ b.name }}</option>
+            <option value="{{ b.id }}" data-logo="{% if b.logo %}{{ b.logo.url }}{% endif %}" data-name="{{ b.name }}">{{ b.name }}</option>
         {% endfor %}
     `;
 
@@ -533,6 +533,7 @@
         
         syncModalCheckboxes();
         renderBrokerPills();
+        initCustomBrokerSelects();
     });
 
     // Sync modal checkboxes based on currentSelection
@@ -766,6 +767,7 @@
         if (select) select.value = brokerId;
 
         list.appendChild(row);
+        initCustomBrokerSelects(row);
         recalculateRanks();
     }
 
@@ -829,6 +831,197 @@
             }
         });
     }
+
+    // Convert all selects in the page to custom searchable selects
+    function initCustomBrokerSelects(root = document) {
+        const selects = root.querySelectorAll('select[name="item_broker"]');
+        selects.forEach(select => {
+            if (select.dataset.customSelectInitialized) return;
+            select.dataset.customSelectInitialized = "true";
+            
+            // Hide original select
+            select.style.display = 'none';
+            
+            // Create wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = 'custom-select-wrapper broker-select-wrapper';
+            
+            // Trigger
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-select-trigger';
+            
+            const displaySpan = document.createElement('span');
+            displaySpan.className = 'selected-display';
+            
+            const selectedOpt = select.options[select.selectedIndex] || select.options[0];
+            if (selectedOpt) {
+                displaySpan.textContent = selectedOpt.textContent.trim();
+            } else {
+                displaySpan.textContent = '--- اختر الشركة ---';
+            }
+            
+            const arrowSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            arrowSvg.setAttribute('class', 'select-arrow-svg');
+            arrowSvg.setAttribute('viewBox', '0 0 24 24');
+            arrowSvg.setAttribute('fill', 'none');
+            arrowSvg.setAttribute('stroke', 'currentColor');
+            arrowSvg.setAttribute('stroke-width', '2');
+            arrowSvg.setAttribute('stroke-linecap', 'round');
+            arrowSvg.setAttribute('stroke-linejoin', 'round');
+            
+            const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            polyline.setAttribute('points', '6 9 12 15 18 9');
+            arrowSvg.appendChild(polyline);
+            
+            trigger.appendChild(displaySpan);
+            trigger.appendChild(arrowSvg);
+            
+            // Dropdown panel
+            const dropdown = document.createElement('div');
+            dropdown.className = 'custom-select-dropdown';
+            
+            // Search box
+            const searchWrapper = document.createElement('div');
+            searchWrapper.className = 'search-box-wrapper';
+            
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Search broker / ابحث عن شركة...';
+            searchInput.autocomplete = 'off';
+            
+            searchWrapper.appendChild(searchInput);
+            dropdown.appendChild(searchWrapper);
+            
+            // Options list
+            const optionsList = document.createElement('div');
+            optionsList.className = 'options-list';
+            
+            const populateOptions = () => {
+                optionsList.innerHTML = '';
+                Array.from(select.options).forEach(opt => {
+                    const item = document.createElement('div');
+                    item.className = 'option-item';
+                    item.dataset.value = opt.value;
+                    item.dataset.search = opt.textContent.toLowerCase().trim();
+                    
+                    if (opt.selected) {
+                        item.classList.add('selected');
+                        displaySpan.textContent = opt.textContent.trim();
+                    }
+                    
+                    const logoUrl = opt.dataset.logo || '';
+                    if (logoUrl) {
+                        const img = document.createElement('img');
+                        img.src = logoUrl;
+                        img.alt = opt.textContent;
+                        img.style.maxHeight = '20px';
+                        img.style.maxWidth = '60px';
+                        img.style.objectFit = 'contain';
+                        img.style.marginRight = '8px';
+                        item.appendChild(img);
+                    }
+                    
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = opt.textContent.trim();
+                    item.appendChild(textSpan);
+                    
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        select.value = opt.value;
+                        
+                        optionsList.querySelectorAll('.option-item').forEach(oi => oi.classList.remove('selected'));
+                        item.classList.add('selected');
+                        
+                        wrapper.classList.remove('open');
+                        
+                        const event = new Event('change', { bubbles: true });
+                        select.dispatchEvent(event);
+                    });
+                    
+                    optionsList.appendChild(item);
+                });
+            };
+            
+            populateOptions();
+            dropdown.appendChild(optionsList);
+            
+            wrapper.appendChild(trigger);
+            wrapper.appendChild(dropdown);
+            
+            select.parentNode.insertBefore(wrapper, select.nextSibling);
+            
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                    if (w !== wrapper) w.classList.remove('open');
+                });
+                
+                const isOpen = wrapper.classList.contains('open');
+                wrapper.classList.toggle('open');
+                if (!isOpen) {
+                    searchInput.value = '';
+                    optionsList.querySelectorAll('.option-item').forEach(item => item.style.display = 'flex');
+                    const noResults = optionsList.querySelector('.no-results-msg');
+                    if (noResults) noResults.remove();
+                    setTimeout(() => searchInput.focus(), 100);
+                }
+            });
+            
+            dropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                let hasResults = false;
+                
+                optionsList.querySelectorAll('.option-item').forEach(item => {
+                    const searchData = item.dataset.search;
+                    if (searchData.includes(query)) {
+                        item.style.display = 'flex';
+                        hasResults = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                let noResults = optionsList.querySelector('.no-results-msg');
+                if (!hasResults) {
+                    if (!noResults) {
+                        noResults = document.createElement('div');
+                        noResults.className = 'no-results-msg';
+                        noResults.innerText = 'No matches found / لا توجد نتائج مطابقة';
+                        optionsList.appendChild(noResults);
+                    }
+                } else if (noResults) {
+                    noResults.remove();
+                }
+            });
+            
+            select.addEventListener('change', () => {
+                const selectedOpt = select.options[select.selectedIndex];
+                if (selectedOpt) {
+                    displaySpan.textContent = selectedOpt.textContent.trim();
+                    optionsList.querySelectorAll('.option-item').forEach(item => {
+                        if (item.dataset.value === selectedOpt.value) {
+                            item.classList.add('selected');
+                        } else {
+                            item.classList.remove('selected');
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    // Click outside to close any open dropdowns
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-select-wrapper')) {
+            document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                w.classList.remove('open');
+            });
+        }
+    });
 </script>
 <style>
     .drag-handle {
@@ -913,6 +1106,150 @@
         font-weight: 800;
         color: #0f172a;
         letter-spacing: 1px;
+    }
+
+    /* Custom Searchable Select Dropdown for Broker rows */
+    .custom-select-wrapper {
+        position: relative;
+        width: 100%;
+        user-select: none;
+        font-family: inherit;
+    }
+
+    .custom-select-trigger {
+        background: #0d1322;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: white;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 42px;
+        box-sizing: border-box;
+    }
+
+    .custom-select-trigger:hover {
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .custom-select-wrapper.open .custom-select-trigger {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .selected-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .select-arrow-svg {
+        width: 16px;
+        height: 16px;
+        color: #9ca3af;
+        transition: transform 0.3s ease;
+    }
+
+    .custom-select-wrapper.open .select-arrow-svg {
+        transform: rotate(180deg);
+        color: #6366f1;
+    }
+
+    .custom-select-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: #111726;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0.5rem;
+        box-sizing: border-box;
+    }
+
+    .custom-select-wrapper.open .custom-select-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .search-box-wrapper {
+        padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 0.25rem;
+    }
+
+    .search-box-wrapper input {
+        background: #0d1322;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        color: white;
+        outline: none;
+        border-radius: 6px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .options-list {
+        max-height: 200px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }
+
+    /* Scrollbar styling for options list */
+    .options-list::-webkit-scrollbar {
+        width: 6px;
+    }
+    .options-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .options-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+    .options-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .option-item {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.88rem;
+        color: #d1d5db;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        transition: all 0.2s ease;
+    }
+
+    .option-item:hover {
+        background: rgba(99, 102, 241, 0.15);
+        color: white;
+    }
+
+    .option-item.selected {
+        background: #6366f1;
+        color: white;
+    }
+
+    .no-results-msg {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        color: #9ca3af;
+        text-align: center;
+        font-style: italic;
     }
 </style>
 {% endblock %}

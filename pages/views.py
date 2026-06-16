@@ -36,7 +36,18 @@ class HomeView(TemplateView):
         sidebar_articles = all_articles[1:4] if all_articles.count() > 1 else []
         
         from news.models import NewsArticle
-        latest_news = NewsArticle.objects.filter(status='published').order_by('-created_at')[:4]
+        latest_news = NewsArticle.objects.filter(status='published').order_by('-created_at')[:5]
+
+        from best_brokers.models import BestBrokersList
+        global_list = BestBrokersList.objects.filter(is_global=True).first()
+        global_ranked_brokers = []
+        if global_list:
+            global_ranked_brokers = [item.broker for item in global_list.items.all().order_by('rank')[:5]]
+
+        from categories.models import Regulator, FinancialAsset, TradingPlatform
+        regulators = Regulator.objects.all()
+        assets = FinancialAsset.objects.all()
+        platforms = TradingPlatform.objects.all()
 
         context.update({
             'homepage_settings': settings_obj,
@@ -45,6 +56,10 @@ class HomeView(TemplateView):
             'featured_article': featured_article,
             'sidebar_articles': sidebar_articles,
             'latest_news': latest_news,
+            'global_ranked_brokers': global_ranked_brokers,
+            'regulators': regulators,
+            'assets': assets,
+            'platforms': platforms,
         })
         return context
 
@@ -243,6 +258,12 @@ class ArticleDirectoryView(ListView):
 class CompareListView(TemplateView):
     template_name = 'pages/compare_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from best_brokers.models import BestBrokersList
+        context['compare_lists'] = BestBrokersList.objects.filter(status='published').order_by('-created_at')
+        return context
+
 
 class BestBrokersListDetailView(DetailView):
     model = BestBrokersList
@@ -253,6 +274,27 @@ class BestBrokersListDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['page'] = self.object
         return context
+
+
+class AboutUsView(TemplateView):
+    template_name = 'pages/about_us.html'
+
+
+class PrivacyPolicyView(TemplateView):
+    template_name = 'pages/privacy_policy.html'
+
+
+class TermsOfServiceView(TemplateView):
+    template_name = 'pages/terms_of_service.html'
+
+
+class DisclaimerView(TemplateView):
+    template_name = 'pages/disclaimer.html'
+
+
+class CookiePolicyView(TemplateView):
+    template_name = 'pages/cookie_policy.html'
+
 
 
 

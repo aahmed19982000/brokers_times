@@ -605,97 +605,943 @@
             grid-template-columns: 1fr;
         }
     }
+
+    /* Side-by-Side News & Top Brokers Layout */
+    .trading-news-brokers-section {
+        background-color: var(--bg-white);
+        border-bottom: 1px solid var(--border-color);
+        padding: 3.5rem 0;
+        position: relative;
+    }
+
+    .news-brokers-grid {
+        display: grid;
+        grid-template-columns: 1.95fr 1.05fr;
+        gap: 2.5rem;
+    }
+
+    @media (max-width: 1024px) {
+        .news-brokers-grid {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+    }
+
+    .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.75rem;
+    }
+
+    .header-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-title-wrapper h2 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    .pulse-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #ef4444;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        animation: pulse 1.8s infinite;
+        display: inline-block;
+    }
+
+    .pulse-indicator.pulse-accent {
+        background-color: var(--accent);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: pulse-acc 1.8s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+    }
+
+    @keyframes pulse-acc {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+
+    .view-all-link {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        transition: transform 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .view-all-link:hover {
+        transform: translateX(3px);
+    }
+    
+    .rtl-layout .view-all-link:hover {
+        transform: translateX(-3px);
+    }
+
+    /* Premium News Slider */
+    .premium-news-slider {
+        display: grid;
+        grid-template-columns: 1.8fr 1.2fr;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-white);
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        height: 400px;
+    }
+
+    @media (max-width: 768px) {
+        .premium-news-slider {
+            grid-template-columns: 1fr;
+            height: auto;
+        }
+        .slider-tabs-sidebar {
+            display: flex;
+            flex-direction: row !important;
+            overflow-x: auto;
+            white-space: nowrap;
+            height: auto !important;
+            border-left: none !important;
+            border-top: 1px solid var(--border-color);
+            scrollbar-width: none;
+        }
+        .slider-tabs-sidebar::-webkit-scrollbar {
+            display: none;
+        }
+        .slider-tab-item {
+            flex: 0 0 200px;
+            padding: 1rem !important;
+            border-bottom: none !important;
+            border-right: 1px solid var(--border-color);
+        }
+        .slider-tab-item.active {
+            border-right: 3px solid var(--primary) !important;
+            border-bottom: none !important;
+        }
+        .rtl-layout .slider-tab-item.active {
+            border-left: 3px solid var(--primary) !important;
+            border-right: none !important;
+        }
+    }
+
+    .active-slide-container {
+        position: relative;
+        overflow: hidden;
+        background-color: #0f172a;
+        height: 100%;
+    }
+
+    .news-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+        z-index: 1;
+    }
+
+    .news-slide.active {
+        opacity: 1;
+        visibility: visible;
+        z-index: 2;
+    }
+
+    .slide-link-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+    }
+
+    .slide-image-wrapper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .slide-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 6s ease;
+    }
+
+    .news-slide.active .slide-image-wrapper img {
+        transform: scale(1.08);
+    }
+
+    .fallback-slide-img {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #1e293b;
+        color: var(--text-muted);
+    }
+
+    .slide-gradient-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 75%;
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0) 100%);
+        z-index: 2;
+    }
+
+    .slide-content-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 2rem;
+        z-index: 3;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        pointer-events: none;
+    }
+
+    .slide-category-badge {
+        background-color: var(--accent);
+        color: #ffffff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        align-self: flex-start;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .slide-date {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .slide-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.3;
+        margin: 0;
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .slide-excerpt {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.4;
+        margin: 0;
+        font-weight: 400;
+        max-width: 95%;
+    }
+
+    .slide-readmore-btn {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-top: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .slider-tabs-sidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: var(--bg-light);
+        border-left: 1px solid var(--border-color);
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .rtl-layout .slider-tabs-sidebar {
+        border-left: none;
+        border-right: 1px solid var(--border-color);
+    }
+
+    .slider-tab-item {
+        padding: 1.1rem;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .slider-tab-item:last-child {
+        border-bottom: none;
+    }
+
+    .slider-tab-item:hover {
+        background-color: rgba(11, 49, 104, 0.03);
+    }
+
+    .slider-tab-item.active {
+        background-color: #ffffff;
+        border-left: 4px solid var(--primary);
+    }
+
+    .rtl-layout .slider-tab-item.active {
+        border-left: none;
+        border-right: 4px solid var(--primary);
+    }
+
+    .tab-progress-line {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        background-color: var(--primary);
+        width: 0;
+        transition: width 0.1s linear;
+    }
+
+    .tab-meta {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .tab-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        line-height: 1.4;
+        margin: 0;
+        transition: color 0.2s ease;
+    }
+
+    .slider-tab-item.active .tab-title {
+        color: var(--primary);
+    }
+
+    .empty-news-state, .empty-brokers-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1.5rem;
+        text-align: center;
+        border: 1px dashed var(--border-color);
+        border-radius: 12px;
+        background-color: var(--bg-light);
+        gap: 0.8rem;
+        height: 400px;
+    }
+
+    /* Top Brokers Widget styles */
+    .brokers-widget-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .broker-widget-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .broker-widget-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
+        border-color: rgba(11, 49, 104, 0.2);
+    }
+
+    .broker-rank-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    .rtl-layout .broker-rank-wrapper {
+        margin-right: 0;
+        margin-left: 0.8rem;
+    }
+
+    .rank-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .rank-badge.gold {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    }
+
+    .rank-badge.silver {
+        background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        box-shadow: 0 2px 4px rgba(148, 163, 184, 0.3);
+    }
+
+    .rank-badge.bronze {
+        background: linear-gradient(135deg, #b45309 0%, #78350f 100%);
+        box-shadow: 0 2px 4px rgba(180, 83, 9, 0.3);
+    }
+
+    .rank-badge.default {
+        background-color: var(--bg-light);
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+    }
+
+    .broker-logo-name-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-grow: 1;
+    }
+
+    .broker-widget-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 6px;
+        background-color: var(--bg-light);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .broker-widget-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 3px;
+    }
+
+    .logo-fallback {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .broker-widget-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .broker-widget-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        line-height: 1.2;
+    }
+
+    .broker-widget-name:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+
+    .broker-widget-rating {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .stars-gold {
+        color: #f59e0b;
+        font-weight: 700;
+    }
+
+    .deposit-meta {
+        font-weight: 500;
+    }
+
+    .broker-widget-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    .rtl-layout .broker-widget-actions {
+        margin-left: 0;
+        margin-right: 0.8rem;
+    }
+
+    .btn-widget-action {
+        text-decoration: none;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.45rem 0.8rem;
+        border-radius: 6px;
+        text-align: center;
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-widget-action.open-acc {
+        background-color: var(--accent);
+        color: #ffffff;
+        border: 1px solid var(--accent);
+    }
+
+    .btn-widget-action.open-acc:hover {
+        background-color: #059669;
+        border-color: #059669;
+    }
+
+    .btn-widget-action.review-lnk {
+        background-color: transparent;
+        color: var(--text-dark);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-widget-action.review-lnk:hover {
+        background-color: var(--bg-light);
+        border-color: var(--text-muted);
+    }
+
+    /* Directory Section Grid Styles */
+    .directory-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+        .directory-grid {
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+    }
+
+    .directory-column {
+        background-color: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+
+    .directory-column-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.75rem;
+    }
+
+    .directory-icon-wrapper {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background-color: rgba(11, 49, 104, 0.05);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .directory-column-header h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    .directory-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .directory-item-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.75rem 1rem;
+        background-color: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .directory-item-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(11, 49, 104, 0.05);
+    }
+
+    .item-icon-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: rgba(11, 49, 104, 0.08);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .item-icon-circle.accent-theme {
+        background-color: rgba(16, 185, 129, 0.08);
+        color: var(--accent);
+    }
+
+    .item-icon-circle.primary-theme {
+        background-color: rgba(59, 130, 246, 0.08);
+        color: #3b82f6;
+    }
+
+    .abbr-text {
+        font-size: 0.7rem;
+    }
+
+    .item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .item-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        line-height: 1.2;
+    }
+
+    .item-meta {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .empty-dir-text {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        text-align: center;
+        padding: 1rem;
+    }
 </style>
+
 {% endblock %}
 
 {% block content %}
 
-<!-- Latest News Section (Added by Request) -->
-<section class="section-container" style="background-color: var(--bg-white); border-bottom: 1px solid var(--border-color); position: relative; overflow: hidden;">
+<!-- Latest News & Top Brokers Side-by-Side Section -->
+<section class="trading-news-brokers-section">
     <div class="container">
-        <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
-            <div class="section-title">
-                <h2>{% if request.LANGUAGE_CODE == 'ar' %}أحدث أخبار التداول{% else %}Latest Trading News{% endif %}</h2>
-                <p style="margin-top: 0.5rem; color: var(--text-muted);">{% if request.LANGUAGE_CODE == 'ar' %}تغطية لأهم التطورات والأخبار العاجلة في سوق الفوركس وشركات التداول.{% else %}Coverage of the most important developments and breaking news in the forex market and brokers.{% endif %}</p>
-            </div>
-            <div style="display: flex; gap: 1rem; align-items: center;">
-                <div class="slider-controls" style="display: flex; gap: 0.5rem;">
-                    <button class="slider-btn" id="news-slide-left" style="background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="transform: {% if request.LANGUAGE_CODE == 'ar' %}rotate(180deg){% else %}none{% endif %};"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    </button>
-                    <button class="slider-btn" id="news-slide-right" style="background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="transform: {% if request.LANGUAGE_CODE == 'ar' %}rotate(180deg){% else %}none{% endif %};"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                </div>
-                <a href="{% url 'news_list' %}" class="section-link" style="margin-left: 1rem; font-weight: 600;">
-                    {% if request.LANGUAGE_CODE == 'ar' %}تصفح كل الأخبار{% else %}View All News{% endif %} &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div id="news-slider-container" style="display: flex; gap: 1.5rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 1rem; scroll-behavior: smooth;">
-            {% for news in latest_news %}
-            <a href="{% url 'news_detail' news.slug %}" style="scroll-snap-align: start; flex: 0 0 calc(33.333% - 1rem); min-width: 280px; text-decoration: none; color: inherit; display: block; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; background: #fff; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                <div style="height: 180px; background-color: var(--bg-light); position: relative; overflow: hidden;">
-                    {% if news.featured_image %}
-                        <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                    {% else %}
-                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); background: #f1f5f9;">
-                            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        </div>
-                    {% endif %}
-                </div>
-                <div style="padding: 1.5rem;">
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 6px;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        {{ news.created_at|date:"M d, Y" }}
+        <div class="news-brokers-grid">
+            
+            <!-- Left Side: Professional News Slider -->
+            <div class="news-slider-column">
+                <div class="column-header">
+                    <div class="header-title-wrapper">
+                        <span class="pulse-indicator"></span>
+                        <h2>{% if request.LANGUAGE_CODE == 'ar' %}أحدث أخبار التداول{% else %}Latest Trading News{% endif %}</h2>
                     </div>
-                    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.8rem; line-height: 1.4;">{{ news.title|truncatechars:60 }}</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0; line-height: 1.5;">{{ news.content|striptags|truncatewords:15|safe }}</p>
+                    <a href="{% url 'news_list' %}" class="view-all-link">
+                        {% if request.LANGUAGE_CODE == 'ar' %}كل الأخبار{% else %}All News{% endif %} &rarr;
+                    </a>
                 </div>
-            </a>
-            {% empty %}
-            <div style="flex: 1 1 100%; text-align: center; padding: 3rem; color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: 12px; background-color: var(--bg-light);">
-                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem;"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
-                <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">{% if request.LANGUAGE_CODE == 'ar' %}لا توجد أخبار حالياً{% else %}No News Available{% endif %}</h3>
-                <p style="font-size: 0.95rem; margin: 0;">{% if request.LANGUAGE_CODE == 'ar' %}سنقوم بنشر أحدث الأخبار والتطورات قريباً.{% else %}We will publish the latest news and developments soon.{% endif %}</p>
+                
+                {% if latest_news %}
+                <div class="premium-news-slider" id="premiumNewsSlider">
+                    <!-- Main active slide representation -->
+                    <div class="active-slide-container">
+                        {% for news in latest_news %}
+                        <div class="news-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
+                            <a href="{% url 'news_detail' news.slug %}" class="slide-link-overlay"></a>
+                            <div class="slide-image-wrapper">
+                                {% if news.featured_image %}
+                                    <img src="{{ news.featured_image.url }}" alt="{{ news.featured_image_alt|default:news.title }}">
+                                {% else %}
+                                    <div class="fallback-slide-img">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    </div>
+                                {% endif %}
+                                <div class="slide-gradient-overlay"></div>
+                            </div>
+                            
+                            <div class="slide-content-overlay">
+                                <span class="slide-category-badge">{% if request.LANGUAGE_CODE == 'ar' %}أخبار السوق{% else %}Market News{% endif %}</span>
+                                <span class="slide-date">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-bottom:2px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    {{ news.created_at|date:"M d, Y" }}
+                                </span>
+                                <h3 class="slide-title">{{ news.title }}</h3>
+                                <p class="slide-excerpt">{{ news.content|striptags|truncatewords:20|safe }}</p>
+                                <span class="slide-readmore-btn">
+                                    {% if request.LANGUAGE_CODE == 'ar' %}اقرأ التفاصيل{% else %}Read Full Article{% endif %}
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-left: 4px; transform: {% if request.LANGUAGE_CODE == 'ar' %}rotate(180deg){% else %}none{% endif %};"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Right side/Tabs selector sidebar (in desktop) -->
+                    <div class="slider-tabs-sidebar">
+                        {% for news in latest_news %}
+                        <div class="slider-tab-item {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
+                            <div class="tab-progress-line"></div>
+                            <span class="tab-meta">{{ news.created_at|date:"M d, Y" }}</span>
+                            <h4 class="tab-title">{{ news.title|truncatechars:70 }}</h4>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="empty-news-state">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.2" style="color:var(--text-muted);"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line></svg>
+                    <h3>{% if request.LANGUAGE_CODE == 'ar' %}لا توجد أخبار تداول حالياً{% else %}No Trading News Available{% endif %}</h3>
+                    <p>{% if request.LANGUAGE_CODE == 'ar' %}سنقوم بنشر آخر الأخبار والتحديثات فور صدورها.{% else %}We will publish updates and breaking news as soon as they occur.{% endif %}</p>
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
+            
+            <!-- Right Side: Top Brokers Widget -->
+            <div class="top-brokers-column">
+                <div class="column-header">
+                    <div class="header-title-wrapper">
+                        <span class="pulse-indicator pulse-accent"></span>
+                        <h2>{% if request.LANGUAGE_CODE == 'ar' %}أفضل شركات التداول{% else %}Top Rated Brokers{% endif %}</h2>
+                    </div>
+                    <a href="{% url 'broker_directory' %}" class="view-all-link">
+                        {% if request.LANGUAGE_CODE == 'ar' %}كل الشركات{% else %}All Brokers{% endif %} &rarr;
+                    </a>
+                </div>
+                
+                <div class="brokers-widget-container">
+                    {% for broker in global_ranked_brokers %}
+                    <div class="broker-widget-row">
+                        <!-- Rank Badge -->
+                        <div class="broker-rank-wrapper">
+                            {% if forloop.counter == 1 %}
+                                <span class="rank-badge gold">1</span>
+                            {% elif forloop.counter == 2 %}
+                                <span class="rank-badge silver">2</span>
+                            {% elif forloop.counter == 3 %}
+                                <span class="rank-badge bronze">3</span>
+                            {% else %}
+                                <span class="rank-badge default">{{ forloop.counter }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Logo & Profile -->
+                        <div class="broker-logo-name-wrapper">
+                            <div class="broker-widget-logo">
+                                {% if broker.logo %}
+                                    <img src="{{ broker.logo.url }}" alt="{{ broker.name }}">
+                                {% else %}
+                                    <span class="logo-fallback">{{ broker.name|slice:":2"|upper }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="broker-widget-details">
+                                <a href="{% url 'broker_review_detail' broker.slug %}" class="broker-widget-name">{{ broker.name }}</a>
+                                <div class="broker-widget-rating">
+                                    <span class="stars-gold">
+                                        ★ {{ broker.rating }}
+                                    </span>
+                                    <span class="deposit-meta">
+                                        • {% if request.LANGUAGE_CODE == 'ar' %}إيداع:{% else %}Dep:{% endif %} ${{ broker.min_deposit|floatformat:0 }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA Buttons -->
+                        <div class="broker-widget-actions">
+                            <a href="{% if broker.account_opening_link %}{{ broker.account_opening_link }}{% else %}#{% endif %}" target="_blank" rel="noopener noreferrer" class="btn-widget-action open-acc">
+                                {% if request.LANGUAGE_CODE == 'ar' %}ابدأ{% else %}Start{% endif %}
+                            </a>
+                            <a href="{% url 'broker_review_detail' broker.slug %}" class="btn-widget-action review-lnk">
+                                {% if request.LANGUAGE_CODE == 'ar' %}تقييم{% else %}Review{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-brokers-state">
+                        <p>{% if request.LANGUAGE_CODE == 'ar' %}لم يتم تحديد ترتيب الشركات بعد.{% else %}No ranked brokers selected yet.{% endif %}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
         </div>
     </div>
 </section>
 
-<style>
-    /* Hide scrollbar for Chrome, Safari and Opera */
-    #news-slider-container::-webkit-scrollbar {
-        display: none;
-    }
-    
-    .slider-btn:hover {
-        background-color: var(--primary) !important;
-        color: white !important;
-        border-color: var(--primary) !important;
-    }
-</style>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const slider = document.getElementById('news-slider-container');
-        const btnLeft = document.getElementById('news-slide-left');
-        const btnRight = document.getElementById('news-slide-right');
+        const slider = document.getElementById('premiumNewsSlider');
+        if (!slider) return;
+
+        const slides = slider.querySelectorAll('.news-slide');
+        const tabs = slider.querySelectorAll('.slider-tab-item');
+        if (!slides.length || !tabs.length) return;
         
-        if(slider && btnLeft && btnRight) {
-            const isRTL = document.documentElement.dir === 'rtl' || document.body.classList.contains('rtl-layout');
-            const scrollAmount = 350; // Scroll distance
+        let activeIndex = 0;
+        let autoplayTimer = null;
+        const intervalTime = 6000; // 6 seconds per slide
+        let progressInterval = null;
+        let progressWidth = 0;
+        const progressSteps = 100;
+        const stepTime = intervalTime / progressSteps;
+
+        function showSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            tabs.forEach(t => t.classList.remove('active'));
             
-            btnLeft.addEventListener('click', () => {
-                slider.scrollBy({ left: isRTL ? scrollAmount : -scrollAmount, behavior: 'smooth' });
-            });
-            
-            btnRight.addEventListener('click', () => {
-                slider.scrollBy({ left: isRTL ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-            });
+            slides[index].classList.add('active');
+            tabs[index].classList.add('active');
+            activeIndex = index;
+
+            resetProgressLines();
+            startProgressLine(index);
         }
+
+        function nextSlide() {
+            let nextIndex = (activeIndex + 1) % slides.length;
+            showSlide(nextIndex);
+        }
+
+        function resetProgressLines() {
+            clearInterval(progressInterval);
+            tabs.forEach(tab => {
+                const line = tab.querySelector('.tab-progress-line');
+                if (line) line.style.width = '0%';
+            });
+            progressWidth = 0;
+        }
+
+        function startProgressLine(index) {
+            const activeTab = tabs[index];
+            if (!activeTab) return;
+            const line = activeTab.querySelector('.tab-progress-line');
+            if (!line) return;
+
+            progressInterval = setInterval(() => {
+                progressWidth += 1;
+                line.style.width = progressWidth + '%';
+                if (progressWidth >= 100) {
+                    clearInterval(progressInterval);
+                }
+            }, stepTime);
+        }
+
+        function startAutoplay() {
+            stopAutoplay();
+            showSlide(activeIndex);
+            autoplayTimer = setInterval(nextSlide, intervalTime);
+        }
+
+        function stopAutoplay() {
+            clearInterval(autoplayTimer);
+            resetProgressLines();
+        }
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                stopAutoplay();
+                showSlide(index);
+                autoplayTimer = setInterval(nextSlide, intervalTime);
+            });
+        });
+
+        slider.addEventListener('mouseenter', () => {
+            clearInterval(autoplayTimer);
+            clearInterval(progressInterval);
+        });
+
+        slider.addEventListener('mouseleave', () => {
+            const activeTab = tabs[activeIndex];
+            if (activeTab) {
+                const line = activeTab.querySelector('.tab-progress-line');
+                if (line) {
+                    progressInterval = setInterval(() => {
+                        progressWidth += 1;
+                        line.style.width = progressWidth + '%';
+                        if (progressWidth >= 100) {
+                            clearInterval(progressInterval);
+                            nextSlide();
+                            startAutoplay();
+                        }
+                    }, stepTime);
+                }
+            }
+            autoplayTimer = setInterval(nextSlide, intervalTime);
+        });
+
+        startAutoplay();
     });
 </script>
 
@@ -806,67 +1652,95 @@
     </div>
 </section>
 
-<!-- 2. Top Rated Brokers Section -->
-<section class="section-container">
+<!-- Browse by Category / Site Directory Section -->
+<section class="section-container site-directory-section" style="background-color: #f8fafc; border-bottom: 1px solid var(--border-color);">
     <div class="container">
         
-        <div class="section-header">
+        <div class="section-header" style="justify-content: center; text-align: center; margin-bottom: 3rem;">
             <div class="section-title">
-                <h2>{% if request.LANGUAGE_CODE == 'ar' %}أفضل شركات التداول الموثوقة{% else %}Top Rated Trading Brokers{% endif %}</h2>
-                <p>{% if request.LANGUAGE_CODE == 'ar' %}تقييمات مبنية على أكثر من 100 معيار تقني ورقابي دقيق.{% else %}Ratings based on over 100 technical and regulatory criteria.{% endif %}</p>
+                <h2>{% if request.LANGUAGE_CODE == 'ar' %}تصفح شركات التداول حسب الفئة{% else %}Browse Brokers by Category{% endif %}</h2>
+                <p style="margin-top: 0.4rem; color: var(--text-muted);">{% if request.LANGUAGE_CODE == 'ar' %}اعثر على الوسيط المناسب لاحتياجاتك عبر تصفية التراخيص، الأصول والمنصات.{% else %}Find the perfect broker by filtering regulations, assets, and platforms.{% endif %}</p>
             </div>
-            <a href="#" class="section-link">
-                {% if request.LANGUAGE_CODE == 'ar' %}عرض جميع التقييمات{% else %}View All Reviews{% endif %} &rarr;
-            </a>
         </div>
 
-        <div class="top-rated-grid">
-            {% for b in featured_brokers %}
-            <div class="broker-card">
-                {% if forloop.first %}
-                <span class="top-choice-tag">{% if request.LANGUAGE_CODE == 'ar' %}الخيار الأول{% else %}Top Choice{% endif %}</span>
-                {% endif %}
-                <div class="card-top">
-                    <div class="card-logo-area">
-                        {% if b.logo %}
-                            <img src="{{ b.logo.url }}" alt="{{ b.name }}" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color);">
-                        {% else %}
-                            <div class="card-logo">{{ b.name|slice:":2"|upper }}</div>
-                        {% endif %}
-                        <div class="card-name-rating">
-                            <h4>{{ b.name }}</h4>
-                            <div class="stars">★★★★★</div>
-                        </div>
+        <div class="directory-grid">
+            
+            <!-- Regulators Column -->
+            <div class="directory-column">
+                <div class="directory-column-header">
+                    <div class="directory-icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     </div>
-                    
-                    <ul class="bullets-list">
-                        <li class="bullet-item">
-                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            <span>{% if request.LANGUAGE_CODE == 'ar' %}الحد الأدنى للإيداع: {% else %}Min Deposit: {% endif %} ${{ b.min_deposit }}</span>
-                        </li>
-                        <li class="bullet-item">
-                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            <span>{% if request.LANGUAGE_CODE == 'ar' %}وقت السحب: {% else %}Withdrawal Time: {% endif %} {{ b.withdrawal_time|default:"Instant" }}</span>
-                        </li>
-                        <li class="bullet-item">
-                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            <span>{% if request.LANGUAGE_CODE == 'ar' %}العملات الأساسية: {% else %}Base Currencies: {% endif %} {{ b.base_currencies }}</span>
-                        </li>
-                    </ul>
+                    <h3>{% if request.LANGUAGE_CODE == 'ar' %}الهيئات الرقابية والتراخيص{% else %}Regulations & Licenses{% endif %}</h3>
                 </div>
-
-                <div class="card-buttons">
-                    <a href="#" class="btn-card-primary">{% if request.LANGUAGE_CODE == 'ar' %}فتح حساب{% else %}Open Account{% endif %}</a>
-                    <a href="{% url 'broker_review_detail' b.slug %}" class="btn-card-secondary">{% if request.LANGUAGE_CODE == 'ar' %}التقييم الكامل{% else %}Full Review{% endif %}</a>
+                <div class="directory-items-list">
+                    {% for reg in regulators %}
+                    <a href="{% url 'broker_directory' %}?regulation={{ reg.slug }}" class="directory-item-card">
+                        <div class="item-icon-circle">
+                            <span class="abbr-text">{{ reg.name|slice:":3"|upper }}</span>
+                        </div>
+                        <div class="item-info">
+                            <span class="item-name">{{ reg.name }}</span>
+                            <span class="item-meta">{% if request.LANGUAGE_CODE == 'ar' %}شركات مرخصة{% else %}Regulated Brokers{% endif %}</span>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <p class="empty-dir-text">{% if request.LANGUAGE_CODE == 'ar' %}لا توجد تراخيص حالياً{% else %}No regulations available{% endif %}</p>
+                    {% endfor %}
                 </div>
             </div>
-            {% empty %}
-                <p style="grid-column: span 3; text-align: center; color: var(--text-muted); padding: 3rem;">
-                    {% if request.LANGUAGE_CODE == 'ar' %}لم يتم اختيار وسطاء لعرضهم بعد.{% else %}No featured brokers selected yet.{% endif %}
-                </p>
-            {% endfor %}
-        </div>
 
+            <!-- Assets Column -->
+            <div class="directory-column">
+                <div class="directory-column-header">
+                    <div class="directory-icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <h3>{% if request.LANGUAGE_CODE == 'ar' %}أصول وأدوات التداول{% else %}Financial Instruments{% endif %}</h3>
+                </div>
+                <div class="directory-items-list">
+                    {% for asset in assets %}
+                    <a href="{% url 'broker_directory' %}?instrument={{ asset.slug }}" class="directory-item-card">
+                        <div class="item-icon-circle accent-theme">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                        </div>
+                        <div class="item-info">
+                            <span class="item-name">{{ asset.name }}</span>
+                            <span class="item-meta">{% if request.LANGUAGE_CODE == 'ar' %}تداول الآن{% else %}Trade Now{% endif %}</span>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <p class="empty-dir-text">{% if request.LANGUAGE_CODE == 'ar' %}لا توجد أصول متاحة{% else %}No instruments available{% endif %}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Platforms Column -->
+            <div class="directory-column">
+                <div class="directory-column-header">
+                    <div class="directory-icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    </div>
+                    <h3>{% if request.LANGUAGE_CODE == 'ar' %}منصات التداول المتاحة{% else %}Trading Platforms{% endif %}</h3>
+                </div>
+                <div class="directory-items-list">
+                    {% for plat in platforms %}
+                    <a href="{% url 'broker_directory' %}?platform={{ plat.slug }}" class="directory-item-card">
+                        <div class="item-icon-circle primary-theme">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
+                        </div>
+                        <div class="item-info">
+                            <span class="item-name">{{ plat.name }}</span>
+                            <span class="item-meta">{% if request.LANGUAGE_CODE == 'ar' %}دعم المنصة{% else %}Supported Platform{% endif %}</span>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <p class="empty-dir-text">{% if request.LANGUAGE_CODE == 'ar' %}لا توجد منصات متاحة{% else %}No platforms available{% endif %}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
     </div>
 </section>
 
@@ -894,10 +1768,17 @@
                     <div class="curated-icon">
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 0 0 1-4 10 15.3 0 0 1-4-10 15.3 0 0 1 4-10z"></path></svg>
                     </div>
-                    <h4>{{ l.title }}</h4>
+                    <a href="{% url 'best_brokers_list_detail' l.slug %}" style="text-decoration: none; color: inherit;">
+                        <h4>
+                            {{ l.title }}
+                            {% if l.country_flag %}
+                            <img src="https://flagcdn.com/w40/{{ l.country_flag }}.png" srcset="https://flagcdn.com/w80/{{ l.country_flag }}.png 2x" width="20" alt="flag" style="vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); margin-left: 6px; margin-right: 6px;">
+                            {% endif %}
+                        </h4>
+                    </a>
                     <p>{{ l.seo_description|truncatechars:90 }}</p>
                 </div>
-                <a href="#" class="curated-explore">{% if request.LANGUAGE_CODE == 'ar' %}استكشف القائمة{% else %}Explore List{% endif %} &rarr;</a>
+                <a href="{% url 'best_brokers_list_detail' l.slug %}" class="curated-explore">{% if request.LANGUAGE_CODE == 'ar' %}استكشف القائمة{% else %}Explore List{% endif %} &rarr;</a>
             </div>
             {% empty %}
                 <p style="grid-column: span 4; text-align: center; color: var(--text-muted); padding: 3rem;">

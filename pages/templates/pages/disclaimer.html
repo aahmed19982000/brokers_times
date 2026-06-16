@@ -1,0 +1,109 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}Disclaimer - Brokers Times{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Policy Pages Premium Styling */
+    .policy-hero {
+        background: radial-gradient(circle at 10% 20%, #071f43 0%, #030a16 90%);
+        color: white;
+        padding: 5rem 0;
+        text-align: center;
+        position: relative;
+    }
+    .policy-hero-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .policy-hero-meta {
+        font-size: 0.9rem;
+        color: #94a3b8;
+    }
+    
+    .policy-content {
+        padding: 4.5rem 0;
+        background-color: var(--bg-white);
+    }
+    .policy-container {
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.75;
+        color: #334155;
+    }
+    .policy-container h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #071f43;
+        margin: 2.5rem 0 1rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .policy-container h2:first-of-type {
+        margin-top: 0;
+    }
+    .policy-container p {
+        margin-bottom: 1.25rem;
+        font-size: 1rem;
+    }
+    .policy-container ul {
+        margin: 0 0 1.5rem 1.5rem;
+        padding-left: 1rem;
+    }
+    .policy-container li {
+        margin-bottom: 0.5rem;
+    }
+    .policy-card {
+        background-color: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 2rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="policy-hero">
+    <div class="container">
+        <h1 class="policy-hero-title">Disclaimer</h1>
+        <p class="policy-hero-meta">Last Updated: June 16, 2026</p>
+    </div>
+</section>
+
+<section class="policy-content">
+    <div class="container">
+        <div class="policy-container">
+            <p>The information provided on Brokers Times (operated by <strong>Brokers Times FZ-L.L.C</strong>) is for general educational, media, and informational purposes only. By using this website, you agree to the terms of this Disclaimer.</p>
+
+            <h2>1. No Financial Advice</h2>
+            <p>Brokers Times is not a financial services provider, investment advisor, or broker. The content, analyses, reviews, and comparison tables presented on this website do not constitute financial advice, investment recommendations, or an invitation to trade. Before making any investment decisions, you should consult a licensed financial advisor or conduct your own independent research.</p>
+
+            <h2>2. Risk of Trading</h2>
+            <p>Trading in financial markets, including Forex, Contracts for Difference (CFDs), stocks, and cryptocurrencies, involves substantial risk of capital loss. Many retail investor accounts lose money when trading CFDs. You should carefully consider whether you understand how financial markets work and whether you can afford to take the high risk of losing your money.</p>
+
+            <div class="policy-card" style="border-right: 4px solid #ef4444; background: rgba(239, 68, 68, 0.02);">
+                <h3 style="color: #dc2626; margin-bottom: 0.75rem; font-weight: 700;">High-Risk Warning</h3>
+                <p style="margin-bottom: 0; font-size: 0.95rem; color: #991b1b;">Under no circumstances shall Brokers Times FZ-L.L.C be held responsible for any trading losses or financial decisions made by users based on information found on this platform.</p>
+            </div>
+
+            <h2>3. Accuracy of Information</h2>
+            <p>While we make every effort to ensure the accuracy, completeness, and timeliness of the information published on our website, financial terms, promotions, and regulatory environments change rapidly. We cannot guarantee that all broker specifications, fees, or features are 100% accurate at all times. Always verify details on the broker’s official website prior to opening an account.</p>
+
+            <h2>4. Affiliate Disclosure</h2>
+            <p>Brokers Times may contain affiliate links, which means we may receive a commission or referral fee when you click on links and register with brokers or sign up for services. This compensation helps fund the maintenance of this site. However, we maintain strict editorial guidelines and objectivity in our reviews, and broker payments do not influence our independent assessments.</p>
+
+            <h2>5. External Links</h2>
+            <p>This website contains links to external, third-party websites. Brokers Times does not control, endorse, or verify the content, privacy policies, or services of these external platforms. You access external links entirely at your own risk.</p>
+
+            <h2>6. Contact Us</h2>
+            <p>If you require any clarification regarding this disclaimer, please reach out to us at:</p>
+            <p style="font-weight: 700; color: #071f43;">Email: support@brokerstimes.com</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

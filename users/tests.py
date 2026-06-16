@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from users.models import CustomUser
-from pages.models import HomepageSettings
+from pages.models import HomepageSettings, SiteSettings, HeaderLink, FooterLink, FooterRegulatoryBadge
 from brokers.models import Broker
 from best_brokers.models import BestBrokersList
 from categories.models import Regulator
@@ -94,6 +94,103 @@ class DashboardHomepageSettingsViewTest(TestCase):
         self.assertEqual(settings.featured_list_1, self.list)
         self.assertNil = lambda x: self.assertIsNone(x)
         self.assertIsNone(settings.featured_broker_2)
+
+
+class DashboardSiteSettingsViewTest(TestCase):
+    def setUp(self):
+        self.admin_user = CustomUser.objects.create_superuser(
+            username="admin_user",
+            email="admin@example.com",
+            password="adminpassword",
+            role="admin"
+        )
+        self.writer_user = CustomUser.objects.create_user(
+            username="writer_user",
+            email="writer@example.com",
+            password="writerpassword",
+            role="writer"
+        )
+        self.list1 = BestBrokersList.objects.create(title="Best ECN", slug="best-ecn", status="published")
+        self.list2 = BestBrokersList.objects.create(title="Best STP", slug="best-stp", status="published")
+
+    def test_get_site_settings_unauthorized_redirect(self):
+        # Anonymous redirects to login
+        response = self.client.get(reverse('dashboard_site_settings'))
+        self.assertEqual(response.status_code, 302)
+        
+        # Writer gets permission denied (403)
+        self.client.login(username="writer_user", password="writerpassword")
+        response = self.client.get(reverse('dashboard_site_settings'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_site_settings_admin_success(self):
+        self.client.login(username="admin_user", password="adminpassword")
+        response = self.client.get(reverse('dashboard_site_settings'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'dashboard/site_settings.html')
+        self.assertIn('settings', response.context)
+
+    def test_post_site_settings_saves_correctly(self):
+        self.client.login(username="admin_user", password="adminpassword")
+        post_data = {
+            'header_brand_name': 'New Brand Name',
+            'footer_about_en': 'About Us English New',
+            'footer_risk_warning_en': 'Risk EN',
+            'footer_col2_title_en': 'Links Col 2',
+            'footer_col3_title_en': 'Links Col 3',
+            'footer_contact_text_en': 'Contact EN',
+            'contact_email': 'contact@newbrand.com',
+            'social_share_url': 'https://twitter.com/newbrand',
+            'copyright_text_en': 'Copyright EN New',
+            
+            # Dropdown page list choices
+            'top_10_dropdown_lists': [self.list1.id],
+            'compare_dropdown_lists': [self.list2.id],
+            
+            # Header link inputs (arrays)
+            'header_title_en': ['Home', 'Compare'],
+            'header_url': ['home', '/compare/'],
+            'header_order': ['1', '2'],
+            
+            # Footer link inputs (arrays)
+            'footer_title_en': ['About', 'Privacy'],
+            'footer_url': ['#', '/privacy/'],
+            'footer_column': ['col2', 'col3'],
+            'footer_order': ['1', '1'],
+            
+            # Regulatory badge inputs (arrays)
+            'badge_text_en': ['FCA Regulated', 'ASIC Regulated'],
+            'badge_order': ['1', '2'],
+        }
+        response = self.client.post(reverse('dashboard_site_settings'), post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('dashboard_site_settings'))
+        
+        # Verify db changes
+        settings = SiteSettings.objects.get(id=1)
+        self.assertEqual(settings.header_brand_name, 'New Brand Name')
+        self.assertEqual(settings.footer_about_en, 'About Us English New')
+        self.assertEqual(settings.contact_email, 'contact@newbrand.com')
+        self.assertEqual(settings.social_share_url, 'https://twitter.com/newbrand')
+        
+        self.assertIn(self.list1, settings.top_10_dropdown_lists.all())
+        self.assertIn(self.list2, settings.compare_dropdown_lists.all())
+        
+        h_links = HeaderLink.objects.all().order_by('order')
+        self.assertEqual(h_links.count(), 2)
+        self.assertEqual(h_links[0].title_en, 'Home')
+        self.assertEqual(h_links[0].url_or_route, 'home')
+        self.assertEqual(h_links[1].title_en, 'Compare')
+        
+        f_links = FooterLink.objects.all().order_by('order')
+        self.assertEqual(f_links.count(), 2)
+        self.assertEqual(f_links[0].column, 'col2')
+        self.assertEqual(f_links[1].column, 'col3')
+        
+        badges = FooterRegulatoryBadge.objects.all().order_by('order')
+        self.assertEqual(badges.count(), 2)
+        self.assertEqual(badges[0].text_en, 'FCA Regulated')
+
 
 class DashboardTaxonomyCreateAjaxViewTest(TestCase):
     def setUp(self):

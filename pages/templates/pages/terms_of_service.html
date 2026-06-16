@@ -1,0 +1,115 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}Terms of Service - Brokers Times{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Policy Pages Premium Styling */
+    .policy-hero {
+        background: radial-gradient(circle at 10% 20%, #071f43 0%, #030a16 90%);
+        color: white;
+        padding: 5rem 0;
+        text-align: center;
+        position: relative;
+    }
+    .policy-hero-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .policy-hero-meta {
+        font-size: 0.9rem;
+        color: #94a3b8;
+    }
+    
+    .policy-content {
+        padding: 4.5rem 0;
+        background-color: var(--bg-white);
+    }
+    .policy-container {
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.75;
+        color: #334155;
+    }
+    .policy-container h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #071f43;
+        margin: 2.5rem 0 1rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .policy-container h2:first-of-type {
+        margin-top: 0;
+    }
+    .policy-container p {
+        margin-bottom: 1.25rem;
+        font-size: 1rem;
+    }
+    .policy-container ul {
+        margin: 0 0 1.5rem 1.5rem;
+        padding-left: 1rem;
+    }
+    .policy-container li {
+        margin-bottom: 0.5rem;
+    }
+    .policy-card {
+        background-color: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 2rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="policy-hero">
+    <div class="container">
+        <h1 class="policy-hero-title">Terms of Service</h1>
+        <p class="policy-hero-meta">Last Updated: June 16, 2026</p>
+    </div>
+</section>
+
+<section class="policy-content">
+    <div class="container">
+        <div class="policy-container">
+            <p>Please read these Terms of Service ("Terms") carefully before using the Brokers Times website (the "Service") operated by <strong>Brokers Times FZ-L.L.C</strong> ("us", "we", or "our").</p>
+            <p>Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users, and others who access or use the Service.</p>
+
+            <h2>1. Intellectual Property</h2>
+            <p>The Service and its original content, features, and functionality are and will remain the exclusive property of Brokers Times FZ-L.L.C and its licensors. Our content is protected by copyright, trademark, and other laws. You may not copy, modify, distribute, or reproduce any part of our site without written consent.</p>
+
+            <h2>2. No Financial or Investment Advice</h2>
+            <p>All information, reviews, news, articles, and comparisons published on Brokers Times are for educational, informational, and media purposes only. We are not financial advisors and do not offer financial or investment advice. Any decision you make to invest capital is done at your own risk.</p>
+
+            <div class="policy-card" style="border-right: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.02);">
+                <h3 style="color: #d97706; margin-bottom: 0.75rem; font-weight: 700;">Trading Risk Warning</h3>
+                <p style="margin-bottom: 0; font-size: 0.95rem; color: #78350f;">Trading Forex, CFDs, cryptocurrencies, and other financial instruments carries a high level of risk to your capital. You should ensure that you fully understand the risks involved and do not invest money you cannot afford to lose.</p>
+            </div>
+
+            <h2>3. Limitation of Liability</h2>
+            <p>In no event shall Brokers Times FZ-L.L.C, nor its directors, employees, partners, or agents, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from:</p>
+            <ul>
+                <li>Your access to or use of (or inability to access or use) the Service.</li>
+                <li>Any conduct or content of any third party on the Service (e.g., third-party broker websites).</li>
+                <li>Any content obtained from the Service.</li>
+            </ul>
+
+            <h2>4. Disclaimer of Warranty</h2>
+            <p>Your use of the Service is at your sole risk. The Service is provided on an "AS IS" and "AS AVAILABLE" basis. The Service is provided without warranties of any kind, whether express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+
+            <h2>5. Changes to Terms</h2>
+            <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms.</p>
+
+            <h2>6. Contact Us</h2>
+            <p>If you have any questions about these Terms, please contact us at:</p>
+            <p style="font-weight: 700; color: #071f43;">Email: support@brokerstimes.com</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

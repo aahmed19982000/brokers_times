@@ -10,7 +10,7 @@ from brokers.models import Broker, BrokerFAQ, BrokerAccountType, BrokerPlatformT
 from articles.models import Article, ArticleFAQ
 from best_brokers.models import BestBrokersList, BestBrokersListItem, BestBrokersListFAQ
 from categories.models import Regulator, FinancialAsset, Headquarters, IslamicAccount, DepositLimit, TradingPlatform
-from pages.models import HomepageSettings
+from pages.models import HomepageSettings, SiteSettings, HeaderLink, FooterLink, FooterRegulatoryBadge
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -519,6 +519,7 @@ class DashboardBestBrokersCreateView(LoginRequiredMixin, View):
         seo_description = request.POST.get('seo_description', '')
         content = request.POST.get('content', '')
         featured_image_alt = request.POST.get('featured_image_alt', '')
+        country_flag = request.POST.get('country_flag', '')
         with transaction.atomic():
             best_list = BestBrokersList.objects.create(
                 title = title,
@@ -529,6 +530,7 @@ class DashboardBestBrokersCreateView(LoginRequiredMixin, View):
                 seo_description = seo_description,
                 content = content,
                 featured_image_alt = featured_image_alt,
+                country_flag = country_flag,
             )
             if request.FILES.get('featured_image'):
                 best_list.featured_image = request.FILES.get('featured_image')
@@ -569,6 +571,7 @@ class DashboardBestBrokersUpdateView(LoginRequiredMixin, View):
         seo_description = request.POST.get('seo_description', '')
         content = request.POST.get('content', '')
         featured_image_alt = request.POST.get('featured_image_alt', '')
+        country_flag = request.POST.get('country_flag', '')
         with transaction.atomic():
             best_list.title = title
             best_list.slug = slug
@@ -578,6 +581,7 @@ class DashboardBestBrokersUpdateView(LoginRequiredMixin, View):
             best_list.seo_description = seo_description
             best_list.content = content
             best_list.featured_image_alt = featured_image_alt
+            best_list.country_flag = country_flag
             if request.FILES.get('featured_image'):
                 best_list.featured_image = request.FILES.get('featured_image')
             elif request.POST.get('featured_image-clear') == 'on':
@@ -672,6 +676,121 @@ class DashboardHomepageSettingsView(AdminRequiredMixin, View):
         from django.contrib import messages
         messages.success(request, "Homepage configuration saved successfully! / تم حفظ إعدادات الصفحة الرئيسية بنجاح!")
         return redirect('dashboard_homepage_settings')
+
+
+class DashboardSiteSettingsView(AdminRequiredMixin, View):
+    def get(self, request):
+        settings_obj, created = SiteSettings.objects.get_or_create(id=1)
+        header_links = HeaderLink.objects.all().order_by('order')
+        footer_links = FooterLink.objects.all().order_by('order')
+        regulatory_badges = FooterRegulatoryBadge.objects.all().order_by('order')
+        
+        # Load all best brokers list pages for selection
+        from best_brokers.models import BestBrokersList
+        all_lists = BestBrokersList.objects.all().order_by('title')
+        
+        # Load all brokers for direct dropdown selection
+        from brokers.models import Broker
+        all_brokers = Broker.objects.all().order_by('name')
+        
+        context = {
+            'settings': settings_obj,
+            'header_links': header_links,
+            'footer_links': footer_links,
+            'regulatory_badges': regulatory_badges,
+            'all_lists': all_lists,
+            'all_brokers': all_brokers,
+        }
+        return render(request, 'dashboard/site_settings.html', context)
+        
+    def post(self, request):
+        settings_obj, created = SiteSettings.objects.get_or_create(id=1)
+        
+        # Save SiteSettings general fields
+        settings_obj.header_brand_name = request.POST.get('header_brand_name', 'Brokers Times')
+        
+        # Handle Logo file upload
+        if request.FILES.get('header_logo'):
+            settings_obj.header_logo = request.FILES.get('header_logo')
+        elif request.POST.get('clear_logo') == 'true':
+            settings_obj.header_logo = None
+            
+        settings_obj.footer_about_en = request.POST.get('footer_about_en', '')
+        settings_obj.footer_risk_warning_en = request.POST.get('footer_risk_warning_en', '')
+        settings_obj.footer_col2_title_en = request.POST.get('footer_col2_title_en', '')
+        settings_obj.footer_col3_title_en = request.POST.get('footer_col3_title_en', '')
+        settings_obj.footer_contact_text_en = request.POST.get('footer_contact_text_en', '')
+        settings_obj.contact_email = request.POST.get('contact_email', '')
+        settings_obj.social_share_url = request.POST.get('social_share_url', '')
+        settings_obj.copyright_text_en = request.POST.get('copyright_text_en', '')
+        settings_obj.save()
+        
+        # Save ManyToMany relations for compare & top 10 dropdowns
+        top_10_broker_ids = request.POST.getlist('top_10_dropdown_brokers')
+        settings_obj.top_10_dropdown_brokers.set(top_10_broker_ids)
+        
+        compare_ids = request.POST.getlist('compare_dropdown_lists')
+        settings_obj.compare_dropdown_lists.set(compare_ids)
+        
+        # Save Header Links (from repeater list input arrays)
+        HeaderLink.objects.all().delete()
+        header_titles_en = request.POST.getlist('header_title_en')
+        header_urls = request.POST.getlist('header_url')
+        header_orders = request.POST.getlist('header_order')
+        for i in range(len(header_titles_en)):
+            if header_titles_en[i]:
+                try:
+                    ord_val = int(header_orders[i])
+                except (ValueError, IndexError):
+                    ord_val = i + 1
+                HeaderLink.objects.create(
+                    title_en=header_titles_en[i],
+                    title_ar=header_titles_en[i],  # Map to EN for backward compatibility
+                    url_or_route=header_urls[i],
+                    order=ord_val
+                )
+                
+        # Save Footer Links (from repeater list input arrays)
+        FooterLink.objects.all().delete()
+        footer_titles_en = request.POST.getlist('footer_title_en')
+        footer_urls = request.POST.getlist('footer_url')
+        footer_columns = request.POST.getlist('footer_column')
+        footer_orders = request.POST.getlist('footer_order')
+        for i in range(len(footer_titles_en)):
+            if footer_titles_en[i]:
+                try:
+                    ord_val = int(footer_orders[i])
+                except (ValueError, IndexError):
+                    ord_val = i + 1
+                col_val = footer_columns[i] if i < len(footer_columns) else 'col2'
+                FooterLink.objects.create(
+                    title_en=footer_titles_en[i],
+                    title_ar=footer_titles_en[i],  # Map to EN for backward compatibility
+                    url_or_route=footer_urls[i],
+                    column=col_val,
+                    order=ord_val
+                )
+                
+        # Save Footer Regulatory Badges
+        FooterRegulatoryBadge.objects.all().delete()
+        badge_texts_en = request.POST.getlist('badge_text_en')
+        badge_orders = request.POST.getlist('badge_order')
+        for i in range(len(badge_texts_en)):
+            if badge_texts_en[i]:
+                try:
+                    ord_val = int(badge_orders[i])
+                except (ValueError, IndexError):
+                    ord_val = i + 1
+                FooterRegulatoryBadge.objects.create(
+                    text_en=badge_texts_en[i],
+                    text_ar=badge_texts_en[i],  # Map to EN for backward compatibility
+                    order=ord_val
+                )
+                
+        from django.contrib import messages
+        messages.success(request, "Site settings saved successfully! / تم حفظ الإعدادات بنجاح!")
+        return redirect('dashboard_site_settings')
+
 from news.models import NewsArticle
 class DashboardNewsView(LoginRequiredMixin, ListView):
     model = NewsArticle
@@ -922,4 +1041,148 @@ class APIBestBrokersLookupView(LoginRequiredMixin, View):
             'title': best_list.title,
             'slug': best_list.slug,
             'brokers': brokers_data
-        })
+        })
+
+
+import requests
+import re
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from decouple import config
+
+TRADING_GLOSSARY = {
+    r'\bfinancial lever\b': 'leverage',
+    r'\bleverage lever\b': 'leverage',
+    r'\bmultiplier lever\b': 'leverage',
+    r'\bleverage multiplier\b': 'leverage',
+    r'\bprice differences\b': 'spreads',
+    r'\bmargins differences\b': 'spreads',
+    r'\bprice spreads\b': 'spreads',
+    r'\bIslamic account\b': 'Islamic/swap-free account',
+    r'\bMuslim account\b': 'Islamic/swap-free account',
+    r'\bdeal platforms\b': 'trading platforms',
+    r'\bdeals platforms\b': 'trading platforms',
+    r'\blowest deposit\b': 'minimum deposit',
+    r'\bleast deposit\b': 'minimum deposit',
+    r'\bpull and deposit\b': 'deposit and withdrawal methods',
+    r'\bdraw and download\b': 'withdrawal and deposit',
+    r'\bwithdrawal and download\b': 'withdrawal and deposit',
+    r'\bpull and download\b': 'withdrawal and deposit',
+    r'\blicensed company\b': 'regulated broker',
+    r'\bcertified broker\b': 'regulated broker',
+    r'\bforex sales\b': 'forex brokers',
+    r'\bcurrency sellers\b': 'forex brokers',
+    r'\bcurrency seller\b': 'forex broker',
+    r'\bcurrency trading companies\b': 'forex brokers',
+}
+
+@method_decorator(csrf_exempt, name='dispatch')
+class DashboardTranslateView(LoginRequiredMixin, View):
+    def post(self, request):
+        import json
+        try:
+            if request.content_type == 'application/json':
+                body = json.loads(request.body)
+                text = body.get('text', '').strip()
+                tone = body.get('tone', 'financial').strip()
+            else:
+                text = request.POST.get('text', '').strip()
+                tone = request.POST.get('tone', 'financial').strip()
+        except Exception as e:
+            return JsonResponse({'error': 'Invalid request: ' + str(e)}, status=400)
+
+        if not text:
+            return JsonResponse({'error': 'No text provided'}, status=400)
+
+        gemini_api_key = config('GEMINI_API_KEY', default=None)
+        if not gemini_api_key:
+            gemini_api_key = os.environ.get('GEMINI_API_KEY')
+
+        translated_text = ""
+        method = ""
+        ai_active = False
+
+        if gemini_api_key:
+            try:
+                model_name = "gemini-2.5-flash"
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_api_key}"
+                
+                prompt = (
+                    f"You are a professional financial translator specializing in translating online broker reviews, "
+                    f"trading news, analysis, and educational trading FAQs from Arabic to English. "
+                    f"Translate the following Arabic text into professional, natural, and context-accurate English. "
+                    f"Tone/Style target: {tone} (formal financial and trading reviews).\n\n"
+                    f"CRITICAL RULES:\n"
+                    f"1. Do NOT translate financial and trading terminology literally (e.g. translate 'رافعة مالية' to 'leverage', "
+                    f"'فروق الأسعار' or 'اسبريد' to 'spreads', 'حساب إسلامي' to 'Islamic/swap-free account', 'منصات التداول' to 'trading platforms', "
+                    f"'تراخيص' or 'شركات مرخصة' to 'regulations' / 'regulated brokers', 'الحد الأدنى للإيداع' to 'minimum deposit', "
+                    f"'طرق السحب والإيداع' to 'funding methods' or 'deposit and withdrawal methods').\n"
+                    f"2. Keep any HTML tags (e.g., <p>, <strong>, <a>, <img>, <br>, <ul>, <li>, etc.) or markdown formatting exactly as they are in the source text. Do not modify, reorder, or lose any tags or their attributes (like img src, a href, class names). Place the translated text inside/between them correctly.\n"
+                    f"3. Do not add any conversational remarks, introductions, markdown code blocks, or notes. Output ONLY the translated text.\n\n"
+                    f"Source Text:\n{text}"
+                )
+
+                payload = {
+                    "contents": [{
+                        "parts": [{"text": prompt}]
+                    }]
+                }
+                
+                response = requests.post(url, json=payload, timeout=20)
+                if response.status_code == 200:
+                    res_json = response.json()
+                    candidate = res_json.get('candidates', [{}])[0]
+                    part = candidate.get('content', {}).get('parts', [{}])[0]
+                    translated_text = part.get('text', '').strip()
+                    if translated_text:
+                        # Clean up markdown code blocks if LLM added them
+                        if translated_text.startswith("```"):
+                            lines = translated_text.splitlines()
+                            if lines[0].startswith("```"):
+                                lines = lines[1:]
+                            if lines and lines[-1].startswith("```"):
+                                lines = lines[:-1]
+                            translated_text = "\n".join(lines).strip()
+                        ai_active = True
+                        method = "Gemini AI"
+                else:
+                    print(f"Gemini API returned status {response.status_code}: {response.text}")
+            except Exception as ex:
+                print(f"Gemini API translation error: {ex}")
+
+        # Fallback Mode: Google Translate + Tag-Safe Glossary Replacement
+        if not translated_text:
+            try:
+                # Call Google Translate single endpoint
+                gt_url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q={requests.utils.quote(text)}"
+                response = requests.get(gt_url, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    raw_translation = ""
+                    if data and data[0]:
+                        for segment in data[0]:
+                            if segment[0]:
+                                raw_translation += segment[0]
+                    
+                    # Refine raw translation using TRADING_GLOSSARY safely (split by HTML tags)
+                    parts = re.split(r'(<[^>]+>)', raw_translation)
+                    for i in range(len(parts)):
+                        if not parts[i].startswith('<'):
+                            for pattern, replacement in TRADING_GLOSSARY.items():
+                                parts[i] = re.sub(pattern, replacement, parts[i], flags=re.IGNORECASE)
+                    
+                    translated_text = "".join(parts)
+                    method = "Glossary-Enhanced Neural Engine"
+                    ai_active = False
+            except Exception as ex:
+                print(f"Fallback translation error: {ex}")
+
+        if not translated_text:
+            return JsonResponse({'error': 'Translation service unavailable'}, status=503)
+
+        return JsonResponse({
+            'translated_text': translated_text,
+            'ai_active': ai_active,
+            'method': method
+        })
+

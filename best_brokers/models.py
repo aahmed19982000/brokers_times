@@ -24,6 +24,30 @@ class BestBrokersList(models.Model):
     featured_image_alt = models.CharField(max_length=255, blank=True)
     content = RichTextField(blank=True)
     
+    FLAG_CHOICES = [
+        ('', 'No Flag / بدون علم'),
+        ('ae', 'UAE / الإمارات 🇦🇪'),
+        ('sa', 'Saudi Arabia / السعودية 🇸🇦'),
+        ('gb', 'United Kingdom / بريطانيا 🇬🇧'),
+        ('cy', 'Cyprus / قبرص 🇨🇾'),
+        ('au', 'Australia / أستراليا 🇦🇺'),
+        ('kw', 'Kuwait / الكويت 🇰🇼'),
+        ('bh', 'Bahrain / البحرين 🇧🇭'),
+        ('qa', 'Qatar / قطر 🇶🇦'),
+        ('om', 'Oman / عمان 🇴🇲'),
+        ('jo', 'Jordan / الأردن 🇯🇴'),
+        ('eg', 'Egypt / مصر 🇪🇬'),
+        ('us', 'United States / أمريكا 🇺🇸'),
+    ]
+    
+    country_flag = models.CharField(
+        max_length=10,
+        choices=FLAG_CHOICES,
+        blank=True,
+        default='',
+        verbose_name="علم الدولة (Country Flag)"
+    )
+    
     # Metadata / Publishing Status
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES, default='private')

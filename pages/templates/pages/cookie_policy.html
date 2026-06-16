@@ -1,0 +1,111 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}Cookie Policy - Brokers Times{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Policy Pages Premium Styling */
+    .policy-hero {
+        background: radial-gradient(circle at 10% 20%, #071f43 0%, #030a16 90%);
+        color: white;
+        padding: 5rem 0;
+        text-align: center;
+        position: relative;
+    }
+    .policy-hero-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .policy-hero-meta {
+        font-size: 0.9rem;
+        color: #94a3b8;
+    }
+    
+    .policy-content {
+        padding: 4.5rem 0;
+        background-color: var(--bg-white);
+    }
+    .policy-container {
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.75;
+        color: #334155;
+    }
+    .policy-container h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #071f43;
+        margin: 2.5rem 0 1rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .policy-container h2:first-of-type {
+        margin-top: 0;
+    }
+    .policy-container p {
+        margin-bottom: 1.25rem;
+        font-size: 1rem;
+    }
+    .policy-container ul {
+        margin: 0 0 1.5rem 1.5rem;
+        padding-left: 1rem;
+    }
+    .policy-container li {
+        margin-bottom: 0.5rem;
+    }
+    .policy-card {
+        background-color: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 2rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="policy-hero">
+    <div class="container">
+        <h1 class="policy-hero-title">Cookie Policy</h1>
+        <p class="policy-hero-meta">Last Updated: June 16, 2026</p>
+    </div>
+</section>
+
+<section class="policy-content">
+    <div class="container">
+        <div class="policy-container">
+            <p>This Cookie Policy explains how Brokers Times (operated by <strong>Brokers Times FZ-L.L.C</strong>) uses cookies and similar technologies to recognize you when you visit our website. It explains what these technologies are and why we use them, as well as your rights to control our use of them.</p>
+
+            <h2>1. What Are Cookies?</h2>
+            <p>Cookies are small data files that are placed on your computer or mobile device when you visit a website. Cookies are widely used by website owners in order to make their websites work, or to work more efficiently, as well as to provide reporting information.</p>
+
+            <h2>2. Why We Use Cookies</h2>
+            <p>We use first-party and third-party cookies for several reasons. Some cookies are required for technical reasons in order for our website to operate, and we refer to these as "essential" or "strictly necessary" cookies. Other cookies enable us to track and target the interests of our users to enhance the experience on our online properties.</p>
+
+            <h2>3. Types of Cookies We Use</h2>
+            <ul>
+                <li><strong>Strictly Necessary Cookies:</strong> These cookies are essential to provide you with services available through our website and to use some of its features, such as accessing secure areas.</li>
+                <li><strong>Performance and Functionality Cookies:</strong> These cookies are used to enhance the performance and functionality of our website but are non-essential to their use. However, without these cookies, certain functionality may become unavailable.</li>
+                <li><strong>Analytics and Customization Cookies:</strong> These cookies collect information that is used either in aggregate form to help us understand how our website is being used or how effective our marketing campaigns are, or to help us customize our website for you.</li>
+            </ul>
+
+            <div class="policy-card">
+                <h3 style="color: #071f43; margin-bottom: 0.75rem; font-weight: 700;">Google Analytics</h3>
+                <p style="margin-bottom: 0; font-size: 0.95rem;">This site uses Google Analytics to help us analyze how visitors use the site. The cookie collects information in an anonymous form, including the number of visitors, where visitors have come to the site from, and the pages they visited.</p>
+            </div>
+
+            <h2>4. How Can I Control Cookies?</h2>
+            <p>You have the right to decide whether to accept or reject cookies. You can set or amend your web browser controls to accept or refuse cookies. If you choose to reject cookies, you may still use our website, though your access to some functionality and areas of our website may be restricted.</p>
+            <p>As the means by which you can refuse cookies through your web browser controls vary from browser to browser, you should visit your browser's help menu for more information.</p>
+
+            <h2>5. Contact Us</h2>
+            <p>If you have any questions about our use of cookies or other technologies, please contact us at:</p>
+            <p style="font-weight: 700; color: #071f43;">Email: support@brokerstimes.com</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

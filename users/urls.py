@@ -6,10 +6,10 @@ from .views import (
     DashboardArticleCreateView, DashboardArticleUpdateView, DashboardBestBrokersCreateView, DashboardBestBrokersUpdateView,
     DashboardTaxonomyCreateAjaxView,
     DashboardUsersView, DashboardUserCreateView, DashboardUserUpdateView,
-    DashboardHomepageSettingsView,
+    DashboardHomepageSettingsView, DashboardSiteSettingsView,
     DashboardNewsView, DashboardNewsCreateView, DashboardNewsUpdateView,
     DashboardCategoriesView, DashboardCategoryCreateView, DashboardCategoryUpdateView,
-    DashboardRankedBrokersView, APIBestBrokersLookupView
+    DashboardRankedBrokersView, APIBestBrokersLookupView, DashboardTranslateView
 )
 
 urlpatterns = [
@@ -35,11 +35,13 @@ urlpatterns = [
     path('dashboard/users/add/', DashboardUserCreateView.as_view(), name='dashboard_users_add'),
     path('dashboard/users/<int:pk>/edit/', DashboardUserUpdateView.as_view(), name='dashboard_users_edit'),
     path('dashboard/homepage-settings/', DashboardHomepageSettingsView.as_view(), name='dashboard_homepage_settings'),
+    path('dashboard/site-settings/', DashboardSiteSettingsView.as_view(), name='dashboard_site_settings'),
     path('dashboard/news/', DashboardNewsView.as_view(), name='dashboard_news'),
     path('dashboard/news/add/', DashboardNewsCreateView.as_view(), name='dashboard_news_add'),
     path('dashboard/news/<int:pk>/edit/', DashboardNewsUpdateView.as_view(), name='dashboard_news_edit'),
     path('dashboard/categories/', DashboardCategoriesView.as_view(), name='dashboard_categories'),
     path('dashboard/categories/add/', DashboardCategoryCreateView.as_view(), name='dashboard_categories_add'),
     path('dashboard/categories/<int:pk>/edit/', DashboardCategoryUpdateView.as_view(), name='dashboard_categories_edit'),
+    path('dashboard/translate/', DashboardTranslateView.as_view(), name='dashboard_translate'),
 ]
 
