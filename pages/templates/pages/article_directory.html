@@ -634,6 +634,31 @@
         }
     }
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": "{{ request.build_absolute_uri }}#collectionpage",
+  "name": "Trading Education & Articles - {{ site_settings.header_brand_name|default:'Brokers Times' }}",
+  "description": "Educational articles and guides covering forex trading, market analysis, strategies, and regulations.",
+  "url": "{{ request.build_absolute_uri }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/"
+  }{% if grid_articles %},
+  "hasPart": [
+    {% for art in grid_articles %}{
+      "@type": "Article",
+      "headline": "{{ art.title|escapejs }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'article_detail' art.slug %}",
+      "datePublished": "{{ art.created_at|date:'c' }}"
+    }{% if not forloop.last %},{% endif %}{% endfor %}
+  ]{% endif %}
+}
+</script>
+
 {% endblock %}
 
 {% block content %}
@@ -674,7 +699,7 @@
                         <div>
                             <div class="featured-meta">By {{ featured_article.author_name }} &middot; {{ featured_article.created_at|date:"F d, Y" }}</div>
                             <h2 class="featured-title">
-                                <a href="{% url 'home' %}">{{ featured_article.title }}</a>
+                                <a href="{% url 'article_detail' featured_article.slug %}">{{ featured_article.title }}</a>
                             </h2>
                             <p class="featured-desc">
                                 {{ featured_article.seo_description|default:"Explore our professional analysis and breakdown of the current trading landscape and financial markets." }}
@@ -761,7 +786,7 @@
                                 <span class="article-card-readtime">{{ art.read_time }}</span>
                             </div>
                             <h3 class="article-card-title">
-                                <a href="{% url 'home' %}">{{ art.title }}</a>
+                                <a href="{% url 'article_detail' art.slug %}">{{ art.title }}</a>
                             </h3>
                             <div class="article-card-footer">
                                 <div class="author-avatar">{{ art.author_initials }}</div>

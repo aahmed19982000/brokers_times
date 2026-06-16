@@ -1,0 +1,399 @@
+{% extends 'pages/base.html' %}
+{% load shortcodes %}
+
+{% block title %}{{ article.seo_title|default:article.title }}{% endblock %}
+
+{% block extra_head %}
+{% if article.seo_description %}
+<meta name="description" content="{{ article.seo_description }}">
+{% endif %}
+<style>
+    .article-detail-container {
+        padding: 3rem 0 5rem 0;
+        background-color: #f8fafc;
+    }
+
+    .article-detail-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    @media (max-width: 900px) {
+        .article-detail-inner { grid-template-columns: 1fr; }
+        .article-sidebar { display: none; }
+    }
+
+    /* Breadcrumb */
+    .article-breadcrumb {
+        font-size: 0.82rem;
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+    .article-breadcrumb a { color: #3b82f6; text-decoration: none; }
+    .article-breadcrumb a:hover { text-decoration: underline; }
+    .article-breadcrumb span { margin: 0 0.4rem; }
+
+    /* Main Card */
+    .article-main-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .article-featured-image {
+        width: 100%;
+        max-height: 420px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .article-main-body {
+        padding: 2rem 2.5rem;
+    }
+
+    .article-label {
+        display: inline-block;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        margin-bottom: 1rem;
+    }
+
+    .article-main-title {
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+    }
+
+    .article-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        font-size: 0.83rem;
+        color: #64748b;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .article-meta-row svg { width: 14px; height: 14px; }
+
+    /* Content typography */
+    .article-content {
+        font-size: 1rem;
+        line-height: 1.85;
+        color: #334155;
+    }
+    .article-content h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 2rem 0 0.8rem;
+    }
+    .article-content h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 1.5rem 0 0.6rem;
+    }
+    .article-content p { margin-bottom: 1.2rem; }
+    .article-content ul, .article-content ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+    .article-content li { margin-bottom: 0.4rem; }
+    .article-content strong { color: #0f172a; }
+    .article-content blockquote {
+        border-left: 4px solid #3b82f6;
+        padding: 0.8rem 1.2rem;
+        margin: 1.5rem 0;
+        background: #eff6ff;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        color: #1e40af;
+    }
+    .article-content img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    /* FAQ */
+    .article-faq {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    .article-faq h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 1.2rem;
+    }
+    .faq-item {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 0.8rem;
+        overflow: hidden;
+    }
+    .faq-question {
+        width: 100%;
+        text-align: left;
+        background: #f8fafc;
+        border: none;
+        padding: 1rem 1.2rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1e293b;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .faq-question:hover { background: #f1f5f9; }
+    .faq-answer {
+        display: none;
+        padding: 1rem 1.2rem;
+        font-size: 0.92rem;
+        color: #475569;
+        line-height: 1.7;
+        border-top: 1px solid #e2e8f0;
+    }
+    .faq-item.open .faq-answer { display: block; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-chevron { transition: transform 0.2s; }
+
+    /* Sidebar */
+    .article-sidebar {
+        position: sticky;
+        top: 100px;
+    }
+
+    .sidebar-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .sidebar-card h4 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+        margin-bottom: 1rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .related-article-item {
+        display: flex;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid #f8fafc;
+        text-decoration: none;
+    }
+    .related-article-item:last-child { border-bottom: none; }
+    .related-article-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+    .related-thumb-placeholder {
+        width: 60px;
+        height: 60px;
+        background: #eff6ff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #3b82f6;
+        flex-shrink: 0;
+    }
+    .related-article-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1e293b;
+        line-height: 1.4;
+    }
+    .related-article-item:hover .related-article-title { color: #2563eb; }
+    .related-article-date {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 0.3rem;
+    }
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "{{ request.build_absolute_uri }}#article",
+      "headline": "{{ article.title|escapejs }}",
+      "description": "{{ article.seo_description|default:''|escapejs }}",
+      {% if article.featured_image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ article.featured_image.url }}",{% endif %}
+      "datePublished": "{{ article.created_at|date:'c' }}",
+      "dateModified": "{{ article.updated_at|date:'c' }}",
+      "author": {
+        "@type": "Organization",
+        "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+        {% if site_settings.header_logo %}"logo": { "@type": "ImageObject", "url": "{{ request.scheme }}://{{ request.get_host }}{{ site_settings.header_logo.url }}" },{% endif %}
+        "url": "{{ request.scheme }}://{{ request.get_host }}/"
+      },
+      "url": "{{ request.build_absolute_uri }}",
+      "mainEntityOfPage": "{{ request.build_absolute_uri }}"
+    }{% if faqs %},
+    {
+      "@type": "FAQPage",
+      "@id": "{{ request.build_absolute_uri }}#faqpage",
+      "mainEntity": [
+        {% for faq in faqs %}{
+          "@type": "Question",
+          "name": "{{ faq.question|escapejs }}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "{{ faq.answer|escapejs }}"
+          }
+        }{% if not forloop.last %},{% endif %}{% endfor %}
+      ]
+    }{% endif %}
+  ]
+}
+</script>
+
+{% endblock %}
+
+{% block content %}
+<div class="article-detail-container">
+    <div class="article-detail-inner">
+
+        <!-- Main Content -->
+        <div>
+            <!-- Breadcrumb -->
+            <div class="article-breadcrumb">
+                <a href="{% url 'home' %}">Home</a>
+                <span>›</span>
+                <a href="{% url 'article_directory' %}">Education</a>
+                <span>›</span>
+                {{ article.title }}
+            </div>
+
+            <div class="article-main-card">
+                {% if article.featured_image %}
+                    <img src="{{ article.featured_image.url }}" alt="{{ article.featured_image_alt|default:article.title }}" class="article-featured-image">
+                {% endif %}
+
+                <div class="article-main-body">
+                    <span class="article-label">Education</span>
+                    <h1 class="article-main-title">{{ article.title }}</h1>
+
+                    <div class="article-meta-row">
+                        <span style="display:flex;align-items:center;gap:4px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            {{ article.created_at|date:"F d, Y" }}
+                        </span>
+                        {% if article.updated_at != article.created_at %}
+                        <span style="display:flex;align-items:center;gap:4px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                            Updated {{ article.updated_at|date:"F d, Y" }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="article-content">
+                        {% if article.content %}
+                            {{ article.content|render_shortcodes|safe }}
+                        {% else %}
+                            <p>No content available.</p>
+                        {% endif %}
+                    </div>
+
+                    {% if faqs %}
+                    <div class="article-faq">
+                        <h2>Frequently Asked Questions</h2>
+                        {% for faq in faqs %}
+                        <div class="faq-item">
+                            <button class="faq-question" onclick="toggleFaq(this)">
+                                {{ faq.question }}
+                                <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                            <div class="faq-answer">{{ faq.answer }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="article-sidebar">
+            {% if related_articles %}
+            <div class="sidebar-card">
+                <h4>Related Articles</h4>
+                {% for rel in related_articles %}
+                <a href="{% url 'article_detail' rel.slug %}" class="related-article-item">
+                    {% if rel.featured_image %}
+                        <img src="{{ rel.featured_image.url }}" alt="{{ rel.title }}">
+                    {% else %}
+                        <div class="related-thumb-placeholder">{{ rel.title|slice:":2"|upper }}</div>
+                    {% endif %}
+                    <div>
+                        <div class="related-article-title">{{ rel.title }}</div>
+                        <div class="related-article-date">{{ rel.created_at|date:"M d, Y" }}</div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="sidebar-card">
+                <h4>Browse More</h4>
+                <a href="{% url 'article_directory' %}" style="display:flex;align-items:center;gap:8px;padding:0.7rem 0;color:#2563eb;font-size:0.9rem;font-weight:600;text-decoration:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    All Education Articles
+                </a>
+                <a href="{% url 'home' %}" style="display:flex;align-items:center;gap:8px;padding:0.7rem 0;color:#475569;font-size:0.9rem;font-weight:600;text-decoration:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Back to Home
+                </a>
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+<script>
+function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    item.classList.toggle('open');
+}
+</script>
+{% endblock %}

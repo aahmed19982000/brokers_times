@@ -3,6 +3,32 @@
 
 {% block title %}Brokers News | Brokers Times{% endblock %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": "{{ request.build_absolute_uri }}#collectionpage",
+  "name": "Brokers News - {{ site_settings.header_brand_name|default:'Brokers Times' }}",
+  "description": "Latest news and updates from the forex and trading industry.",
+  "url": "{{ request.build_absolute_uri }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/"
+  }{% if news_articles %},
+  "hasPart": [
+    {% for article in news_articles %}{
+      "@type": "NewsArticle",
+      "headline": "{{ article.title|escapejs }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'news_detail' article.slug %}",
+      "datePublished": "{{ article.created_at|date:'c' }}"
+    }{% if not forloop.last %},{% endif %}{% endfor %}
+  ]{% endif %}
+}
+</script>
+{% endblock %}
+
 {% block nav_news %}active{% endblock %}
 
 {% block content %}

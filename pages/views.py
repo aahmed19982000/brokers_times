@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, DetailView, ListView
 from django.db.models import Q
 from pages.models import HomepageSettings
-from articles.models import Article
+from articles.models import Article, ArticleFAQ
 from brokers.models import Broker
 from best_brokers.models import BestBrokersList
 
@@ -273,6 +273,23 @@ class BestBrokersListDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page'] = self.object
+        return context
+
+
+class ArticleDetailView(DetailView):
+    model = Article
+    template_name = 'pages/article_detail.html'
+    context_object_name = 'article'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+
+    def get_queryset(self):
+        return Article.objects.filter(status='published')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['faqs'] = self.object.faqs.all()
+        context['related_articles'] = Article.objects.filter(status='published').exclude(pk=self.object.pk).order_by('-created_at')[:4]
         return context
 
 

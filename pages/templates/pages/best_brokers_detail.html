@@ -5,6 +5,46 @@
 
 {% block title %}{{ best_list.seo_title|default:best_list.title }} | Brokers Times{% endblock %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ItemList",
+      "@id": "{{ request.build_absolute_uri }}#itemlist",
+      "name": "{{ best_list.title|escapejs }}",
+      "description": "{{ best_list.seo_description|default:''|escapejs }}",
+      "url": "{{ request.build_absolute_uri }}",
+      "numberOfItems": {{ best_list.items.count }},
+      "itemListElement": [
+        {% for item in best_list.items.all %}{
+          "@type": "ListItem",
+          "position": {{ forloop.counter }},
+          "name": "{{ item.broker.name|escapejs }}",
+          "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'broker_review_detail' item.broker.slug %}"
+        }{% if not forloop.last %},{% endif %}{% endfor %}
+      ]
+    }{% if best_list.faqs.all %},
+    {
+      "@type": "FAQPage",
+      "@id": "{{ request.build_absolute_uri }}#faqpage",
+      "mainEntity": [
+        {% for faq in best_list.faqs.all %}{
+          "@type": "Question",
+          "name": "{{ faq.question|escapejs }}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "{{ faq.answer|escapejs }}"
+          }
+        }{% if not forloop.last %},{% endif %}{% endfor %}
+      ]
+    }{% endif %}
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <style>
     .best-brokers-detail-header {

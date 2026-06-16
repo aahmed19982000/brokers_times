@@ -69,6 +69,7 @@ class DashboardArticlesView(LoginRequiredMixin, ListView):
     model = Article
     template_name = 'dashboard/articles.html'
     context_object_name = 'articles'
+    ordering = ['-created_at']
 class DashboardBestBrokersView(LoginRequiredMixin, ListView):
     model = BestBrokersList
     template_name = 'dashboard/best_brokers.html'
@@ -1077,6 +1078,60 @@ TRADING_GLOSSARY = {
 }
 
 @method_decorator(csrf_exempt, name='dispatch')
+def _translate_text_only(raw_text, headers):
+    """Translate plain text via Google Translate, with MyMemory fallback."""
+    gt_url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t"
+    try:
+        response = requests.post(gt_url, data={'q': raw_text}, headers=headers, timeout=15)
+        if response.status_code == 200:
+            data = response.json()
+            result = ""
+            if data and data[0]:
+                for segment in data[0]:
+                    if segment and segment[0]:
+                        result += segment[0]
+            if result and result.strip() != raw_text.strip():
+                return result
+    except Exception:
+        pass
+
+    # Fallback: MyMemory free API (no rate limit for small texts)
+    try:
+        mm_url = f"https://api.mymemory.translated.net/get?q={requests.utils.quote(raw_text[:500])}&langpair=ar|en"
+        mm_resp = requests.get(mm_url, timeout=10)
+        if mm_resp.status_code == 200:
+            mm_data = mm_resp.json()
+            result = mm_data.get('responseData', {}).get('translatedText', '')
+            if result and result.strip() != raw_text.strip():
+                return result
+    except Exception:
+        pass
+
+    return None
+
+
+def _translate_html_preserving_structure(html, headers):
+    """
+    Split HTML into tag/text chunks, translate only text chunks,
+    then reassemble — so h2/h3/strong/etc. are never touched.
+    """
+    parts = re.split(r'(<[^>]+>)', html)
+    translated_parts = []
+    for part in parts:
+        if part.startswith('<') or not part.strip():
+            translated_parts.append(part)
+        else:
+            translated = _translate_text_only(part, headers)
+            if translated:
+                # Apply glossary corrections
+                for pattern, replacement in TRADING_GLOSSARY.items():
+                    translated = re.sub(pattern, replacement, translated, flags=re.IGNORECASE)
+                translated_parts.append(translated)
+            else:
+                translated_parts.append(part)
+    return "".join(translated_parts)
+
+
 class DashboardTranslateView(LoginRequiredMixin, View):
     def post(self, request):
         import json
@@ -1150,28 +1205,15 @@ class DashboardTranslateView(LoginRequiredMixin, View):
             except Exception as ex:
                 print(f"Gemini API translation error: {ex}")
 
-        # Fallback Mode: Google Translate + Tag-Safe Glossary Replacement
+        # Fallback Mode: Google Translate with structure-preserving approach
         if not translated_text:
             try:
-                # Call Google Translate single endpoint
-                gt_url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q={requests.utils.quote(text)}"
-                response = requests.get(gt_url, timeout=10)
-                if response.status_code == 200:
-                    data = response.json()
-                    raw_translation = ""
-                    if data and data[0]:
-                        for segment in data[0]:
-                            if segment[0]:
-                                raw_translation += segment[0]
-                    
-                    # Refine raw translation using TRADING_GLOSSARY safely (split by HTML tags)
-                    parts = re.split(r'(<[^>]+>)', raw_translation)
-                    for i in range(len(parts)):
-                        if not parts[i].startswith('<'):
-                            for pattern, replacement in TRADING_GLOSSARY.items():
-                                parts[i] = re.sub(pattern, replacement, parts[i], flags=re.IGNORECASE)
-                    
-                    translated_text = "".join(parts)
+                gt_headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+                translated_text = _translate_html_preserving_structure(text, gt_headers)
+                if translated_text:
                     method = "Glossary-Enhanced Neural Engine"
                     ai_active = False
             except Exception as ex:
@@ -1179,6 +1221,13 @@ class DashboardTranslateView(LoginRequiredMixin, View):
 
         if not translated_text:
             return JsonResponse({'error': 'Translation service unavailable'}, status=503)
+
+        # Detect rate-limit: if returned text is identical to input, translation didn't happen
+        import unicodedata
+        def _strip(s):
+            return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', s)).strip()
+        if _strip(translated_text) == _strip(text):
+            return JsonResponse({'error': 'خدمة الترجمة مشغولة حالياً (rate limit)، انتظر ثوانٍ وحاول مجدداً.'}, status=503)
 
         return JsonResponse({
             'translated_text': translated_text,

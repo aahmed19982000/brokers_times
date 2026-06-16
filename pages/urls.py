@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     HomeView, BrokerReviewDetailView, BrokerDirectoryView, ArticleDirectoryView,
-    CompareListView, BestBrokersListDetailView, AboutUsView,
+    ArticleDetailView, CompareListView, BestBrokersListDetailView, AboutUsView,
     PrivacyPolicyView, TermsOfServiceView, DisclaimerView, CookiePolicyView
 )
 
@@ -10,6 +10,7 @@ urlpatterns = [
     path('reviews/', BrokerDirectoryView.as_view(), name='broker_directory'),
     path('reviews/<slug:slug>/', BrokerReviewDetailView.as_view(), name='broker_review_detail'),
     path('education/', ArticleDirectoryView.as_view(), name='article_directory'),
+    path('education/<slug:slug>/', ArticleDetailView.as_view(), name='article_detail'),
     path('compare/', CompareListView.as_view(), name='compare_list'),
     path('compare/<slug:slug>/', BestBrokersListDetailView.as_view(), name='best_brokers_list_detail'),
     path('about/', AboutUsView.as_view(), name='about_us'),

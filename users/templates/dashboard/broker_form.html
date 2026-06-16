@@ -53,6 +53,21 @@
         gap: 1rem;
     }
 
+    .btn-translate-field {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 2px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        white-space: nowrap;
+    }
+    .btn-translate-field:hover { opacity: 0.85; }
+    .btn-translate-field:disabled { opacity: 0.5; cursor: not-allowed; }
+
     .btn-editor-secondary {
         background: transparent;
         color: #f3f4f6;
@@ -990,9 +1005,9 @@
 
                     <div class="form-row">
                         <div class="form-group-editor">
-                            <label for="id_seo_title_en">
-                                <span>SEO Title Tag </span>
-                                
+                            <label for="id_seo_title_en" style="display:flex;justify-content:space-between;align-items:center;">
+                                <span>SEO Title Tag</span>
+                                <button type="button" class="btn-translate-field" onclick="translateField(this.closest('.form-group-editor').querySelector('input'))">ترجمة</button>
                             </label>
                             <input type="text" name="seo_title" id="id_seo_title" class="form-input-editor" placeholder="Best for Forex: Admiral Markets Review 2024" value="{{ broker.seo_title|default_if_none:'' }}">
                         </div>
@@ -1004,9 +1019,9 @@
 
                     <div class="form-row" style="margin-bottom: 0;">
                         <div class="form-group-editor no-margin">
-                            <label for="id_seo_description_en">
-                                <span>SEO Meta Description </span>
-                                
+                            <label for="id_seo_description_en" style="display:flex;justify-content:space-between;align-items:center;">
+                                <span>SEO Meta Description</span>
+                                <button type="button" class="btn-translate-field" onclick="translateField(this.closest('.form-group-editor').querySelector('textarea'))">ترجمة</button>
                             </label>
                             <textarea name="seo_description" id="id_seo_description" class="form-input-editor" placeholder="Comprehensive expert review of Admiral Markets trading platform, fees, and security...">{{ broker.seo_description|default_if_none:'' }}</textarea>
                         </div>
@@ -1136,6 +1151,12 @@
                             <div class="toolbar-group">
                                 <button type="button" class="toolbar-btn" title="Clear Formatting" onmousedown="event.preventDefault(); formatDoc('removeFormat')">
                                     <span style="font-size: 0.75rem; font-weight: 700;">Clear</span>
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button type="button" id="translate-btn" class="toolbar-btn" title="ترجمة المحتوى من عربي لإنجليزي" onclick="translateEditorContent()" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 6px; padding: 4px 12px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-2"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+                                    ترجمة
                                 </button>
                             </div>
                         </div>
@@ -1516,9 +1537,9 @@
                                 <!-- Question Row -->
                                 <div class="form-row">
                                     <div class="form-group-editor">
-                                        <label>
-                                            <span>Question </span>
-                                            
+                                        <label style="display:flex;justify-content:space-between;align-items:center;">
+                                            <span>Question</span>
+                                            <button type="button" class="btn-translate-field" onclick="translateField(this.closest('.form-group-editor').querySelector('input'))">ترجمة</button>
                                         </label>
                                         <input type="text" name="faq_question" class="form-input-editor" placeholder="Is Admiral Markets a regulated broker?" value="{{ faq.question }}">
                                     </div>
@@ -1528,9 +1549,9 @@
                                 <!-- Answer Row -->
                                 <div class="form-row" style="margin-bottom: 0;">
                                     <div class="form-group-editor no-margin">
-                                        <label>
-                                            <span>Answer </span>
-                                            
+                                        <label style="display:flex;justify-content:space-between;align-items:center;">
+                                            <span>Answer</span>
+                                            <button type="button" class="btn-translate-field" onclick="translateField(this.closest('.form-group-editor').querySelector('textarea'))">ترجمة</button>
                                         </label>
                                         <textarea name="faq_answer" class="form-input-editor" placeholder="Yes, Admiral Markets is regulated by multiple high-tier financial authorities...">{{ faq.answer }}</textarea>
                                     </div>
@@ -1635,6 +1656,108 @@
     });
 
     // Sync content from contenteditable DIVs to hidden textareas on input
+    function cleanPastedContent(html, text) {
+        const ALLOWED = ['P','BR','B','STRONG','I','EM','U','H1','H2','H3','H4','UL','OL','LI','A','BLOCKQUOTE'];
+        if (html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            tmp.querySelectorAll('*').forEach(el => {
+                while (el.attributes.length > 0) el.removeAttribute(el.attributes[0].name);
+                if (el.tagName === 'A' && el.href) el.setAttribute('href', el.href);
+            });
+            tmp.querySelectorAll('*').forEach(el => {
+                if (!ALLOWED.includes(el.tagName)) {
+                    const frag = document.createDocumentFragment();
+                    while (el.firstChild) frag.appendChild(el.firstChild);
+                    el.replaceWith(frag);
+                }
+            });
+            return tmp.innerHTML;
+        }
+        return '<p>' + text.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+    }
+
+    document.getElementById('editor').addEventListener('paste', function(e) {
+        e.preventDefault();
+        const html = (e.clipboardData || window.clipboardData).getData('text/html');
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertHTML', false, cleanPastedContent(html, text));
+        syncEditor();
+    });
+
+    async function translateField(fieldEl) {
+        const text = fieldEl.value.trim();
+        if (!text) { alert('الحقل فارغ، أضف نصاً عربياً أولاً.'); return; }
+        const btn = fieldEl.closest('.form-group-editor').querySelector('.btn-translate-field');
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = '...';
+        try {
+            const res = await fetch('{% url "dashboard_translate" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ text: text, tone: 'financial' })
+            });
+            const data = await res.json();
+            if (data.translated_text) {
+                const tmp = document.createElement('div');
+                tmp.innerHTML = data.translated_text;
+                fieldEl.value = (tmp.textContent || tmp.innerText || '').trim();
+                btn.textContent = '✓';
+                btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                setTimeout(() => {
+                    btn.textContent = original;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 1500);
+            } else {
+                alert(data.error || 'فشلت الترجمة.');
+                btn.textContent = original;
+                btn.disabled = false;
+            }
+        } catch(e) {
+            alert('خطأ في الاتصال.');
+            btn.textContent = original;
+            btn.disabled = false;
+        }
+    }
+
+    async function translateEditorContent() {
+        const editor = document.getElementById('editor');
+        const btn = document.getElementById('translate-btn');
+        const text = editor.innerHTML.trim();
+        if (!text || text === '<br>') { alert('المحرر فارغ، أضف محتوى عربياً أولاً.'); return; }
+        btn.disabled = true;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> جاري الترجمة...';
+        try {
+            const res = await fetch('{% url "dashboard_translate" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ text: text, tone: 'financial' })
+            });
+            const data = await res.json();
+            if (data.translated_text) {
+                editor.innerHTML = data.translated_text;
+                syncEditor();
+                btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                btn.innerHTML = '✓ تمت الترجمة';
+                setTimeout(() => {
+                    btn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+                    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-2"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg> ترجمة';
+                    btn.disabled = false;
+                }, 2000);
+            } else {
+                alert(data.error || 'فشلت الترجمة، حاول مجدداً.');
+                btn.disabled = false;
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-2"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg> ترجمة';
+            }
+        } catch(e) {
+            alert('خطأ في الاتصال بخدمة الترجمة.');
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-2"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg> ترجمة';
+        }
+    }
+
     function syncEditor() {
         const editor = document.getElementById('editor');
         const textarea = document.getElementById('id_review_content');
@@ -2266,21 +2389,20 @@
             <!-- Question Row -->
             <div class="form-row">
                 <div class="form-group-editor">
-                    <label>
-                        <span>Question </span>
-                        
+                    <label style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Question</span>
+                        <button type="button" class="btn-translate-field" onclick="translateField(this.closest('.form-group-editor').querySelector('input'))">ترجمة</button>
                     </label>
                     <input type="text" name="faq_question" class="form-input-editor" placeholder="Enter question in English...">
                 </div>
-                
             </div>
 
             <!-- Answer Row -->
             <div class="form-row" style="margin-bottom: 0;">
                 <div class="form-group-editor no-margin">
-                    <label>
-                        <span>Answer </span>
-                        
+                    <label style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>Answer</span>
+                        <button type="button" class="btn-translate-field" onclick="translateField(this.closest('.form-group-editor').querySelector('textarea'))">ترجمة</button>
                     </label>
                     <textarea name="faq_answer" class="form-input-editor" placeholder="Enter detailed answer in English..."></textarea>
                 </div>

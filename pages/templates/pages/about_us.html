@@ -223,6 +223,40 @@
         }
     }
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "AboutPage",
+      "@id": "{{ request.build_absolute_uri }}#aboutpage",
+      "name": "About Us - {{ site_settings.header_brand_name|default:'Brokers Times' }}",
+      "description": "Learn about Brokers Times — our mission, editorial team, and commitment to unbiased broker reviews.",
+      "url": "{{ request.build_absolute_uri }}",
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "{{ request.scheme }}://{{ request.get_host }}/#organization",
+      "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/",
+      {% if site_settings.header_logo %}"logo": "{{ request.scheme }}://{{ request.get_host }}{{ site_settings.header_logo.url }}",{% endif %}
+      "description": "{{ site_settings.footer_about_en|default:'Independent broker reviews and trading education.'|escapejs }}",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/about/"
+      }
+    }
+  ]
+}
+</script>
+
 {% endblock %}
 
 {% block content %}

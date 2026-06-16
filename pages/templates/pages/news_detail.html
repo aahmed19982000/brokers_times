@@ -4,6 +4,33 @@
 
 {% block title %}{{ news_article.seo_title|default:news_article.title }} | Brokers Times{% endblock %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "@id": "{{ request.build_absolute_uri }}#newsarticle",
+  "headline": "{{ news_article.title|escapejs }}",
+  "description": "{{ news_article.seo_description|default:''|escapejs }}",
+  {% if news_article.featured_image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ news_article.featured_image.url }}",{% endif %}
+  "datePublished": "{{ news_article.created_at|date:'c' }}",
+  "dateModified": "{{ news_article.updated_at|date:'c' }}",
+  "author": {
+    "@type": "Organization",
+    "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+    {% if site_settings.header_logo %}"logo": { "@type": "ImageObject", "url": "{{ request.scheme }}://{{ request.get_host }}{{ site_settings.header_logo.url }}" },{% endif %}
+    "url": "{{ request.scheme }}://{{ request.get_host }}/"
+  },
+  "url": "{{ request.build_absolute_uri }}",
+  "mainEntityOfPage": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <style>
     .news-detail-header {

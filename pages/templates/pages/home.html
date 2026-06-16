@@ -360,80 +360,108 @@
 
     /* Curated lists grid */
     .curated-section {
-        background-color: #f8fafc;
+        background: #f0f4f9;
     }
 
     .curated-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
+        gap: 1.25rem;
     }
 
     .curated-card {
-        background-color: var(--bg-white);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        height: 200px;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
 
     .curated-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(11, 49, 104, 0.12);
     }
 
-    .curated-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 6px;
-        background-color: rgba(11, 49, 104, 0.05);
-        color: var(--primary);
+    .curated-card-header {
+        height: 100px;
+        background: linear-gradient(135deg, #0b3168 0%, #1563c5 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 1.2rem;
+        flex-shrink: 0;
     }
 
-    .curated-icon svg {
-        width: 18px;
-        height: 18px;
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 2;
+    .curated-flag {
+        width: 72px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+        border: 2px solid rgba(255,255,255,0.25);
+        display: block;
     }
 
-    .curated-card h4 {
-        font-size: 0.95rem;
+    .curated-flag-placeholder {
+        width: 48px;
+        height: 48px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .curated-card-body {
+        padding: 1rem 1.1rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .curated-card-title {
+        font-size: 0.9rem;
         font-weight: 700;
-        color: var(--primary);
-        margin-bottom: 0.3rem;
+        color: #071f43;
+        margin-bottom: 0.4rem;
+        line-height: 1.35;
+        text-transform: capitalize;
     }
 
-    .curated-card p {
-        font-size: 0.78rem;
-        color: var(--text-muted);
-        line-height: 1.4;
+    .curated-card-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .curated-card-title a:hover {
+        color: var(--primary);
+    }
+
+    .curated-card-desc {
+        font-size: 0.775rem;
+        color: #64748b;
+        line-height: 1.5;
+        flex: 1;
+        margin-bottom: 0.75rem;
     }
 
     .curated-explore {
-        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.775rem;
         font-weight: 700;
         color: var(--primary);
         text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 0.7rem;
         transition: gap 0.2s;
     }
 
     .curated-explore:hover {
-        gap: 10px;
+        gap: 8px;
     }
 
     /* Articles educational section */
@@ -1292,6 +1320,45 @@
     }
 </style>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "{{ request.scheme }}://{{ request.get_host }}/#website",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/",
+      "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+      "description": "The definitive guide to choosing the best trading brokers — reviews, comparisons, and education.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "{{ request.scheme }}://{{ request.get_host }}/reviews/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "{{ request.scheme }}://{{ request.get_host }}/#organization",
+      "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/",
+      {% if site_settings.header_logo %}"logo": "{{ request.scheme }}://{{ request.get_host }}{{ site_settings.header_logo.url }}",{% endif %}
+      "sameAs": []
+    },
+    {
+      "@type": "WebPage",
+      "@id": "{{ request.build_absolute_uri }}#webpage",
+      "url": "{{ request.build_absolute_uri }}",
+      "name": "Brokers Times - The Definitive Guide to Best Trading Brokers",
+      "isPartOf": { "@id": "{{ request.scheme }}://{{ request.get_host }}/#website" },
+      "publisher": { "@id": "{{ request.scheme }}://{{ request.get_host }}/#organization" }
+    }
+  ]
+}
+</script>
+
 {% endblock %}
 
 {% block content %}
@@ -1764,21 +1831,25 @@
         <div class="curated-grid">
             {% for l in featured_lists %}
             <div class="curated-card">
-                <div>
-                    <div class="curated-icon">
-                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 0 0 1-4 10 15.3 0 0 1-4-10 15.3 0 0 1 4-10z"></path></svg>
+                <div class="curated-card-header">
+                    {% if l.country_flag %}
+                    <img src="https://flagcdn.com/w80/{{ l.country_flag }}.png" srcset="https://flagcdn.com/w160/{{ l.country_flag }}.png 2x" alt="{{ l.title }} flag" class="curated-flag">
+                    {% else %}
+                    <div class="curated-flag-placeholder">
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 0 0 1-4 10 15.3 0 0 1-4-10 15.3 0 0 1 4-10z"></path></svg>
                     </div>
-                    <a href="{% url 'best_brokers_list_detail' l.slug %}" style="text-decoration: none; color: inherit;">
-                        <h4>
-                            {{ l.title }}
-                            {% if l.country_flag %}
-                            <img src="https://flagcdn.com/w40/{{ l.country_flag }}.png" srcset="https://flagcdn.com/w80/{{ l.country_flag }}.png 2x" width="20" alt="flag" style="vertical-align: middle; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); margin-left: 6px; margin-right: 6px;">
-                            {% endif %}
-                        </h4>
-                    </a>
-                    <p>{{ l.seo_description|truncatechars:90 }}</p>
+                    {% endif %}
                 </div>
-                <a href="{% url 'best_brokers_list_detail' l.slug %}" class="curated-explore">{% if request.LANGUAGE_CODE == 'ar' %}استكشف القائمة{% else %}Explore List{% endif %} &rarr;</a>
+                <div class="curated-card-body">
+                    <h4 class="curated-card-title">
+                        <a href="{% url 'best_brokers_list_detail' l.slug %}">{{ l.title }}</a>
+                    </h4>
+                    <p class="curated-card-desc">{{ l.seo_description|truncatechars:90 }}</p>
+                </div>
+                <a href="{% url 'best_brokers_list_detail' l.slug %}" class="curated-explore">
+                    {% if request.LANGUAGE_CODE == 'ar' %}استكشف القائمة{% else %}Explore List{% endif %}
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
             </div>
             {% empty %}
                 <p style="grid-column: span 4; text-align: center; color: var(--text-muted); padding: 3rem;">
@@ -1799,7 +1870,7 @@
                 <h2>{% if request.LANGUAGE_CODE == 'ar' %}التحليلات والمقالات التعليمية{% else %}Educational Analysis & Articles{% endif %}</h2>
                 <p>{% if request.LANGUAGE_CODE == 'ar' %}تعلم أساسيات التداول واطلع على أحدث تحليلات السوق اليومية.{% else %}Learn the basics of trading and read our daily in-depth market updates.{% endif %}</p>
             </div>
-            <a href="#" class="btn-hero-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.85rem; background-color: #f1f5f9;">
+            <a href="{% url 'article_directory' %}" class="btn-hero-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.85rem; background-color: #f1f5f9;">
                 {% if request.LANGUAGE_CODE == 'ar' %}المركز التعليمي{% else %}Education Center{% endif %}
             </a>
         </div>
@@ -1816,7 +1887,7 @@
                 {% endif %}
                 <div class="article-large-content">
                     <span class="article-category-tag">{% if request.LANGUAGE_CODE == 'ar' %}آخر مقال منشور{% else %}Latest Article{% endif %}</span>
-                    <h3>{{ featured_article.title }}</h3>
+                    <a href="{% url 'article_detail' featured_article.slug %}" style="color: inherit; text-decoration: none;"><h3>{{ featured_article.title }}</h3></a>
                     <p>{{ featured_article.seo_description|truncatechars:180 }}</p>
                 </div>
             </div>
@@ -1837,7 +1908,7 @@
                     {% endif %}
                     <div class="sidebar-article-content">
                         <span class="sidebar-article-cat">{% if request.LANGUAGE_CODE == 'ar' %}تعليم{% else %}Education{% endif %}</span>
-                        <a href="#" class="sidebar-article-title">{{ art.title }}</a>
+                        <a href="{% url 'article_detail' art.slug %}" class="sidebar-article-title">{{ art.title }}</a>
                         <p class="sidebar-article-desc">{{ art.seo_description|truncatechars:80 }}</p>
                     </div>
                 </div>

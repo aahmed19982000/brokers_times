@@ -594,6 +594,35 @@
         }
     }
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": "{{ request.build_absolute_uri }}#collectionpage",
+  "name": "All Trading Brokers Reviews - {{ site_settings.header_brand_name|default:'Brokers Times' }}",
+  "description": "Comprehensive reviews and comparisons of forex and trading brokers, covering regulations, fees, and platforms.",
+  "url": "{{ request.build_absolute_uri }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/"
+  },
+  "hasPart": [
+    {% for broker in brokers %}{
+      "@type": "Review",
+      "name": "{{ broker.name|escapejs }} Review",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'broker_review_detail' broker.slug %}",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "{{ broker.rating }}",
+        "bestRating": "5"
+      }
+    }{% if not forloop.last %},{% endif %}{% endfor %}
+  ]
+}
+</script>
+
 {% endblock %}
 
 {% block content %}

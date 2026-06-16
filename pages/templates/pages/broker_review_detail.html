@@ -720,6 +720,64 @@
         }
     }
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Review",
+      "@id": "{{ request.build_absolute_uri }}#review",
+      "name": "{{ broker.seo_title|default:broker.name }} Review",
+      "reviewBody": "{{ broker.seo_description|default:'' }}",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "{{ broker.rating }}",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}"
+      },
+      "itemReviewed": {
+        "@type": "FinancialProduct",
+        "name": "{{ broker.name }}",
+        {% if broker.logo %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ broker.logo.url }}",{% endif %}
+        {% if broker.account_opening_link %}"url": "{{ broker.account_opening_link }}",{% endif %}
+        "description": "{{ broker.seo_description|default:'' }}",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "{{ broker.rating }}",
+          "bestRating": "5",
+          "worstRating": "1",
+          "ratingCount": "1"
+        }
+      },
+      "url": "{{ request.build_absolute_uri }}"
+    }{% if broker.faqs.all %},
+    {
+      "@type": "FAQPage",
+      "@id": "{{ request.build_absolute_uri }}#faqpage",
+      "mainEntity": [
+        {% for faq in broker.faqs.all %}{
+          "@type": "Question",
+          "name": "{{ faq.question|escapejs }}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "{{ faq.answer|escapejs }}"
+          }
+        }{% if not forloop.last %},{% endif %}{% endfor %}
+      ]
+    }{% endif %}
+  ]
+}
+</script>
+
 {% endblock %}
 
 {% block content %}

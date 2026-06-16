@@ -541,6 +541,30 @@
         gap: 10px;
     }
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": "{{ request.build_absolute_uri }}#collectionpage",
+  "name": "Best Broker Comparison Lists - {{ site_settings.header_brand_name|default:'Brokers Times' }}",
+  "description": "Curated lists of the best forex and trading brokers by category, regulation, and trading style.",
+  "url": "{{ request.build_absolute_uri }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site_settings.header_brand_name|default:'Brokers Times' }}",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/"
+  }{% if compare_lists %},
+  "hasPart": [
+    {% for l in compare_lists %}{
+      "@type": "ItemList",
+      "name": "{{ l.title|escapejs }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'best_brokers_list_detail' l.slug %}"
+    }{% if not forloop.last %},{% endif %}{% endfor %}
+  ]{% endif %}
+}
+</script>
+
 {% endblock %}
 
 {% block content %}
