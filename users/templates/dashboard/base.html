@@ -385,6 +385,12 @@
                     <span>Homepage Settings / إعدادات الرئيسية</span>
                 </a>
             </li>
+            <li class="menu-item {% block nav_header_footer %}{% endblock %}">
+                <a href="{% url 'dashboard_header_footer' %}">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="5" rx="1"></rect><rect x="3" y="16" width="18" height="5" rx="1"></rect><line x1="3" y1="11" x2="21" y2="11"></line><line x1="3" y1="13" x2="21" y2="13"></line></svg>
+                    <span>Header & Footer / الهيدر والفوتر</span>
+                </a>
+            </li>
             {% endif %}
             <li class="menu-item {% block nav_settings %}{% endblock %}">
                 <a href="{% url 'profile' %}">

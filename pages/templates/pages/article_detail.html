@@ -3,10 +3,30 @@
 
 {% block title %}{{ article.seo_title|default:article.title }}{% endblock %}
 
+{% block meta_description %}{{ article.seo_description|default:article.title }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ article.seo_title|default:article.title }}{% endblock %}
+{% block og_description %}{{ article.seo_description|default:article.title }}{% endblock %}
+{% block og_image %}{% if article.featured_image %}{{ request.scheme }}://{{ request.get_host }}{{ article.featured_image.url }}{% endif %}{% endblock %}
+{% block twitter_title %}{{ article.seo_title|default:article.title }}{% endblock %}
+{% block twitter_description %}{{ article.seo_description|default:article.title }}{% endblock %}
+{% block twitter_image %}{% if article.featured_image %}{{ request.scheme }}://{{ request.get_host }}{{ article.featured_image.url }}{% endif %}{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ article.title|escapejs }}",
+  "description": "{{ article.seo_description|default:''|escapejs }}",
+  {% if article.featured_image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ article.featured_image.url }}",{% endif %}
+  "dateModified": "{{ article.updated_at|date:'c' }}",
+  "author": {"@type": "Organization", "name": "Brokers Times"},
+  "url": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
+
 {% block extra_head %}
-{% if article.seo_description %}
-<meta name="description" content="{{ article.seo_description }}">
-{% endif %}
 <style>
     .article-detail-container {
         padding: 3rem 0 5rem 0;
@@ -306,10 +326,6 @@
             </div>
 
             <div class="article-main-card">
-                {% if article.featured_image %}
-                    <img src="{{ article.featured_image.url }}" alt="{{ article.featured_image_alt|default:article.title }}" class="article-featured-image">
-                {% endif %}
-
                 <div class="article-main-body">
                     <span class="article-label">Education</span>
                     <h1 class="article-main-title">{{ article.title }}</h1>

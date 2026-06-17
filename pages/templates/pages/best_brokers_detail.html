@@ -5,7 +5,15 @@
 
 {% block title %}{{ best_list.seo_title|default:best_list.title }} | Brokers Times{% endblock %}
 
-{% block extra_head %}
+{% block meta_description %}{{ best_list.seo_description|default:best_list.title }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ best_list.seo_title|default:best_list.title }}{% endblock %}
+{% block og_description %}{{ best_list.seo_description|default:best_list.title }}{% endblock %}
+{% block og_image %}{% if best_list.featured_image %}{{ request.scheme }}://{{ request.get_host }}{{ best_list.featured_image.url }}{% endif %}{% endblock %}
+{% block twitter_title %}{{ best_list.seo_title|default:best_list.title }}{% endblock %}
+{% block twitter_description %}{{ best_list.seo_description|default:best_list.title }}{% endblock %}
+{% block twitter_image %}{% if best_list.featured_image %}{{ request.scheme }}://{{ request.get_host }}{{ best_list.featured_image.url }}{% endif %}{% endblock %}
+{% block structured_data %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -44,6 +52,8 @@
 }
 </script>
 {% endblock %}
+
+{% block extra_head %}{% endblock %}
 
 {% block content %}
 <style>
@@ -183,6 +193,14 @@
 <!-- Header Area -->
 <div class="best-brokers-detail-header">
     <div class="best-brokers-container">
+        <!-- Breadcrumb -->
+        <div class="article-breadcrumb" style="font-size:0.82rem;color:#94a3b8;margin-bottom:1rem;">
+            <a href="{% url 'home' %}" style="color:#3b82f6;text-decoration:none;">Home</a>
+            <span style="margin:0 0.4rem;">›</span>
+            <a href="{% url 'compare_list' %}" style="color:#3b82f6;text-decoration:none;">Best Broker</a>
+            <span style="margin:0 0.4rem;">›</span>
+            {{ best_list.title }}
+        </div>
         <h1 class="best-brokers-title">{{ best_list.title }}</h1>
         {% if best_list.seo_description %}
             <p class="best-brokers-subtitle">{{ best_list.seo_description }}</p>
@@ -191,12 +209,6 @@
 </div>
 
 <div class="best-brokers-container" style="margin-bottom: 5rem;">
-    <!-- Featured Image -->
-    {% if best_list.featured_image %}
-        <div class="best-brokers-image-wrapper">
-            <img src="{{ best_list.featured_image.url }}" alt="{{ best_list.featured_image_alt|default:best_list.title }}" class="best-brokers-image">
-        </div>
-    {% endif %}
 
     <!-- Rich Text Content with shortcodes rendered -->
     <div class="best-brokers-content">

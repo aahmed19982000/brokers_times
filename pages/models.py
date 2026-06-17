@@ -17,8 +17,8 @@ class HomepageSettings(models.Model):
     featured_list_4 = models.ForeignKey('best_brokers.BestBrokersList', on_delete=models.SET_NULL, null=True, blank=True, related_name='featured_list_pos_4')
 
     class Meta:
-        verbose_name = "Homepage Settings"
-        verbose_name_plural = "Homepage Settings"
+        verbose_name = "إعدادات الصفحة الرئيسية"
+        verbose_name_plural = "إعدادات الصفحة الرئيسية"
         
     def __str__(self):
         return "Homepage Configuration"
@@ -58,8 +58,8 @@ class SiteSettings(models.Model):
     copyright_text_ar = models.TextField(default="&copy; 2026 بروكرز تايمز. جميع الحقوق محفوظة. تحذير المخاطر: تنطوي تداولات الفوركس وعقود الفروقات على مخاطر عالية وقد تؤدي لخسارة رأس المال.")
 
     class Meta:
-        verbose_name = "Site Settings"
-        verbose_name_plural = "Site Settings"
+        verbose_name = "إعدادات الموقع العامة"
+        verbose_name_plural = "إعدادات الموقع العامة"
 
     def __str__(self):
         return "Global Site Settings"
@@ -73,6 +73,8 @@ class HeaderLink(models.Model):
 
     class Meta:
         ordering = ['order']
+        verbose_name = "🔝 رابط الهيدر"
+        verbose_name_plural = "🔝 روابط الهيدر"
 
     def __str__(self):
         return f"Header Link: {self.title_en} / {self.title_ar}"
@@ -98,6 +100,8 @@ class FooterLink(models.Model):
 
     class Meta:
         ordering = ['order']
+        verbose_name = "🔻 رابط الفوتر"
+        verbose_name_plural = "🔻 روابط الفوتر"
 
     def __str__(self):
         return f"Footer Link ({self.get_column_display()}): {self.title_en}"
@@ -117,6 +121,8 @@ class FooterRegulatoryBadge(models.Model):
 
     class Meta:
         ordering = ['order']
+        verbose_name = "🏅 شارة تنظيمية (فوتر)"
+        verbose_name_plural = "🏅 الشارات التنظيمية (فوتر)"
 
     def __str__(self):
         return f"Regulatory Badge: {self.text_en}"

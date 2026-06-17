@@ -36,6 +36,7 @@ urlpatterns = [
     path('dashboard/users/<int:pk>/edit/', DashboardUserUpdateView.as_view(), name='dashboard_users_edit'),
     path('dashboard/homepage-settings/', DashboardHomepageSettingsView.as_view(), name='dashboard_homepage_settings'),
     path('dashboard/site-settings/', DashboardSiteSettingsView.as_view(), name='dashboard_site_settings'),
+    path('dashboard/header-footer/', DashboardSiteSettingsView.as_view(), name='dashboard_header_footer'),
     path('dashboard/news/', DashboardNewsView.as_view(), name='dashboard_news'),
     path('dashboard/news/add/', DashboardNewsCreateView.as_view(), name='dashboard_news_add'),
     path('dashboard/news/<int:pk>/edit/', DashboardNewsUpdateView.as_view(), name='dashboard_news_edit'),
