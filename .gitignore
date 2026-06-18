@@ -11,3 +11,4 @@ env/
 db.sqlite3
 .DS_Store
 .env
+brokers_times/settings.py
