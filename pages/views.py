@@ -45,9 +45,22 @@ class HomeView(TemplateView):
             global_ranked_brokers = [item.broker for item in global_list.items.all().order_by('rank')[:5]]
 
         from categories.models import Regulator, FinancialAsset, TradingPlatform
-        regulators = Regulator.objects.all()
-        assets = FinancialAsset.objects.all()
-        platforms = TradingPlatform.objects.all()
+
+        # استخدام القوائم المحددة من لوحة التحكم، أو عرض الكل إن لم يُحدد شيء
+        if settings_obj.homepage_regulators.exists():
+            regulators = settings_obj.homepage_regulators.all()
+        else:
+            regulators = Regulator.objects.all()
+
+        if settings_obj.homepage_assets.exists():
+            assets = settings_obj.homepage_assets.all()
+        else:
+            assets = FinancialAsset.objects.all()
+
+        if settings_obj.homepage_platforms.exists():
+            platforms = settings_obj.homepage_platforms.all()
+        else:
+            platforms = TradingPlatform.objects.all()
 
         context.update({
             'homepage_settings': settings_obj,
@@ -62,6 +75,7 @@ class HomeView(TemplateView):
             'platforms': platforms,
         })
         return context
+
 
 class BrokerReviewDetailView(DetailView):
     model = Broker

@@ -642,12 +642,30 @@ class DashboardHomepageSettingsView(AdminRequiredMixin, View):
         lists = BestBrokersList.objects.filter(status='published').order_by('title')
         if not lists.exists():
             lists = BestBrokersList.objects.all().order_by('title')
+
+        from categories.models import Regulator, FinancialAsset, TradingPlatform
+        all_regulators = Regulator.objects.all().order_by('name')
+        all_assets = FinancialAsset.objects.all().order_by('name')
+        all_platforms = TradingPlatform.objects.all().order_by('name')
+
+        # IDs of currently selected items (for pre-checking checkboxes)
+        selected_regulators = list(settings_obj.homepage_regulators.values_list('pk', flat=True))
+        selected_assets = list(settings_obj.homepage_assets.values_list('pk', flat=True))
+        selected_platforms = list(settings_obj.homepage_platforms.values_list('pk', flat=True))
+
         context = {
             'settings': settings_obj,
             'brokers': brokers,
             'lists': lists,
+            'all_regulators': all_regulators,
+            'all_assets': all_assets,
+            'all_platforms': all_platforms,
+            'selected_regulators': selected_regulators,
+            'selected_assets': selected_assets,
+            'selected_platforms': selected_platforms,
         }
         return render(request, 'dashboard/homepage_settings.html', context)
+
     def post(self, request):
         settings_obj, created = HomepageSettings.objects.get_or_create(id=1)
         hero_id = request.POST.get('hero_featured_broker')
@@ -674,9 +692,27 @@ class DashboardHomepageSettingsView(AdminRequiredMixin, View):
         settings_obj.featured_list_3 = get_or_none(BestBrokersList, l3_id)
         settings_obj.featured_list_4 = get_or_none(BestBrokersList, l4_id)
         settings_obj.save()
+
+        # Save directory section ManyToMany selections
+        from categories.models import Regulator, FinancialAsset, TradingPlatform
+        regulator_ids = request.POST.getlist('homepage_regulators')
+        asset_ids = request.POST.getlist('homepage_assets')
+        platform_ids = request.POST.getlist('homepage_platforms')
+
+        settings_obj.homepage_regulators.set(
+            Regulator.objects.filter(pk__in=regulator_ids) if regulator_ids else []
+        )
+        settings_obj.homepage_assets.set(
+            FinancialAsset.objects.filter(pk__in=asset_ids) if asset_ids else []
+        )
+        settings_obj.homepage_platforms.set(
+            TradingPlatform.objects.filter(pk__in=platform_ids) if platform_ids else []
+        )
+
         from django.contrib import messages
         messages.success(request, "Homepage configuration saved successfully! / تم حفظ إعدادات الصفحة الرئيسية بنجاح!")
         return redirect('dashboard_homepage_settings')
+
 
 
 class DashboardSiteSettingsView(AdminRequiredMixin, View):

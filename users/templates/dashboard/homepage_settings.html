@@ -89,6 +89,97 @@
         justify-content: flex-end;
         margin-top: 2rem;
     }
+
+    /* === Directory Section Checkbox Grid === */
+    .dir-section-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.75rem;
+        margin-top: 1.5rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .dir-section-label:first-of-type { margin-top: 0; }
+    .dir-hint {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.6rem;
+    }
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: #0d1322;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 8px;
+        padding: 0.55rem 0.8rem;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+    }
+    .checkbox-item:hover {
+        border-color: rgba(99,102,241,0.4);
+        background: rgba(99,102,241,0.06);
+    }
+    .checkbox-item input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .checkbox-item input[type="checkbox"]:checked + .checkbox-icon-wrap {
+        border-color: var(--primary);
+    }
+    .checkbox-item.checked {
+        border-color: rgba(99,102,241,0.5);
+        background: rgba(99,102,241,0.1);
+    }
+    .checkbox-icon-wrap {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    .checkbox-icon-wrap img {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+    .checkbox-icon-wrap .abbr {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.6);
+    }
+    .checkbox-label-text {
+        font-size: 0.85rem;
+        color: white;
+        font-weight: 500;
+    }
+    .select-all-btn {
+        font-size: 0.75rem;
+        color: var(--primary);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        text-decoration: underline;
+        margin-left: auto;
+    }
 </style>
 {% endblock %}
 
@@ -254,6 +345,91 @@
                 </div>
             </div>
 
+        <!-- Card 4: Browse by Category Directory Control -->
+        <div class="editor-card">
+            <div class="editor-card-title">
+                <span>Browse by Category / تصفح حسب الفئة</span>
+            </div>
+
+            <p class="dir-hint">
+                Control which items appear in the "Browse Brokers by Category" section on the homepage.
+                Leave a group <strong style="color:white;">empty</strong> to show all items automatically.
+                <br>
+                تحكم في العناصر التي تظهر في قسم "تصفح حسب الفئة". اترك المجموعة فارغة لعرض الكل تلقائياً.
+            </p>
+
+            <!-- Regulations & Licenses -->
+            <div class="dir-section-label">
+                🛡️ Regulations &amp; Licenses / هيئات الرقابة والتراخيص
+                <button type="button" class="select-all-btn" onclick="toggleAll('regulators')">Select All / تحديد الكل</button>
+            </div>
+            <div class="checkbox-grid" id="grid-regulators">
+                {% for reg in all_regulators %}
+                <label class="checkbox-item {% if reg.pk in selected_regulators %}checked{% endif %}" onclick="this.classList.toggle('checked')">
+                    <input type="checkbox" name="homepage_regulators" value="{{ reg.pk }}"
+                           {% if reg.pk in selected_regulators %}checked{% endif %}>
+                    <div class="checkbox-icon-wrap">
+                        {% if reg.icon %}
+                            <img src="{{ reg.icon.url }}" alt="{{ reg.name }}">
+                        {% else %}
+                            <span class="abbr">{{ reg.name|slice:":3"|upper }}</span>
+                        {% endif %}
+                    </div>
+                    <span class="checkbox-label-text">{{ reg.name }}</span>
+                </label>
+                {% empty %}
+                <p style="color:var(--text-muted); font-size:0.85rem;">لا توجد هيئات مضافة بعد. / No regulators added yet.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Financial Instruments -->
+            <div class="dir-section-label" style="margin-top:1.8rem;">
+                📈 Financial Instruments / الأدوات المالية
+                <button type="button" class="select-all-btn" onclick="toggleAll('assets')">Select All / تحديد الكل</button>
+            </div>
+            <div class="checkbox-grid" id="grid-assets">
+                {% for asset in all_assets %}
+                <label class="checkbox-item {% if asset.pk in selected_assets %}checked{% endif %}" onclick="this.classList.toggle('checked')">
+                    <input type="checkbox" name="homepage_assets" value="{{ asset.pk }}"
+                           {% if asset.pk in selected_assets %}checked{% endif %}>
+                    <div class="checkbox-icon-wrap">
+                        {% if asset.icon %}
+                            <img src="{{ asset.icon.url }}" alt="{{ asset.name }}">
+                        {% else %}
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                        {% endif %}
+                    </div>
+                    <span class="checkbox-label-text">{{ asset.name }}</span>
+                </label>
+                {% empty %}
+                <p style="color:var(--text-muted); font-size:0.85rem;">لا توجد أدوات مضافة بعد. / No financial assets added yet.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Trading Platforms -->
+            <div class="dir-section-label" style="margin-top:1.8rem;">
+                🖥️ Trading Platforms / منصات التداول
+                <button type="button" class="select-all-btn" onclick="toggleAll('platforms')">Select All / تحديد الكل</button>
+            </div>
+            <div class="checkbox-grid" id="grid-platforms">
+                {% for plat in all_platforms %}
+                <label class="checkbox-item {% if plat.pk in selected_platforms %}checked{% endif %}" onclick="this.classList.toggle('checked')">
+                    <input type="checkbox" name="homepage_platforms" value="{{ plat.pk }}"
+                           {% if plat.pk in selected_platforms %}checked{% endif %}>
+                    <div class="checkbox-icon-wrap">
+                        {% if plat.icon %}
+                            <img src="{{ plat.icon.url }}" alt="{{ plat.name }}">
+                        {% else %}
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
+                        {% endif %}
+                    </div>
+                    <span class="checkbox-label-text">{{ plat.name }}</span>
+                </label>
+                {% empty %}
+                <p style="color:var(--text-muted); font-size:0.85rem;">لا توجد منصات مضافة بعد. / No trading platforms added yet.</p>
+                {% endfor %}
+            </div>
+
             <div class="action-buttons">
                 <a href="{% url 'dashboard' %}" class="btn-editor-secondary" style="padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 8px; font-weight: 600; text-align: center; border: 1px solid rgba(255,255,255,0.08); display: inline-flex; align-items: center; justify-content: center;">
                     Cancel / إلغاء
@@ -265,4 +441,18 @@
         </div>
     </form>
 </div>
+
+<script>
+function toggleAll(group) {
+    const grid = document.getElementById('grid-' + group);
+    const checkboxes = grid.querySelectorAll('input[type="checkbox"]');
+    const labels = grid.querySelectorAll('label.checkbox-item');
+    const anyUnchecked = Array.from(checkboxes).some(c => !c.checked);
+    checkboxes.forEach((cb, i) => {
+        cb.checked = anyUnchecked;
+        if (anyUnchecked) labels[i].classList.add('checked');
+        else labels[i].classList.remove('checked');
+    });
+}
+</script>
 {% endblock %}

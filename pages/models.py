@@ -16,6 +16,30 @@ class HomepageSettings(models.Model):
     featured_list_3 = models.ForeignKey('best_brokers.BestBrokersList', on_delete=models.SET_NULL, null=True, blank=True, related_name='featured_list_pos_3')
     featured_list_4 = models.ForeignKey('best_brokers.BestBrokersList', on_delete=models.SET_NULL, null=True, blank=True, related_name='featured_list_pos_4')
 
+    # Browse by Category Section — Directory Control
+    # إذا تركت فارغة سيظهر الكل، وإذا اخترت عناصر سيظهر المحدد فقط
+    homepage_regulators = models.ManyToManyField(
+        'categories.Regulator',
+        related_name='homepage_settings',
+        blank=True,
+        verbose_name="🛡️ هيئات الرقابة المعروضة (Regulations & Licenses)",
+        help_text="اختر الهيئات التي ستظهر في الصفحة الرئيسية. اتركها فارغة لعرض الكل."
+    )
+    homepage_assets = models.ManyToManyField(
+        'categories.FinancialAsset',
+        related_name='homepage_settings',
+        blank=True,
+        verbose_name="📈 الأدوات المالية المعروضة (Financial Instruments)",
+        help_text="اختر الأدوات التي ستظهر في الصفحة الرئيسية. اتركها فارغة لعرض الكل."
+    )
+    homepage_platforms = models.ManyToManyField(
+        'categories.TradingPlatform',
+        related_name='homepage_settings',
+        blank=True,
+        verbose_name="🖥️ منصات التداول المعروضة (Trading Platforms)",
+        help_text="اختر المنصات التي ستظهر في الصفحة الرئيسية. اتركها فارغة لعرض الكل."
+    )
+
     class Meta:
         verbose_name = "إعدادات الصفحة الرئيسية"
         verbose_name_plural = "إعدادات الصفحة الرئيسية"

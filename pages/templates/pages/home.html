@@ -1744,7 +1744,11 @@
                     {% for reg in regulators %}
                     <a href="{% url 'broker_directory' %}?regulation={{ reg.slug }}" class="directory-item-card">
                         <div class="item-icon-circle">
-                            <span class="abbr-text">{{ reg.name|slice:":3"|upper }}</span>
+                            {% if reg.icon %}
+                                <img src="{{ reg.icon.url }}" alt="{{ reg.name }}" style="width:22px;height:22px;object-fit:contain;filter:none;">
+                            {% else %}
+                                <span class="abbr-text">{{ reg.name|slice:":3"|upper }}</span>
+                            {% endif %}
                         </div>
                         <div class="item-info">
                             <span class="item-name">{{ reg.name }}</span>
@@ -1769,7 +1773,11 @@
                     {% for asset in assets %}
                     <a href="{% url 'broker_directory' %}?instrument={{ asset.slug }}" class="directory-item-card">
                         <div class="item-icon-circle accent-theme">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                            {% if asset.icon %}
+                                <img src="{{ asset.icon.url }}" alt="{{ asset.name }}" style="width:22px;height:22px;object-fit:contain;filter:none;">
+                            {% else %}
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                            {% endif %}
                         </div>
                         <div class="item-info">
                             <span class="item-name">{{ asset.name }}</span>
@@ -1794,7 +1802,11 @@
                     {% for plat in platforms %}
                     <a href="{% url 'broker_directory' %}?platform={{ plat.slug }}" class="directory-item-card">
                         <div class="item-icon-circle primary-theme">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
+                            {% if plat.icon %}
+                                <img src="{{ plat.icon.url }}" alt="{{ plat.name }}" style="width:22px;height:22px;object-fit:contain;filter:none;">
+                            {% else %}
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
+                            {% endif %}
                         </div>
                         <div class="item-info">
                             <span class="item-name">{{ plat.name }}</span>

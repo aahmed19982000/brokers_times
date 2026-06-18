@@ -82,6 +82,20 @@ class HomepageSettingsAdmin(admin.ModelAdmin):
             "fields": ("featured_list_1", "featured_list_2",
                        "featured_list_3", "featured_list_4"),
         }),
+        ("🗂️ قسم التصفح حسب الفئة / Browse by Category", {
+            "description": "تحكم في العناصر التي تظهر في قسم 'تصفح حسب الفئة' بالصفحة الرئيسية. اترك الحقل فارغاً لعرض جميع العناصر تلقائياً.",
+            "fields": (
+                "homepage_regulators",
+                "homepage_assets",
+                "homepage_platforms",
+            ),
+            "classes": ("wide",),
+        }),
+    )
+    filter_horizontal = (
+        "homepage_regulators",
+        "homepage_assets",
+        "homepage_platforms",
     )
 
     def has_add_permission(self, request):
@@ -89,3 +103,4 @@ class HomepageSettingsAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
