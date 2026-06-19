@@ -429,10 +429,26 @@
                         </div>
                         <!-- Rank hidden -->
                         <input type="hidden" name="item_rank" value="{{ item.rank }}">
-                        <input type="hidden" name="item_headline" value="">
-                        <input type="hidden" name="item_custom_deposit" value="">
-                        <input type="hidden" name="item_description" value="">
-                        <input type="hidden" name="item_highlights" value="">
+                        
+                        <!-- Extra Fields for Broker Custom Details -->
+                        <div style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 1rem; text-align: left;">
+                            <div class="form-group-editor">
+                                <label style="font-size: 0.8rem; color: #a5b4fc; font-weight: 600;">Custom Headline / عنوان مخصص</label>
+                                <input type="text" name="item_headline" class="form-input-editor" value="{{ item.headline|default_if_none:'' }}" placeholder="e.g. Best ECN Broker / أفضل وسيط ECN">
+                            </div>
+                            <div class="form-group-editor">
+                                <label style="font-size: 0.8rem; color: #a5b4fc; font-weight: 600;">Custom Deposit / إيداع مخصص (اختياري)</label>
+                                <input type="text" name="item_custom_deposit" class="form-input-editor" value="{{ item.custom_deposit|default_if_none:'' }}" placeholder="e.g. $100 / 100 دولار">
+                            </div>
+                            <div class="form-group-editor">
+                                <label style="font-size: 0.8rem; color: #a5b4fc; font-weight: 600;">Highlights (one per line) / مميزات الشركة (سطر لكل ميزة)</label>
+                                <textarea name="item_highlights" class="form-input-editor" rows="3" placeholder="Highlight 1&#10;Highlight 2&#10;Highlight 3">{{ item.highlights|default_if_none:'' }}</textarea>
+                            </div>
+                            <div class="form-group-editor">
+                                <label style="font-size: 0.8rem; color: #a5b4fc; font-weight: 600;">Short Description / وصف قصير</label>
+                                <textarea name="item_description" class="form-input-editor" rows="3" placeholder="Enter a brief summary description / اكتب وصفاً مختصراً للشركة...">{{ item.description|default_if_none:'' }}</textarea>
+                            </div>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -757,10 +773,26 @@
                 </button>
             </div>
             <input type="hidden" name="item_rank" value="${newRank}">
-            <input type="hidden" name="item_headline" value="">
-            <input type="hidden" name="item_custom_deposit" value="">
-            <input type="hidden" name="item_description" value="">
-            <input type="hidden" name="item_highlights" value="">
+            
+            <!-- Extra Fields for Broker Custom Details -->
+            <div style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 1rem; text-align: left;">
+                <div class="form-group-editor">
+                    <label style="font-size: 0.8rem; color: #a5b4fc; font-weight: 600;">Custom Headline / عنوان مخصص</label>
+                    <input type="text" name="item_headline" class="form-input-editor" value="" placeholder="e.g. Best ECN Broker / أفضل وسيط ECN">
+                </div>
+                <div class="form-group-editor">
+                    <label style="font-size: 0.8rem; color: #a5b4fc; font-weight: 600;">Custom Deposit / إيداع مخصص (اختياري)</label>
+                    <input type="text" name="item_custom_deposit" class="form-input-editor" value="" placeholder="e.g. $100 / 100 دولار">
+                </div>
+                <div class="form-group-editor">
+                    <label style="font-size: 0.8rem; color: #a5b4fc; font-weight: 600;">Highlights (one per line) / مميزات الشركة (سطر لكل ميزة)</label>
+                    <textarea name="item_highlights" class="form-input-editor" rows="3" placeholder="Highlight 1&#10;Highlight 2&#10;Highlight 3"></textarea>
+                </div>
+                <div class="form-group-editor">
+                    <label style="font-size: 0.8rem; color: #a5b4fc; font-weight: 600;">Short Description / وصف قصير</label>
+                    <textarea name="item_description" class="form-input-editor" rows="3" placeholder="Enter a brief summary description / اكتب وصفاً مختصراً للشركة..."></textarea>
+                </div>
+            </div>
         `;
 
         const select = row.querySelector('select[name="item_broker"]');
