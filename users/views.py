@@ -1221,7 +1221,7 @@ class DashboardTranslateView(LoginRequiredMixin, View):
         if gemini_api_key:
             try:
                 model_name = "gemini-2.5-flash"
-                url = f"https://generativelanguage.googleapis.com/v1/models/{model_name}:generateContent?key={gemini_api_key}"
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_api_key}"
                 
                 prompt = (
                     f"You are a professional financial translator specializing in translating online broker reviews, "
@@ -1242,9 +1242,9 @@ class DashboardTranslateView(LoginRequiredMixin, View):
                     "contents": [{
                         "parts": [{"text": prompt}]
                     }],
-                    "generationConfig": {
-                        "thinkingConfig": {
-                            "thinkingBudget": 0
+                    "generation_config": {
+                        "thinking_config": {
+                            "thinking_budget": 0
                         }
                     }
                 }
