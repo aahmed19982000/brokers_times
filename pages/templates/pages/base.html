@@ -480,6 +480,99 @@
                 display: none;
             }
         }
+
+        /* Modern Premium Table Styling for Visitor Content Areas */
+        .detailed-review-body table, 
+        .article-content table, 
+        .news-detail-content table {
+            width: 100% !important;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            margin: 2rem 0 !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 10px !important;
+            overflow: hidden !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01) !important;
+        }
+
+        .detailed-review-body th, 
+        .article-content th, 
+        .news-detail-content th {
+            background-color: #f8fafc !important;
+            color: #0b3168 !important;
+            font-weight: 700 !important;
+            padding: 1rem 1.2rem !important;
+            border-bottom: 2px solid #e2e8f0 !important;
+            border-right: 1px solid #e2e8f0 !important;
+        }
+
+        .detailed-review-body td, 
+        .article-content td, 
+        .news-detail-content td {
+            padding: 1rem 1.2rem !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            border-right: 1px solid #f1f5f9 !important;
+            color: #334155 !important;
+            background-color: #ffffff !important;
+            font-size: 0.92rem !important;
+        }
+
+        /* Border handling for LTR/RTL layouts */
+        .ltr-layout .detailed-review-body th, .ltr-layout .detailed-review-body td,
+        .ltr-layout .article-content th, .ltr-layout .article-content td,
+        .ltr-layout .news-detail-content th, .ltr-layout .news-detail-content td {
+            text-align: left !important;
+        }
+
+        .rtl-layout .detailed-review-body th, .rtl-layout .detailed-review-body td,
+        .rtl-layout .article-content th, .rtl-layout .article-content td,
+        .rtl-layout .news-detail-content th, .rtl-layout .news-detail-content td {
+            text-align: right !important;
+            border-right: none !important;
+            border-left: 1px solid #e2e8f0 !important;
+        }
+
+        .rtl-layout .detailed-review-body td,
+        .rtl-layout .article-content td,
+        .rtl-layout .news-detail-content td {
+            border-left: 1px solid #f1f5f9 !important;
+        }
+
+        /* Remove borders from the last column in LTR */
+        .ltr-layout .detailed-review-body th:last-child, .ltr-layout .detailed-review-body td:last-child,
+        .ltr-layout .article-content th:last-child, .ltr-layout .article-content td:last-child,
+        .ltr-layout .news-detail-content th:last-child, .ltr-layout .news-detail-content td:last-child {
+            border-right: none !important;
+        }
+
+        /* Remove borders from the first column in RTL (since it has left-border) */
+        .rtl-layout .detailed-review-body th:first-child, .rtl-layout .detailed-review-body td:first-child,
+        .rtl-layout .article-content th:first-child, .rtl-layout .article-content td:first-child,
+        .rtl-layout .news-detail-content th:first-child, .rtl-layout .news-detail-content td:first-child {
+            border-left: none !important;
+        }
+
+        /* Remove bottom border from the last row */
+        .detailed-review-body tr:last-child td,
+        .article-content tr:last-child td,
+        .news-detail-content tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        /* Row Zebra Striping */
+        .detailed-review-body tr:nth-child(even) td,
+        .article-content tr:nth-child(even) td,
+        .news-detail-content tr:nth-child(even) td {
+            background-color: #f8fafc !important;
+        }
+
+        /* Row Hover effect */
+        .detailed-review-body tr:hover td,
+        .article-content tr:hover td,
+        .news-detail-content tr:hover td {
+            background-color: #f1f5f9 !important;
+            transition: background-color 0.2s ease !important;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>

@@ -309,6 +309,66 @@
             align-items: center;
         }
 
+        /* WYSIWYG Editor Table Styling (Dashboard - Dark Theme) */
+        .wysiwyg-editor table {
+            width: 100% !important;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            margin: 1.5rem 0 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+        }
+
+        .wysiwyg-editor th {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #fff !important;
+            font-weight: 700 !important;
+            padding: 0.8rem 1rem !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+            text-align: left !important;
+        }
+
+        .wysiwyg-editor.rtl th {
+            text-align: right !important;
+            border-right: none !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .wysiwyg-editor td {
+            padding: 0.8rem 1rem !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: #cbd5e1 !important;
+            background-color: transparent !important;
+            font-size: 0.92rem !important;
+        }
+
+        .wysiwyg-editor.rtl td {
+            border-right: none !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .wysiwyg-editor th:last-child, .wysiwyg-editor td:last-child {
+            border-right: none !important;
+        }
+
+        .wysiwyg-editor.rtl th:first-child, .wysiwyg-editor.rtl td:first-child {
+            border-left: none !important;
+        }
+
+        .wysiwyg-editor tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        .wysiwyg-editor tr:nth-child(even) td {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+        }
+
+        .wysiwyg-editor tr:hover td {
+            background-color: rgba(255, 255, 255, 0.04) !important;
+        }
         /* Utilities */
         .rtl-layout {
             direction: rtl;
