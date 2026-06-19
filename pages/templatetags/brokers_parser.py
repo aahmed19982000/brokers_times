@@ -50,7 +50,8 @@ def parse_best_brokers(page_instance):
     # لذا نستخدم regex يتعرف على جميع الأشكال دفعةً واحدة
     BROKERS_SHORTCODE_RE = re.compile(
         r'\[brokers_list\]'
-        r'|<pre[^>]*>\s*brokers_list\s*</pre>',
+        r'|<pre[^>]*>\s*brokers_list\s*</pre>'
+        r'|<p[^>]*>\s*brokers_list\s*</p>',
         re.IGNORECASE
     )
 
