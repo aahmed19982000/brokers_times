@@ -1672,7 +1672,9 @@
                     <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span>{% if request.LANGUAGE_CODE == 'ar' %}البلد المقر: {% else %}HQ Country: {% endif %} {{ hb.headquarters.name|default:"Global" }}</span>
+                    <span>{% if request.LANGUAGE_CODE == 'ar' %}البلد المقر: {% else %}HQ Country: {% endif %}
+                        {% with hq_list=hb.headquarters.all %}{% if hq_list %}{% for hq in hq_list %}{% if hq.country_code %}<img src="https://flagcdn.com/w40/{{ hq.country_code }}.png" width="16" style="border-radius:2px;vertical-align:middle;margin-left:2px;" alt="{{ hq.name }}">{% endif %}{{ hq.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Global{% endif %}{% endwith %}
+                    </span>
                 </div>
 
                 <div class="hero-badge-item" style="background-color: rgba(59, 130, 246, 0.05); color: #1e3a8a;">

@@ -1082,12 +1082,6 @@
                             <textarea name="verdict_text" id="id_verdict_text" class="form-input-editor" rows="3" placeholder="This broker stands out for its tight spreads and excellent educational resources...">{{ broker.verdict_text|default_if_none:'' }}</textarea>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group-editor" style="grid-column: span 2;">
-                            <label for="id_local_offices">Local Offices / المكاتب المحلية (مكتب واحد في كل سطر / One office per line)</label>
-                            <textarea name="local_offices" id="id_local_offices" class="form-input-editor" rows="3" placeholder="دبي، الإمارات العربية المتحدة&#10;الرياض، المملكة العربية السعودية">{{ broker.local_offices|default_if_none:'' }}</textarea>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- 2. Review Content Section -->
@@ -1292,44 +1286,53 @@
 
                     <div class="form-row">
                         <div class="form-group-editor">
-                            <label for="id_headquarters">Headquarters / المقر الرئيسي للشركة</label>
-                            <div class="custom-single-search-select" id="headquarters-select-container" data-type="headquarters">
-                                <div class="custom-single-select-trigger" onclick="toggleSingleSearchMenu(event, 'headquarters')">
-                                    <span id="headquarters-selected-display">
-                                        {% if broker.headquarters %}
-                                            {{ broker.headquarters.name }}
-                                        {% else %}
-                                            Select Headquarters / اختر المقر الرئيسي
-                                        {% endif %}
-                                    </span>
-                                    <span class="custom-select-arrow">&#x25BC;</span>
-                                </div>
-                                
-                                <div class="custom-search-dropdown-menu" id="headquarters-dropdown-menu" style="display: none;">
-                                    <input type="text" class="custom-search-input" id="headquarters-search-input" placeholder="Search or add new... / ابحث أو أضف..." oninput="filterSingleOptions('headquarters', this.value)" autocomplete="off">
-                                    
-                                    <ul class="custom-search-options-list" id="headquarters-options-list">
-                                        <li class="custom-search-option-item" data-id="" onclick="selectSingleOption('headquarters', '', '--------')">
-                                            --------
-                                        </li>
-                                        {% for hq in headquarters %}
-                                            <li class="custom-search-option-item" data-id="{{ hq.id }}" id="li-hq-{{ hq.id }}" onclick="selectSingleOption('headquarters', '{{ hq.id }}', '{{ hq.name }}')">
+                            <label>Headquarters / مقرات الشركة</label>
+                            <div class="regulator-badges-wrapper">
+                                <div class="regulator-badges-list" id="hq-badges-list">
+                                    {% for hq in headquarters %}
+                                        {% if hq.id in selected_headquarters %}
+                                            <span class="regulator-badge-custom" data-id="{{ hq.id }}" style="display:inline-flex;align-items:center;gap:6px;">
+                                                {% if hq.country_code %}<img src="https://flagcdn.com/w40/{{ hq.country_code }}.png" width="18" style="border-radius:2px;vertical-align:middle;" alt="{{ hq.name }}">{% endif %}
                                                 {{ hq.name }}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                    
-                                    <div class="custom-add-new-option" id="headquarters-add-new-option" style="display: none;" onclick="createNewTaxonomyAjax('headquarters')">
-                                        <span>+ Add: <strong id="headquarters-new-name-display"></strong></span>
-                                        <span class="custom-add-btn-small">Add / إضافة</span>
-                                    </div>
-                                    
-                                    <div class="custom-loading-indicator" id="headquarters-loading-indicator" style="display: none;">
-                                        Saving / جاري الحفظ...
+                                                <span class="regulator-badge-close" onclick="removeHQ({{ hq.id }})">&times;</span>
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+
+                                <div class="custom-search-select-container" id="hq-search-select-container">
+                                    <button type="button" class="select-add-regulator-btn" id="hq-search-select-trigger" onclick="toggleHQSearchMenu(event)">
+                                        + Add Headquarters / إضافة مقر
+                                    </button>
+
+                                    <div class="custom-search-dropdown-menu" id="hq-search-dropdown-menu" style="display: none;">
+                                        <input type="text" class="custom-search-input" id="hq-search-input" placeholder="Search or add new... / ابحث أو أضف..." oninput="filterHQOptions(this.value)" autocomplete="off">
+
+                                        <ul class="custom-search-options-list" id="hq-options-list">
+                                            {% for hq in headquarters %}
+                                                <li class="custom-search-option-item" data-id="{{ hq.id }}" id="li-hq-{{ hq.id }}" {% if hq.id in selected_headquarters %}style="display:none;"{% endif %} onclick="selectHQFromSearch({{ hq.id }}, '{{ hq.name }}', '{{ hq.country_code }}')">
+                                                    {% if hq.country_code %}<img src="https://flagcdn.com/w40/{{ hq.country_code }}.png" width="18" style="border-radius:2px;vertical-align:middle;margin-left:6px;" alt="">{% endif %}
+                                                    {{ hq.name }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+
+                                        <div class="custom-add-new-option" id="hq-add-new-option" style="display: none;" onclick="createNewHQAjax()">
+                                            <span>+ Add: <strong id="hq-new-name-display"></strong></span>
+                                            <span class="custom-add-btn-small">Add / إضافة</span>
+                                        </div>
+
+                                        <div class="custom-loading-indicator" id="hq-loading-indicator" style="display: none;">
+                                            Saving / جاري الحفظ...
+                                        </div>
                                     </div>
                                 </div>
-                                
-                                <input type="hidden" name="headquarters" id="id_headquarters" value="{{ broker.headquarters.id|default:'' }}">
+
+                                <select name="headquarters" id="hidden-hq-select" multiple style="display:none;">
+                                    {% for hq in headquarters %}
+                                        <option value="{{ hq.id }}" {% if hq.id in selected_headquarters %}selected{% endif %}></option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         
@@ -1421,16 +1424,14 @@
                     <!-- Pros -->
                     <div class="form-row" style="margin-top: 1.5rem;">
                         <div class="form-group-editor">
-                            <label for="id_pros_en">
-                                <span>Pros </span>
-                                
+                            <label for="id_pros" style="display:flex;justify-content:space-between;align-items:center;">
+                                <span>Pros</span>
+                                <button type="button" class="btn-translate-field" onclick="translateField(this.closest('.form-group-editor').querySelector('textarea'))">ترجمة</button>
                             </label>
                             <textarea name="pros" id="id_pros" class="form-input-editor" rows="5" placeholder="Fast execution&#10;Regulated by FCA&#10;Low minimum deposit">{{ broker.pros|default_if_none:'' }}</textarea>
                             <small style="color:#6b7280; font-size:0.78rem; margin-top:0.3rem; display:block;">One advantage per line / ميزة واحدة في كل سطر</small>
                         </div>
                         <div class="form-group-editor">
-                            
-                            
                             <small style="color:#6b7280; font-size:0.78rem; margin-top:0.3rem; display:block;">ميزة واحدة في كل سطر / One advantage per line</small>
                         </div>
                     </div>
@@ -1438,16 +1439,14 @@
                     <!-- Cons -->
                     <div class="form-row">
                         <div class="form-group-editor">
-                            <label for="id_cons_en">
-                                <span>Cons </span>
-                                
+                            <label for="id_cons" style="display:flex;justify-content:space-between;align-items:center;">
+                                <span>Cons</span>
+                                <button type="button" class="btn-translate-field" onclick="translateField(this.closest('.form-group-editor').querySelector('textarea'))">ترجمة</button>
                             </label>
                             <textarea name="cons" id="id_cons" class="form-input-editor" rows="5" placeholder="Limited educational content&#10;High swap rates">{{ broker.cons|default_if_none:'' }}</textarea>
                             <small style="color:#6b7280; font-size:0.78rem; margin-top:0.3rem; display:block;">One disadvantage per line / عيب واحد في كل سطر</small>
                         </div>
                         <div class="form-group-editor">
-                            
-                            
                             <small style="color:#6b7280; font-size:0.78rem; margin-top:0.3rem; display:block;">عيب واحد في كل سطر / One disadvantage per line</small>
                         </div>
                     </div>
@@ -1811,6 +1810,35 @@
 
     // Rich editor format execution
     function formatDoc(cmd, value = null) {
+        if (cmd === 'formatBlock') {
+            const tag = value.replace(/[<>]/g, '').toLowerCase();
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount) {
+                const range = sel.getRangeAt(0);
+                let node = range.commonAncestorContainer;
+                if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+                // Find the block-level ancestor inside the editor
+                const editor = document.getElementById('editor');
+                while (node && node !== editor && node.parentNode !== editor) {
+                    node = node.parentNode;
+                }
+                if (node && node !== editor) {
+                    const newEl = document.createElement(tag);
+                    newEl.innerHTML = node.innerHTML;
+                    // Copy relevant attributes
+                    if (node.className) newEl.className = node.className;
+                    node.parentNode.replaceChild(newEl, node);
+                    // Restore selection inside new element
+                    const newRange = document.createRange();
+                    newRange.selectNodeContents(newEl);
+                    newRange.collapse(false);
+                    sel.removeAllRanges();
+                    sel.addRange(newRange);
+                    syncEditor();
+                    return;
+                }
+            }
+        }
         document.execCommand(cmd, false, value);
         syncEditor();
     }
@@ -1928,7 +1956,7 @@
         }
 
         // Single selects (Headquarters, Deposit Limit, Islamic Account)
-        const singleSelectors = ['headquarters', 'deposit_limit', 'islamic_account'];
+        const singleSelectors = ['deposit_limit', 'islamic_account'];
         singleSelectors.forEach(type => {
             const container = document.getElementById(`${type}-select-container`);
             const menu = document.getElementById(`${type}-dropdown-menu`);
@@ -2103,6 +2131,119 @@
         .catch(error => {
             console.error('Error:', error);
             alert('Failed to save regulator / فشل حفظ الهيئة الرقابية');
+            loadingIndicator.style.display = 'none';
+            addOption.style.display = 'flex';
+        });
+    }
+
+    // ==========================================
+    // Multi-Select: Headquarters
+    // ==========================================
+    function toggleHQSearchMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('hq-search-dropdown-menu');
+        const isHidden = menu.style.display === 'none';
+        document.querySelectorAll('.custom-search-dropdown-menu').forEach(m => m.style.display = 'none');
+        if (isHidden) {
+            menu.style.display = 'block';
+            document.getElementById('hq-search-input').focus();
+        }
+    }
+
+    function filterHQOptions(query) {
+        const items = document.querySelectorAll('#hq-options-list .custom-search-option-item');
+        const hiddenSelect = document.getElementById('hidden-hq-select');
+        const selectedIds = Array.from(hiddenSelect.options).filter(o => o.selected).map(o => o.value);
+        const addOption = document.getElementById('hq-add-new-option');
+        const nameDisplay = document.getElementById('hq-new-name-display');
+        let hasVisible = false;
+        items.forEach(item => {
+            if (selectedIds.includes(item.getAttribute('data-id'))) { item.style.display = 'none'; return; }
+            const match = item.textContent.trim().toLowerCase().includes(query.toLowerCase());
+            item.style.display = match ? 'block' : 'none';
+            if (match) hasVisible = true;
+        });
+        if (query && !hasVisible) {
+            nameDisplay.textContent = query;
+            addOption.style.display = 'flex';
+        } else {
+            addOption.style.display = 'none';
+        }
+    }
+
+    function selectHQFromSearch(id, name, countryCode) {
+        const hiddenSelect = document.getElementById('hidden-hq-select');
+        const selectedIds = Array.from(hiddenSelect.options).filter(o => o.selected).map(o => o.value);
+        if (selectedIds.includes(String(id))) return;
+
+        // Add badge
+        const badgeList = document.getElementById('hq-badges-list');
+        const badge = document.createElement('span');
+        badge.className = 'regulator-badge-custom';
+        badge.setAttribute('data-id', id);
+        badge.style.cssText = 'display:inline-flex;align-items:center;gap:6px;';
+        badge.innerHTML = (countryCode ? `<img src="https://flagcdn.com/w40/${countryCode}.png" width="18" style="border-radius:2px;vertical-align:middle;" alt="">` : '') +
+            name + ` <span class="regulator-badge-close" onclick="removeHQ(${id})">&times;</span>`;
+        badgeList.appendChild(badge);
+
+        // Mark option hidden
+        const li = document.getElementById(`li-hq-${id}`);
+        if (li) li.style.display = 'none';
+
+        // Select in hidden select
+        for (let i = 0; i < hiddenSelect.options.length; i++) {
+            if (hiddenSelect.options[i].value == id) { hiddenSelect.options[i].selected = true; break; }
+        }
+
+        // Close dropdown & clear search
+        document.getElementById('hq-search-dropdown-menu').style.display = 'none';
+        document.getElementById('hq-search-input').value = '';
+        document.getElementById('hq-add-new-option').style.display = 'none';
+        filterHQOptions('');
+    }
+
+    function removeHQ(id) {
+        const badge = document.querySelector(`#hq-badges-list .regulator-badge-custom[data-id="${id}"]`);
+        if (badge) badge.remove();
+        const li = document.getElementById(`li-hq-${id}`);
+        if (li) li.style.display = 'block';
+        const hiddenSelect = document.getElementById('hidden-hq-select');
+        for (let i = 0; i < hiddenSelect.options.length; i++) {
+            if (hiddenSelect.options[i].value == id) { hiddenSelect.options[i].selected = false; break; }
+        }
+    }
+
+    function createNewHQAjax() {
+        const input = document.getElementById('hq-search-input');
+        const name = input.value.trim();
+        if (!name) return;
+        const addOption = document.getElementById('hq-add-new-option');
+        const loadingIndicator = document.getElementById('hq-loading-indicator');
+        addOption.style.display = 'none';
+        loadingIndicator.style.display = 'block';
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('type', 'headquarters');
+        fetch('/dashboard/taxonomy/create-ajax/', { method: 'POST', headers: { 'X-CSRFToken': csrfToken }, body: formData })
+        .then(r => r.json())
+        .then(data => {
+            loadingIndicator.style.display = 'none';
+            const listUl = document.getElementById('hq-options-list');
+            const newLi = document.createElement('li');
+            newLi.className = 'custom-search-option-item';
+            newLi.setAttribute('data-id', data.id);
+            newLi.id = `li-hq-${data.id}`;
+            newLi.textContent = data.name;
+            newLi.onclick = () => selectHQFromSearch(data.id, data.name, '');
+            listUl.appendChild(newLi);
+            const hiddenSelect = document.getElementById('hidden-hq-select');
+            const newOpt = document.createElement('option');
+            newOpt.value = data.id;
+            hiddenSelect.appendChild(newOpt);
+            selectHQFromSearch(data.id, data.name, '');
+        })
+        .catch(() => {
             loadingIndicator.style.display = 'none';
             addOption.style.display = 'flex';
         });

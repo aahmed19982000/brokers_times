@@ -267,11 +267,18 @@
                         <span style="font-weight: 600; color: white;">${{ broker.min_deposit|floatformat:2 }}</span>
                     </td>
                     <td>
-                        {% if broker.headquarters %}
-                            <span class="badge-pill badge-success">{{ broker.headquarters.name }}</span>
+                        {% with hq_list=broker.headquarters.all %}
+                        {% if hq_list %}
+                            {% for hq in hq_list %}
+                                <span class="badge-pill badge-success" style="display:inline-flex;align-items:center;gap:4px;">
+                                    {% if hq.country_code %}<img src="https://flagcdn.com/w40/{{ hq.country_code }}.png" width="14" style="border-radius:2px;" alt="">{% endif %}
+                                    {{ hq.name }}
+                                </span>
+                            {% endfor %}
                         {% else %}
                             <span class="badge-pill badge-secondary">Unknown</span>
                         {% endif %}
+                        {% endwith %}
                     </td>
                     <td>
                         {% if broker.islamic_account %}

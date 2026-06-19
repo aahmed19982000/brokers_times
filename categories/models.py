@@ -43,6 +43,7 @@ class IslamicAccount(models.Model):
 class Headquarters(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
+    country_code = models.CharField(max_length=2, blank=True, help_text="ISO 2-letter country code (e.g. gb, us, cy)")
 
     class Meta:
         verbose_name_plural = "Headquarters"

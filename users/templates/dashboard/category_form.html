@@ -176,6 +176,14 @@
         </div>
         {% endif %}
 
+        {% if current_type == 'headquarters' %}
+        <div class="form-group">
+            <label class="form-label">Country Code / رمز الدولة</label>
+            <input type="text" name="country_code" value="{{ item.country_code|default:'' }}" class="form-input" placeholder="e.g. gb, us, cy, ae" maxlength="2">
+            <span class="form-text">ISO 2-letter country code (lowercase) used to show the flag. Examples: gb (UK), us (USA), cy (Cyprus), ae (UAE). See <a href="https://flagcdn.com" target="_blank" style="color:#6366f1;">flagcdn.com</a> for all codes.</span>
+        </div>
+        {% endif %}
+
         <div style="margin-top: 2.5rem;">
             <button type="submit" class="btn-submit">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>

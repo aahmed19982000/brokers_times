@@ -20,7 +20,7 @@ class Broker(models.Model):
     financial_assets = models.ManyToManyField(FinancialAsset, related_name='brokers', blank=True)
     deposit_limit = models.ForeignKey(DepositLimit, on_delete=models.SET_NULL, null=True, blank=True, related_name='brokers')
     islamic_account = models.ForeignKey(IslamicAccount, on_delete=models.SET_NULL, null=True, blank=True, related_name='brokers')
-    headquarters = models.ForeignKey(Headquarters, on_delete=models.SET_NULL, null=True, blank=True, related_name='brokers')
+    headquarters = models.ManyToManyField(Headquarters, related_name='brokers', blank=True)
     trading_platforms = models.ManyToManyField(TradingPlatform, related_name='brokers', blank=True)
     
     min_deposit = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

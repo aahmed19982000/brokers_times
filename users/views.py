@@ -88,6 +88,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
             'islamic_accounts': islamic_accounts,
             'trading_platforms': trading_platforms,
             'selected_trading_platforms': [],
+            'selected_headquarters': [],
             'is_edit': False,
             'best_brokers_lists': BestBrokersList.objects.all().order_by('title'),
         }
@@ -103,7 +104,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
         withdrawal_time = request.POST.get('withdrawal_time', '')
         base_currencies = request.POST.get('base_currencies', '')
         logo_alt = request.POST.get('logo_alt', '')
-        hq_id = request.POST.get('headquarters')
+        hq_ids = request.POST.getlist('headquarters')
         islamic_id = request.POST.get('islamic_account')
         # New detailed review fields
         rating = request.POST.get('rating') or 4.5
@@ -150,7 +151,6 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
                 min_deposit=min_deposit,
                 withdrawal_time = withdrawal_time,
                 base_currencies=base_currencies,
-                headquarters_id=hq_id if hq_id else None,
                 islamic_account_id=islamic_id if islamic_id else None,
                 deposit_limit=dep_limit,
                 logo=request.FILES.get('logo'),
@@ -178,6 +178,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
                 broker.financial_assets.set(FinancialAsset.objects.filter(id__in=asset_ids))
             trading_platform_ids = request.POST.getlist('trading_platforms')
             broker.trading_platforms.set(TradingPlatform.objects.filter(id__in=trading_platform_ids))
+            broker.headquarters.set(Headquarters.objects.filter(id__in=hq_ids))
             # Create FAQs
             faq_questions = request.POST.getlist('faq_question')
             faq_answers = request.POST.getlist('faq_answer')
@@ -217,6 +218,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
         selected_regulators = list(broker.regulators.values_list('id', flat=True))
         selected_assets = list(broker.financial_assets.values_list('id', flat=True))
         selected_trading_platforms = list(broker.trading_platforms.values_list('id', flat=True))
+        selected_headquarters = list(broker.headquarters.values_list('id', flat=True))
         context = {
             'broker': broker,
             'regulators': regulators,
@@ -227,6 +229,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
             'selected_regulators': selected_regulators,
             'selected_assets': selected_assets,
             'selected_trading_platforms': selected_trading_platforms,
+            'selected_headquarters': selected_headquarters,
             'faqs': broker.faqs.all(),
             'account_types': broker.account_types.all(),
             'platform_tabs': broker.platform_tabs.all(),
@@ -246,7 +249,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
         withdrawal_time = request.POST.get('withdrawal_time', '')
         base_currencies = request.POST.get('base_currencies', '')
         logo_alt = request.POST.get('logo_alt', '')
-        hq_id = request.POST.get('headquarters')
+        hq_ids = request.POST.getlist('headquarters')
         islamic_id = request.POST.get('islamic_account')
         # New detailed review fields
         rating = request.POST.get('rating') or 4.5
@@ -292,7 +295,6 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
             broker.min_deposit = min_deposit
             broker.withdrawal_time = withdrawal_time
             broker.base_currencies = base_currencies
-            broker.headquarters_id = hq_id if hq_id else None
             broker.islamic_account_id = islamic_id if islamic_id else None
             broker.deposit_limit = dep_limit
             broker.logo_alt = logo_alt
@@ -322,6 +324,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
             broker.financial_assets.set(FinancialAsset.objects.filter(id__in=asset_ids))
             trading_platform_ids = request.POST.getlist('trading_platforms')
             broker.trading_platforms.set(TradingPlatform.objects.filter(id__in=trading_platform_ids))
+            broker.headquarters.set(Headquarters.objects.filter(id__in=hq_ids))
             # Recreate FAQs
             broker.faqs.all().delete()
             faq_questions = request.POST.getlist('faq_question')
@@ -941,8 +944,11 @@ class DashboardCategoryCreateView(LoginRequiredMixin, UserPassesTestMixin, Templ
         from django.utils.text import slugify
         slug = slugify(name)
         icon = request.FILES.get('icon')
+        country_code = request.POST.get('country_code', '').strip().lower()
         if hasattr(Model, 'icon') and icon:
             Model.objects.create(name=name, slug=slug, icon=icon)
+        elif model_name == 'headquarters':
+            Model.objects.create(name=name, slug=slug, country_code=country_code)
         else:
             Model.objects.create(name=name, slug=slug)
         return redirect(f'/dashboard/categories/?type={model_name}')
@@ -966,6 +972,8 @@ class DashboardCategoryUpdateView(LoginRequiredMixin, UserPassesTestMixin, Templ
         item.name = request.POST.get('name')
         if hasattr(item, 'icon') and request.FILES.get('icon'):
             item.icon = request.FILES.get('icon')
+        if hasattr(item, 'country_code'):
+            item.country_code = request.POST.get('country_code', '').strip().lower()
         item.save()
         return redirect(f'/dashboard/categories/?type={model_name}')
 

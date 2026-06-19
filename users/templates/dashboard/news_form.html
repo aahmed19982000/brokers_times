@@ -1113,6 +1113,32 @@
 
     // WYSIWYG Document Action Command
     function formatDoc(cmd, value = null) {
+        if (cmd === 'formatBlock') {
+            const tag = value.replace(/[<>]/g, '').toLowerCase();
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount) {
+                const range = sel.getRangeAt(0);
+                let node = range.commonAncestorContainer;
+                if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+                const editor = document.getElementById('editor');
+                while (node && node !== editor && node.parentNode !== editor) {
+                    node = node.parentNode;
+                }
+                if (node && node !== editor) {
+                    const newEl = document.createElement(tag);
+                    newEl.innerHTML = node.innerHTML;
+                    if (node.className) newEl.className = node.className;
+                    node.parentNode.replaceChild(newEl, node);
+                    const newRange = document.createRange();
+                    newRange.selectNodeContents(newEl);
+                    newRange.collapse(false);
+                    sel.removeAllRanges();
+                    sel.addRange(newRange);
+                    syncEditor();
+                    return;
+                }
+            }
+        }
         document.execCommand(cmd, false, value);
         syncEditor();
     }
