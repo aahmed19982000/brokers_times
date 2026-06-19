@@ -540,6 +540,27 @@
     .curated-explore:hover {
         gap: 10px;
     }
+
+    @media (max-width: 768px) {
+        .compare-hero { padding: 2.5rem 0 2rem; }
+        .compare-hero h1 { font-size: 1.7rem; }
+        .compare-hero p { font-size: 0.95rem; }
+        .curated-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .curated-card { padding: 1.2rem; }
+        .regional-grid { grid-template-columns: 1fr; }
+        .news-briefing-card { flex-direction: column; }
+        .news-briefing-image { width: 100%; height: 180px; }
+    }
+
+    @media (max-width: 480px) {
+        .compare-hero h1 { font-size: 1.4rem; }
+        .curated-grid { grid-template-columns: 1fr; }
+        .curated-title { font-size: 1rem; }
+        .curated-desc { font-size: 0.85rem; }
+        .regional-subgrid { grid-template-columns: 1fr; }
+        .region-card { padding: 1rem; }
+        .region-card h3 { font-size: 1rem; }
+    }
 </style>
 
 <script type="application/ld+json">

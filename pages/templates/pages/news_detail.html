@@ -176,6 +176,21 @@
         background: var(--primary-hover);
     }
 
+    @media (max-width: 768px) {
+        .news-detail-header { padding: 2rem 0 1.5rem; }
+        .news-detail-title { font-size: 1.7rem; line-height: 1.3; }
+        .news-detail-content { font-size: 1rem; }
+        .news-detail-content h2 { font-size: 1.3rem; }
+        .news-detail-content h3 { font-size: 1.1rem; }
+        .related-broker-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        .related-broker-logo { width: 60px; height: 60px; }
+    }
+
+    @media (max-width: 480px) {
+        .news-detail-title { font-size: 1.35rem; }
+        .news-detail-content { font-size: 0.95rem; }
+    }
+
 </style>
 
 <div class="news-detail-header">
