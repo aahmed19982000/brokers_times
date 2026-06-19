@@ -26,6 +26,7 @@ class Broker(models.Model):
     min_deposit = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     withdrawal_time = models.CharField(max_length=100, blank=True)
     base_currencies = models.CharField(max_length=100, blank=True, help_text="e.g. USD, EUR, GBP")
+    founded_year = models.PositiveIntegerField(null=True, blank=True, help_text="Year the broker was founded")
 
     # Review specifications and rating
     rating = models.DecimalField(max_digits=3, decimal_places=1, default=4.5)

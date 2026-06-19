@@ -103,6 +103,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
         min_deposit = request.POST.get('min_deposit') or 0.00
         withdrawal_time = request.POST.get('withdrawal_time', '')
         base_currencies = request.POST.get('base_currencies', '')
+        founded_year = request.POST.get('founded_year') or None
         logo_alt = request.POST.get('logo_alt', '')
         hq_ids = request.POST.getlist('headquarters')
         islamic_id = request.POST.get('islamic_account')
@@ -151,6 +152,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
                 min_deposit=min_deposit,
                 withdrawal_time = withdrawal_time,
                 base_currencies=base_currencies,
+                founded_year=founded_year,
                 islamic_account_id=islamic_id if islamic_id else None,
                 deposit_limit=dep_limit,
                 logo=request.FILES.get('logo'),
@@ -295,6 +297,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
             broker.min_deposit = min_deposit
             broker.withdrawal_time = withdrawal_time
             broker.base_currencies = base_currencies
+            broker.founded_year = founded_year
             broker.islamic_account_id = islamic_id if islamic_id else None
             broker.deposit_limit = dep_limit
             broker.logo_alt = logo_alt

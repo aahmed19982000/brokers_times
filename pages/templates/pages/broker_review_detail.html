@@ -845,10 +845,18 @@
                 <div class="header-broker-info">
                     <h1>{% if request.LANGUAGE_CODE == 'ar' %}مراجعة شركة {{ broker.name }}{% else %}{{ broker.name }} Review{% endif %}</h1>
                     <p>
-                        {% if request.LANGUAGE_CODE == 'ar' %}
-                            وسيط مرخص وموثوق • تأسست في عام 2008
+                        {% if broker.rating >= 2.8 %}
+                            {% if request.LANGUAGE_CODE == 'ar' %}
+                                وسيط مرخص وموثوق{% if broker.founded_year %} • تأسست عام {{ broker.founded_year }}{% endif %}
+                            {% else %}
+                                Licensed &amp; Regulated Broker{% if broker.founded_year %} • Established {{ broker.founded_year }}{% endif %}
+                            {% endif %}
                         {% else %}
-                            Vetted and Regulated Broker • Established 2008
+                            {% if request.LANGUAGE_CODE == 'ar' %}
+                                {% if broker.founded_year %}تأسست عام {{ broker.founded_year }}{% endif %}
+                            {% else %}
+                                {% if broker.founded_year %}Founded {{ broker.founded_year }}{% endif %}
+                            {% endif %}
                         {% endif %}
                     </p>
                 </div>
@@ -1104,17 +1112,11 @@
                 <!-- Account Opening widget -->
                 <div class="sidebar-widget">
                     <h3 class="sidebar-widget-title">{% if request.LANGUAGE_CODE == 'ar' %}فتح حساب{% else %}Account Opening{% endif %}</h3>
-                    <p class="open-account-desc">
-                        {% if request.LANGUAGE_CODE == 'ar' %}
-                            ابدأ التداول بمبلغ بسيط يصل إلى 1 دولار. إعداد فوري للحساب.
-                        {% else %}
-                            Start trading with as little as $1. Instant account setup.
-                        {% endif %}
-                    </p>
+                    {% if broker.account_opening_link %}
                     <div class="widget-actions">
-                        <a href="{% if broker.account_opening_link %}{{ broker.account_opening_link }}{% else %}#{% endif %}" target="_blank" rel="noopener noreferrer" class="btn-widget-primary">{% if request.LANGUAGE_CODE == 'ar' %}افتح حساب حقيقي{% else %}Open Live Account{% endif %}</a>
-                        <a href="#" class="btn-widget-secondary">{% if request.LANGUAGE_CODE == 'ar' %}تجربة حساب تجريبي{% else %}Try Free Demo{% endif %}</a>
+                        <a href="{{ broker.account_opening_link }}" target="_blank" rel="noopener noreferrer" class="btn-widget-primary">{% if request.LANGUAGE_CODE == 'ar' %}افتح حساب حقيقي{% else %}Open Live Account{% endif %}</a>
                     </div>
+                    {% endif %}
                     
                     <div class="widget-stats-list">
                         <div class="widget-stat-row">

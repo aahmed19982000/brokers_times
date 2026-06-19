@@ -1227,7 +1227,14 @@
                             <label for="id_min_deposit">Min. Deposit ($) / الحد الأدنى للإيداع بالدولار</label>
                             <input type="number" name="min_deposit" id="id_min_deposit" step="0.01" class="form-input-editor" placeholder="100" value="{{ broker.min_deposit|default:'100' }}">
                         </div>
-                        
+
+                        <div class="form-group-editor">
+                            <label for="id_founded_year">Founded Year / سنة التأسيس</label>
+                            <input type="number" name="founded_year" id="id_founded_year" class="form-input-editor" placeholder="e.g. 2008" min="1900" max="2099" value="{{ broker.founded_year|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group-editor">
                             <label>Base Currencies / العملات الأساسية للحساب</label>
                             <div class="regulator-badges-wrapper">
