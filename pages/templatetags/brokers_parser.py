@@ -26,10 +26,24 @@ def parse_best_brokers(page_instance):
             items = best_list.items.all().order_by('rank')
             processed_items = []
             for item in items:
-                highlights_list = [h.strip() for h in item.highlights.split('\n') if h.strip()] if item.highlights else []
+                # Fallback for headline
+                if not item.headline:
+                    item.headline = f"Review of {item.broker.name}"
+                
+                # Fallback for description
+                if not item.description:
+                    item.description = item.broker.seo_description
+                
+                # Fallback for highlights (get first 3 pros of the broker)
+                if item.highlights:
+                    highlights_list = [h.strip() for h in item.highlights.split('\n') if h.strip()]
+                else:
+                    highlights_list = [p.strip() for p in item.broker.pros.split('\n') if p.strip()][:3] if item.broker.pros else []
                 item.processed_highlights = highlights_list
+                
                 rating_val = float(item.broker.rating) if item.broker.rating else 4.5
                 item.overall_score_val = rating_val * 2.0 if rating_val <= 5.0 else rating_val
+                
                 if item.custom_deposit:
                     item.display_deposit_val = item.custom_deposit
                 else:

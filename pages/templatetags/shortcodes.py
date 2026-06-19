@@ -27,8 +27,19 @@ def render_shortcodes(value):
             items = best_list.items.all().order_by('rank')
             processed_items = []
             for item in items:
-                # 1. Highlights list by split line
-                highlights_list = [h.strip() for h in item.highlights.split('\n') if h.strip()] if item.highlights else []
+                # Fallback for headline
+                if not item.headline:
+                    item.headline = f"Review of {item.broker.name}"
+                
+                # Fallback for description
+                if not item.description:
+                    item.description = item.broker.seo_description
+                
+                # Fallback for highlights (get first 3 pros of the broker)
+                if item.highlights:
+                    highlights_list = [h.strip() for h in item.highlights.split('\n') if h.strip()]
+                else:
+                    highlights_list = [p.strip() for p in item.broker.pros.split('\n') if p.strip()][:3] if item.broker.pros else []
                 item.processed_highlights = highlights_list
 
                 # 2. Overall rating score (multiplying 1-5 rating to be out of 10)
