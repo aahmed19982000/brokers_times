@@ -1220,7 +1220,7 @@ class DashboardTranslateView(LoginRequiredMixin, View):
 
         if gemini_api_key:
             try:
-                model_name = "gemini-1.5-flash"
+                model_name = "gemini-2.5-flash"
                 url = f"https://generativelanguage.googleapis.com/v1/models/{model_name}:generateContent?key={gemini_api_key}"
                 
                 prompt = (
@@ -1241,10 +1241,15 @@ class DashboardTranslateView(LoginRequiredMixin, View):
                 payload = {
                     "contents": [{
                         "parts": [{"text": prompt}]
-                    }]
+                    }],
+                    "generationConfig": {
+                        "thinkingConfig": {
+                            "thinkingBudget": 0
+                        }
+                    }
                 }
                 
-                response = requests.post(url, json=payload, timeout=20)
+                response = requests.post(url, json=payload, timeout=30)
                 if response.status_code == 200:
                     res_json = response.json()
                     candidate = res_json.get('candidates', [{}])[0]
