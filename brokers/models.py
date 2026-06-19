@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 from categories.models import Regulator, FinancialAsset, DepositLimit, IslamicAccount, Headquarters, TradingPlatform
 from ckeditor.fields import RichTextField
 
@@ -49,6 +50,12 @@ class Broker(models.Model):
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Enforce lowercase and no spaces in slug
+        if self.slug:
+            self.slug = self.slug.strip().lower().replace(' ', '-')
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

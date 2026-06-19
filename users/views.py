@@ -1134,9 +1134,12 @@ TRADING_GLOSSARY = {
 @method_decorator(csrf_exempt, name='dispatch')
 def _translate_text_only(raw_text, headers):
     """Translate plain text via Google Translate, with MyMemory fallback."""
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
     gt_url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t"
     try:
-        response = requests.post(gt_url, data={'q': raw_text}, headers=headers, timeout=15)
+        response = requests.post(gt_url, data={'q': raw_text}, headers=headers, timeout=15, verify=False)
         if response.status_code == 200:
             data = response.json()
             result = ""
@@ -1146,18 +1149,22 @@ def _translate_text_only(raw_text, headers):
                         result += segment[0]
             if result and result.strip() != raw_text.strip():
                 return result
+    except (SystemExit, KeyboardInterrupt):
+        raise
     except Exception:
         pass
 
     # Fallback: MyMemory free API (no rate limit for small texts)
     try:
         mm_url = f"https://api.mymemory.translated.net/get?q={requests.utils.quote(raw_text[:500])}&langpair=ar|en"
-        mm_resp = requests.get(mm_url, timeout=10)
+        mm_resp = requests.get(mm_url, timeout=10, verify=False)
         if mm_resp.status_code == 200:
             mm_data = mm_resp.json()
             result = mm_data.get('responseData', {}).get('translatedText', '')
             if result and result.strip() != raw_text.strip():
                 return result
+    except (SystemExit, KeyboardInterrupt):
+        raise
     except Exception:
         pass
 
@@ -1256,6 +1263,8 @@ class DashboardTranslateView(LoginRequiredMixin, View):
                         method = "Gemini AI"
                 else:
                     print(f"Gemini API returned status {response.status_code}: {response.text}")
+            except (SystemExit, KeyboardInterrupt):
+                raise
             except Exception as ex:
                 print(f"Gemini API translation error: {ex}")
 
@@ -1270,6 +1279,8 @@ class DashboardTranslateView(LoginRequiredMixin, View):
                 if translated_text:
                     method = "Glossary-Enhanced Neural Engine"
                     ai_active = False
+            except (SystemExit, KeyboardInterrupt):
+                raise
             except Exception as ex:
                 print(f"Fallback translation error: {ex}")
 
