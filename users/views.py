@@ -1220,7 +1220,7 @@ class DashboardTranslateView(LoginRequiredMixin, View):
 
         if gemini_api_key:
             try:
-                model_name = "gemini-2.5-flash"
+                model_name = "gemini-1.5-flash"
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_api_key}"
                 
                 prompt = (
