@@ -747,19 +747,39 @@
 
     @media (max-width: 480px) {
         .review-header-card { padding: 1.2rem; }
-        .broker-logo-large { width: 56px; height: 56px; }
-        .broker-name-heading { font-size: 1.4rem; }
+        .header-card-left {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            width: 100%;
+        }
+        .header-card-left img, .header-broker-logo {
+            width: 60px !important;
+            height: 60px !important;
+        }
+        .header-broker-info h1 {
+            font-size: 1.5rem;
+        }
         .content-section-card { padding: 1.2rem; }
         .section-headline { font-size: 1.1rem; }
-        .spec-table td, .spec-table th { padding: 0.6rem 0.8rem; font-size: 0.85rem; }
-        .pros-cons-item { font-size: 0.88rem; }
-        .platform-tabs-grid { grid-template-columns: repeat(2, 1fr); }
-        .platform-tab-card { padding: 0.75rem; }
-        .platform-tab-card h4 { font-size: 0.8rem; }
-        .verdict-quote { font-size: 1rem; padding: 1rem 1.2rem; }
-        .faq-question-btn { font-size: 0.9rem; padding: 0.9rem 1rem; }
-        .broker-cta-section { padding: 1.5rem 1rem; }
-        .broker-cta-section h2 { font-size: 1.3rem; }
+        
+        .account-table td, .account-table th { padding: 0.6rem 0.8rem; font-size: 0.85rem; }
+        .pro-con-item { font-size: 0.85rem; }
+        
+        .platform-tabs-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .platform-tab-card { padding: 0.75rem; min-width: unset; }
+        .platform-tab-card div, .platform-tab-card h4 { font-size: 0.8rem !important; }
+        
+        .verdict-section { padding: 1.2rem !important; }
+        .verdict-text { font-size: 0.95rem !important; }
+        
+        .faq-question { font-size: 0.88rem; padding: 1rem; }
+        .faq-answer { font-size: 0.82rem; }
     }
 </style>
 
