@@ -35,6 +35,8 @@ class Broker(models.Model):
     customer_support = models.IntegerField(default=90)
     asset_variety = models.IntegerField(default=90)
     
+    review_count = models.PositiveIntegerField(default=150, verbose_name="Review Count", help_text="Number of reviews to display")
+    
     pros = models.TextField(blank=True, help_text="One advantage per line / ميزة واحدة في كل سطر")
     cons = models.TextField(blank=True, help_text="One disadvantage per line / عيب واحد في كل سطر")
     

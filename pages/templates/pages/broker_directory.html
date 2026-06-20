@@ -753,11 +753,9 @@
                                         ★★☆☆☆
                                     {% endif %}
                                 </div>
-                                <!-- Mock review count based on broker ID for visual completeness -->
+                                <!-- Actual review count from database -->
                                 <div class="reviews-count">
-                                    {% with count=b.id|add:17|add:b.id|add:79|add:250 %}
-                                        {{ count }} Reviews
-                                    {% endwith %}
+                                    {{ b.review_count }} Reviews
                                 </div>
                             </div>
                         </div>

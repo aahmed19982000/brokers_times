@@ -218,6 +218,23 @@
 
             <div class="form-row">
                 <div class="form-group-editor">
+                    <label for="id_site_icon">
+                        <span>Site Icon (Favicon / أيقونة الموقع)</span>
+                    </label>
+                    {% if settings.site_icon %}
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; background: rgba(255, 255, 255, 0.02); padding: 0.5rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); max-width: fit-content;">
+                            <img src="{{ settings.site_icon.url }}" alt="Icon preview" style="max-height: 32px; width: 32px; object-fit: contain;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: #ef4444; font-size: 0.8rem; margin: 0;">
+                                <input type="checkbox" name="clear_site_icon" value="true" style="accent-color: #ef4444;"> Clear Icon / حذف الأيقونة
+                            </label>
+                        </div>
+                    {% endif %}
+                    <input type="file" name="site_icon" id="id_site_icon" accept="image/*" class="form-input-editor" style="padding: 0.5rem;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group-editor">
                     <label for="id_footer_about_en">
                         <span>About Site (Footer Column 1 Description)</span>
                     </label>

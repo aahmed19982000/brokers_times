@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Brokers Times{% endblock %}</title>
 
+    {% if site_settings.site_icon %}
+    <link rel="icon" type="image/x-icon" href="{{ site_settings.site_icon.url }}">
+    {% endif %}
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="{% block meta_description %}{% endblock %}">
     <meta name="robots" content="index, follow">
@@ -664,20 +668,6 @@
     <!-- Footer -->
     <footer class="site-footer">
         
-        <!-- Regulatory top dark blue bar -->
-        <div class="footer-regulatory-bar">
-            <div class="container regulatory-grid">
-                {% for badge in global_regulatory_badges %}
-                    <div class="regulatory-item">
-                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        <span>{{ badge.text_en }}</span>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-
         <!-- Risk Warning dark block -->
         <div class="footer-risk-warning-bar">
             <div class="container">

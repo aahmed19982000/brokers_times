@@ -112,6 +112,10 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
         islamic_id = request.POST.get('islamic_account')
         # New detailed review fields
         rating = request.POST.get('rating') or 4.5
+        try:
+            review_count = int(request.POST.get('review_count') or 150)
+        except (ValueError, TypeError):
+            review_count = 150
         execution_speed = request.POST.get('execution_speed') or 90
         customer_support = request.POST.get('customer_support') or 90
         asset_variety = request.POST.get('asset_variety') or 90
@@ -162,6 +166,7 @@ class DashboardBrokerCreateView(LoginRequiredMixin, View):
                 logo_alt = logo_alt,
                 # New fields mapping
                 rating=rating,
+                review_count=review_count,
                 execution_speed=execution_speed,
                 customer_support=customer_support,
                 asset_variety=asset_variety,
@@ -262,6 +267,10 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
         islamic_id = request.POST.get('islamic_account')
         # New detailed review fields
         rating = request.POST.get('rating') or 4.5
+        try:
+            review_count = int(request.POST.get('review_count') or 150)
+        except (ValueError, TypeError):
+            review_count = 150
         execution_speed = request.POST.get('execution_speed') or 90
         customer_support = request.POST.get('customer_support') or 90
         asset_variety = request.POST.get('asset_variety') or 90
@@ -310,6 +319,7 @@ class DashboardBrokerUpdateView(LoginRequiredMixin, View):
             broker.logo_alt = logo_alt
             # Update review detail fields
             broker.rating = rating
+            broker.review_count = review_count
             broker.execution_speed = execution_speed
             broker.customer_support = customer_support
             broker.asset_variety = asset_variety
@@ -764,6 +774,12 @@ class DashboardSiteSettingsView(AdminRequiredMixin, View):
             settings_obj.header_logo = request.FILES.get('header_logo')
         elif request.POST.get('clear_logo') == 'true':
             settings_obj.header_logo = None
+            
+        # Handle Site Icon / Favicon upload
+        if request.FILES.get('site_icon'):
+            settings_obj.site_icon = request.FILES.get('site_icon')
+        elif request.POST.get('clear_site_icon') == 'true':
+            settings_obj.site_icon = None
             
         settings_obj.footer_about_en = request.POST.get('footer_about_en', '')
         settings_obj.footer_risk_warning_en = request.POST.get('footer_risk_warning_en', '')
@@ -1304,4 +1320,34 @@ class DashboardTranslateView(LoginRequiredMixin, View):
             'ai_active': ai_active,
             'method': method
         })
+
+
+from pages.models import ContactMessage
+class DashboardContactMessagesView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'dashboard/contact_messages.html'
+
+    def test_func(self):
+        return self.request.user.role == 'admin' or self.request.user.is_superuser or self.request.user.is_staff
+
+    def get(self, request, *args, **kwargs):
+        mark_read_id = request.GET.get('mark_read')
+        mark_unread_id = request.GET.get('mark_unread')
+        delete_id = request.GET.get('delete')
+
+        if mark_read_id:
+            ContactMessage.objects.filter(pk=mark_read_id).update(is_read=True)
+            return redirect('dashboard_contacts')
+        if mark_unread_id:
+            ContactMessage.objects.filter(pk=mark_unread_id).update(is_read=False)
+            return redirect('dashboard_contacts')
+        if delete_id:
+            ContactMessage.objects.filter(pk=delete_id).delete()
+            return redirect('dashboard_contacts')
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['messages_list'] = ContactMessage.objects.all().order_by('-created_at')
+        return context
 

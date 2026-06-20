@@ -9,7 +9,8 @@ from .views import (
     DashboardHomepageSettingsView, DashboardSiteSettingsView,
     DashboardNewsView, DashboardNewsCreateView, DashboardNewsUpdateView,
     DashboardCategoriesView, DashboardCategoryCreateView, DashboardCategoryUpdateView,
-    DashboardRankedBrokersView, APIBestBrokersLookupView, DashboardTranslateView
+    DashboardRankedBrokersView, APIBestBrokersLookupView, DashboardTranslateView,
+    DashboardContactMessagesView
 )
 
 urlpatterns = [
@@ -35,6 +36,7 @@ urlpatterns = [
     path('dashboard/users/add/', DashboardUserCreateView.as_view(), name='dashboard_users_add'),
     path('dashboard/users/<int:pk>/edit/', DashboardUserUpdateView.as_view(), name='dashboard_users_edit'),
     path('dashboard/homepage-settings/', DashboardHomepageSettingsView.as_view(), name='dashboard_homepage_settings'),
+    path('dashboard/contacts/', DashboardContactMessagesView.as_view(), name='dashboard_contacts'),
     path('dashboard/site-settings/', DashboardSiteSettingsView.as_view(), name='dashboard_site_settings'),
     path('dashboard/header-footer/', DashboardSiteSettingsView.as_view(), name='dashboard_header_footer'),
     path('dashboard/news/', DashboardNewsView.as_view(), name='dashboard_news'),

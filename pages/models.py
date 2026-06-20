@@ -52,6 +52,7 @@ class SiteSettings(models.Model):
     # Header Settings
     header_brand_name = models.CharField(max_length=100, default="Brokers Times")
     header_logo = models.ImageField(upload_to='site_settings/', blank=True, null=True, verbose_name="Brand Logo")
+    site_icon = models.ImageField(upload_to='site_settings/', blank=True, null=True, verbose_name="Site Icon / Favicon")
     
     # Dropdown Page links
     top_10_dropdown_brokers = models.ManyToManyField('brokers.Broker', related_name='top_10_dropdown_settings', blank=True, verbose_name="Top 10 Brokers Dropdown (Direct)")
@@ -150,3 +151,20 @@ class FooterRegulatoryBadge(models.Model):
 
     def __str__(self):
         return f"Regulatory Badge: {self.text_en}"
+
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=150, verbose_name="الاسم / Name")
+    email = models.EmailField(verbose_name="البريد الإلكتروني / Email")
+    subject = models.CharField(max_length=255, verbose_name="الموضوع / Subject")
+    message = models.TextField(verbose_name="الرسالة / Message")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ الإرسال / Sent At")
+    is_read = models.BooleanField(default=False, verbose_name="تم القراءة / Is Read")
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "📨 رسالة اتصال"
+        verbose_name_plural = "📨 رسائل الاتصال"
+
+    def __str__(self):
+        return f"From: {self.name} - {self.subject[:30]}"

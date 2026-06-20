@@ -1411,15 +1411,21 @@
                             <input type="number" name="rating" id="id_rating" class="form-input-editor" step="0.1" min="0" max="5" value="{{ broker.rating|default:'4.5' }}" placeholder="4.5">
                         </div>
                         <div class="form-group-editor">
-                            <label for="id_execution_speed">Execution Speed % / سرعة التنفيذ</label>
-                            <input type="number" name="execution_speed" id="id_execution_speed" class="form-input-editor" min="0" max="100" value="{{ broker.execution_speed|default:'90' }}" placeholder="90">
+                            <label for="id_review_count">Review Count / عدد التقييمات</label>
+                            <input type="number" name="review_count" id="id_review_count" class="form-input-editor" min="0" value="{{ broker.review_count|default:'150' }}" placeholder="150">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group-editor">
+                            <label for="id_execution_speed">Execution Speed % / سرعة التنفيذ</label>
+                            <input type="number" name="execution_speed" id="id_execution_speed" class="form-input-editor" min="0" max="100" value="{{ broker.execution_speed|default:'90' }}" placeholder="90">
+                        </div>
+                        <div class="form-group-editor">
                             <label for="id_customer_support">Customer Support % / دعم العملاء</label>
                             <input type="number" name="customer_support" id="id_customer_support" class="form-input-editor" min="0" max="100" value="{{ broker.customer_support|default:'90' }}" placeholder="90">
                         </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group-editor">
                             <label for="id_asset_variety">Asset Variety % / تنوع الأصول</label>
                             <input type="number" name="asset_variety" id="id_asset_variety" class="form-input-editor" min="0" max="100" value="{{ broker.asset_variety|default:'90' }}" placeholder="90">

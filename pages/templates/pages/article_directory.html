@@ -747,11 +747,11 @@
                         {% for trend in trending_articles %}
                             <div class="trending-item">
                                 <div class="trending-num-category">
-                                    <span class="trending-num">{{ trend.num }}</span>
-                                    <span class="trending-category">{{ trend.category }}</span>
+                                    <span class="trending-num">0{{ forloop.counter }}</span>
+                                    <span class="trending-category">NEWS</span>
                                 </div>
                                 <h4 class="trending-title">
-                                    <a href="#">{{ trend.title }}</a>
+                                    <a href="{% url 'news_detail' trend.slug %}">{{ trend.title }}</a>
                                 </h4>
                             </div>
                         {% endfor %}

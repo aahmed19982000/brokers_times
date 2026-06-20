@@ -961,14 +961,14 @@
                     <div class="platform-tabs-row">
                         {% for asset in broker.financial_assets.all %}
                         <div class="platform-tab-card" style="cursor: default;">
-                            <h4 style="margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <div style="margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; color: var(--text-dark);">
                                 {% if asset.icon %}
                                     <img src="{{ asset.icon.url }}" alt="{{ asset.name }}" style="width: 18px; height: 18px; object-fit: contain;">
                                 {% else %}
                                     <svg width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
                                 {% endif %}
                                 {{ asset.name }}
-                            </h4>
+                            </div>
                         </div>
                         {% empty %}
                         <p style="color: var(--text-muted);">{% if request.LANGUAGE_CODE == 'ar' %}لا توجد أصول مالية مسجلة بعد.{% else %}No trading assets listed yet.{% endif %}</p>
@@ -990,7 +990,7 @@
                                 {% endif %}
                             </div>
                             <div class="regulator-details">
-                                <h4>{{ regulator.name }}</h4>
+                                <div style="font-weight: 700; color: var(--text-dark);">{{ regulator.name }}</div>
                             </div>
                         </div>
                         {% empty %}
@@ -1034,11 +1034,11 @@
                             {% else %}
                                 <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--primary);"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                             {% endif %}
-                            <h4 style="margin:0;">{{ platform.name }}</h4>
+                            <div style="margin:0; font-weight: 700; color: var(--text-dark);">{{ platform.name }}</div>
                         </div>
                         {% empty %}
                             <div class="platform-tab-card" style="flex: auto;">
-                                <h4>{% if request.LANGUAGE_CODE == 'ar' %}لا توجد منصات مسجلة بعد{% else %}No platforms listed yet{% endif %}</h4>
+                                <div style="font-weight: 700; color: var(--text-muted);">{% if request.LANGUAGE_CODE == 'ar' %}لا توجد منصات مسجلة بعد{% else %}No platforms listed yet{% endif %}</div>
                             </div>
                         {% endfor %}
                     </div>

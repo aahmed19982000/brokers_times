@@ -1,0 +1,306 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}
+    {% if request.LANGUAGE_CODE == 'ar' %}اتصل بنا - Brokers Times{% else %}Contact Us - Brokers Times{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Contact Us LTR/RTL Premium Styling */
+    .contact-hero {
+        background: radial-gradient(circle at 10% 20%, #071f43 0%, #030a16 90%);
+        color: white;
+        padding: 5rem 0 6rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .contact-hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="none"/><path d="M0,50 Q25,25 50,50 T100,50" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></svg>');
+        opacity: 0.8;
+    }
+    .contact-hero-tag {
+        display: inline-block;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981;
+        padding: 0.4rem 1.2rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .contact-hero-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        line-height: 1.25;
+        margin-bottom: 1.2rem;
+        background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .contact-hero-desc {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        max-width: 650px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+    .contact-container {
+        max-width: 720px;
+        margin: -3.5rem auto 5rem auto;
+        padding: 0 1.5rem;
+        position: relative;
+        z-index: 10;
+    }
+    .contact-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+    .contact-card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 0.75rem;
+    }
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    .form-group label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        color: #0f172a;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+    }
+    .form-input:focus {
+        outline: none;
+        border-color: #0b3168;
+        box-shadow: 0 0 0 3px rgba(11, 49, 104, 0.1);
+    }
+    textarea.form-input {
+        resize: vertical;
+        min-height: 120px;
+    }
+    .btn-submit {
+        background: #0b3168;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.9rem 1.8rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btn-submit:hover {
+        background: #1e40af;
+    }
+    .btn-submit:active {
+        transform: scale(0.98);
+    }
+    
+    .info-sidebar {
+        background: radial-gradient(circle at 100% 100%, #071f43 0%, #0b3168 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 25px -5px rgba(11, 49, 104, 0.2);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .info-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 0.75rem;
+    }
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem 0;
+    }
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #10b981;
+    }
+    .info-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    .info-text h5 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin: 0 0 0.25rem 0;
+        color: #e2e8f0;
+    }
+    .info-text p, .info-text a {
+        font-size: 0.88rem;
+        color: #cbd5e1;
+        margin: 0;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .info-text a:hover {
+        color: #10b981;
+    }
+    .social-links {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: auto;
+    }
+    .social-btn {
+        width: 38px;
+        height: 38px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: background-color 0.2s, color 0.2s;
+        text-decoration: none;
+    }
+    .social-btn:hover {
+        background: #10b981;
+        color: #071f43;
+    }
+
+    /* RTL Layout adjustments */
+    html[dir="rtl"] .info-item,
+    html[dir="rtl"] .contact-grid {
+        text-align: right;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+        .contact-hero {
+            padding: 4rem 0 5rem 0;
+        }
+        .contact-hero-title {
+            font-size: 2.2rem;
+        }
+        .contact-container {
+            margin-top: -2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container">
+        <span class="contact-hero-tag">
+            {% if request.LANGUAGE_CODE == 'ar' %}تواصل معنا{% else %}GET IN TOUCH{% endif %}
+        </span>
+        <h1 class="contact-hero-title">
+            {% if request.LANGUAGE_CODE == 'ar' %}كيف يمكننا مساعدتك؟{% else %}How Can We Help You?{% endif %}
+        </h1>
+        <p class="contact-hero-desc">
+            {% if request.LANGUAGE_CODE == 'ar' %}
+                فريق الخبراء لدينا جاهز للرد على استفساراتكم وتقديم الدعم الفني في أي وقت. لا تتردد في مراسلتنا.
+            {% else %}
+                Our team of experts is ready to answer your inquiries and provide support at any time. Feel free to message us.
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- Content Grid -->
+<div class="contact-container">
+    <!-- Success Alert Messages -->
+    {% if messages %}
+        {% for msg in messages %}
+            <div style="background: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 1.1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                {{ msg }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Contact Form Card -->
+    <div class="contact-card">
+        <h2 class="contact-card-title">
+            {% if request.LANGUAGE_CODE == 'ar' %}ارسل لنا رسالة{% else %}Send Us A Message{% endif %}
+        </h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_name">
+                    {% if request.LANGUAGE_CODE == 'ar' %}الاسم الكامل{% else %}Full Name{% endif %}
+                </label>
+                <input type="text" name="name" id="id_name" class="form-input" required placeholder="John Doe">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_email">
+                    {% if request.LANGUAGE_CODE == 'ar' %}البريد الإلكتروني{% else %}Email Address{% endif %}
+                </label>
+                <input type="email" name="email" id="id_email" class="form-input" required placeholder="name@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_subject">
+                    {% if request.LANGUAGE_CODE == 'ar' %}الموضوع{% else %}Subject{% endif %}
+                </label>
+                <input type="text" name="subject" id="id_subject" class="form-input" required placeholder="Inquiry about...">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_message">
+                    {% if request.LANGUAGE_CODE == 'ar' %}الرسالة{% else %}Your Message{% endif %}
+                </label>
+                <textarea name="message" id="id_message" class="form-input" required placeholder="Write your message here..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit">
+                {% if request.LANGUAGE_CODE == 'ar' %}إرسال الرسالة{% else %}Send Message{% endif %}
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -244,12 +244,9 @@ class ArticleDirectoryView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # 1. Trending Articles mockup (from screenshot)
-        context['trending_articles'] = [
-            {'num': '01', 'category': 'CRYPTO', 'title': "Bitcoin's Halving Aftermath: 6 Months Later"},
-            {'num': '02', 'category': 'FOREX', 'title': "Why the Japanese Yen Carry Trade Still Matters"},
-            {'num': '03', 'category': 'COMMODITIES', 'title': "Gold vs. Silver: The Diversification Dilemma"}
-        ]
+        # 1. Fetch latest news articles from database
+        from news.models import NewsArticle
+        context['trending_articles'] = NewsArticle.objects.filter(status='published').order_by('-created_at')[:5]
         
         # 2. Get featured article
         # The first item in the queryset is treated as the featured article (if any exist)
@@ -325,6 +322,32 @@ class DisclaimerView(TemplateView):
 
 class CookiePolicyView(TemplateView):
     template_name = 'pages/cookie_policy.html'
+
+
+class ContactUsView(TemplateView):
+    template_name = 'pages/contact_us.html'
+
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        from pages.models import ContactMessage
+        ContactMessage.objects.create(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message
+        )
+
+        from django.contrib import messages
+        if request.LANGUAGE_CODE == 'ar':
+            messages.success(request, "تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.")
+        else:
+            messages.success(request, "Your message has been sent successfully! We will contact you soon.")
+
+        return self.get(request, *args, **kwargs)
 
 
 
